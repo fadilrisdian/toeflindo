@@ -14,7 +14,7 @@ Next.js 15 frontend + FastAPI JSON backend for TOEFL practice tracking.
 Create `.env` in the project root (see [environment variables](docs/reference.md#environment-variables)), then:
 
 ```bash
-cd ~/.hermes/toefl_tracker_v2
+cd ~/toeflindo
 docker compose build
 docker compose up -d
 ```

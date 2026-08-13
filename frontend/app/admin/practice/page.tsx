@@ -296,8 +296,8 @@ function Modal({
 const CSV_EXAMPLE = `task_type,question,answer,tags,category,question_type,source,reference_only
 Build a Sentence,"She ___ to school every day.","goes","Build a Sentence,Group 1",,,https://www.toeflresources.com/,0
 Write an Email,"Write an email to your professor about missing class.","Dear Professor...",,,email,https://www.toeflresources.com/,0
-Listen and Repeat,/home/ubuntu/.hermes/toefl_tracker_v2/speaking-practice/listen-and-repeat/campus/lib1.mp3,"Welcome to the library.","speaking,listen-repeat,campus-library",,,https://www.toeflresources.com/,0
-Take an Interview,/home/ubuntu/.hermes/toefl_tracker_v2/speaking-practice/take-an-interview/campus/tour.mp3,"Campus life and facilities","speaking,take-an-interview,campus",,,https://www.toeflresources.com/,0`
+Listen and Repeat,/home/ubuntu/toeflindo/speaking-practice/listen-and-repeat/campus/lib1.mp3,"Welcome to the library.","speaking,listen-repeat,campus-library",,,https://www.toeflresources.com/,0
+Take an Interview,/home/ubuntu/toeflindo/speaking-practice/take-an-interview/campus/tour.mp3,"Campus life and facilities","speaking,take-an-interview,campus",,,https://www.toeflresources.com/,0`
 
 /** Minimal RFC-4180 CSV parser — returns headers + data rows as string[] arrays. */
 function parseCsv(text: string): { headers: string[]; rows: string[][] } {
@@ -445,7 +445,7 @@ function CsvImportModal({ onClose, onDone }: { onClose: () => void; onDone: () =
               <li>
                 <code>question</code> <strong>(required)</strong> — for writing/grammar tasks: the prompt text.
                 For <em>Listen and Repeat</em> / <em>Take an Interview</em>: the <strong>absolute path</strong> to the audio file already on the server
-                (e.g. <code>/home/ubuntu/.hermes/toefl_tracker_v2/speaking-practice/listen-and-repeat/...</code>).
+                (e.g. <code>/home/ubuntu/toeflindo/speaking-practice/listen-and-repeat/...</code>).
                 Use the single-task form to upload new audio files.
               </li>
               <li><code>answer</code> — model answer. <strong>Required for Listen and Repeat</strong> (sentence text displayed to learner). Optional for others.</li>
