@@ -3,13 +3,8 @@
 *.db-wal
 __pycache__/
 *.pyc
-.next/
-node_modules/
-recordings/
-*.webm
 
 # V2 local assets (large / secrets)
-speaking-practice/
 certs/key.pem
 
 # litellm
