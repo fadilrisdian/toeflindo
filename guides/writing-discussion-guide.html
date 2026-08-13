@@ -1,0 +1,117 @@
+<style>
+  .g-wrap { font-family: Arial, sans-serif; font-size: 14px; color: #1f2937; line-height: 1.65; max-width: 720px; }
+  .g-wrap h2 { font-size: 1.15rem; font-weight: 700; color: #2a7a7a; margin: 28px 0 10px; border-bottom: 2px solid #e0f0f0; padding-bottom: 6px; }
+  .g-wrap p  { margin: 0 0 10px; }
+  .g-wrap ul { margin: 4px 0 12px 18px; }
+  .g-wrap ul li { margin-bottom: 5px; }
+  .g-overview { background: #f0faf9; border: 1px solid #b2dada; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; }
+  .g-overview ul { margin: 6px 0 0 16px; }
+  .g-template { background: #f9fafb; border: 1px solid #e6e8eb; border-radius: 10px; padding: 16px 20px; margin-bottom: 8px; }
+  .g-template .row { display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-start; }
+  .g-template .row:last-child { margin-bottom: 0; }
+  .g-template .part { min-width: 200px; font-weight: 700; color: #2a7a7a; font-size: 0.88rem; }
+  .g-template .text { font-size: 0.88rem; color: #4b5563; font-style: italic; }
+  .g-template-ex { background: #eaf5f3; border: 1px solid #b2dada; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; }
+  .g-template-ex .row { display: flex; gap: 12px; margin-bottom: 10px; align-items: flex-start; }
+  .g-template-ex .row:last-child { margin-bottom: 0; }
+  .g-template-ex .part { min-width: 200px; font-weight: 700; color: #1f6060; font-size: 0.88rem; }
+  .g-template-ex .text { font-size: 0.88rem; color: #1f2937; line-height: 1.6; }
+  .g-sample { background: white; border: 1px solid #e6e8eb; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+  .g-sample-head { background: #f0faf9; border-bottom: 1px solid #d1eeee; padding: 12px 18px; }
+  .g-sample-head .title { font-weight: 700; font-size: 0.95rem; color: #1f2937; margin-bottom: 4px; }
+  .g-sample-head .meta  { font-size: 0.82rem; color: #6b7280; }
+  .g-sample-views { padding: 12px 18px; border-bottom: 1px solid #e6e8eb; display: flex; gap: 12px; }
+  .g-sample-views .view { flex: 1; background: #f9fafb; border: 1px solid #e6e8eb; border-radius: 8px; padding: 10px 12px; }
+  .g-sample-views .view .vname { font-weight: 700; font-size: 0.78rem; color: #2a7a7a; margin-bottom: 3px; }
+  .g-sample-views .view .vtext { font-size: 0.82rem; color: #374151; }
+  .g-sample-body { padding: 14px 18px; }
+  .g-sample-body .resp-text { font-size: 0.88rem; color: #1f2937; line-height: 1.7; white-space: pre-wrap; background: #f9fafb; border: 1px solid #e6e8eb; border-radius: 8px; padding: 14px 16px; }
+  .g-sample-body .wc { font-size: 0.78rem; color: #9ca3af; margin-top: 6px; text-align: right; }
+  .g-summary { background: #fff8e1; border: 1px solid #ffe082; border-radius: 10px; padding: 14px 18px; margin-top: 24px; font-size: 0.9rem; }
+  .g-note { font-size: 0.82rem; color: #6b7280; font-style: italic; margin-top: 6px; margin-bottom: 16px; }
+</style>
+
+<div class="g-wrap">
+
+  <div class="g-overview">
+    <strong>Academic Discussion — Task Overview</strong>
+    <ul>
+      <li>Format: teacher asks a question → two students respond → you add your own post</li>
+      <li>Time: <strong>10 minutes</strong> · Recommended: <strong>120–150 words</strong></li>
+      <li>Topic is appropriate for a first-year university class in North America</li>
+    </ul>
+  </div>
+
+  <h2>Response Template</h2>
+  <div class="g-template">
+    <div class="row"><div class="part">General opinion</div><div class="text">In my opinion, (your general position on the topic)</div></div>
+    <div class="row"><div class="part">Specific reason</div><div class="text">My personal belief is that (specific reason supporting your opinion)</div></div>
+    <div class="row"><div class="part">Example</div><div class="text">For example, …</div></div>
+    <div class="row"><div class="part">Acknowledge another speaker</div><div class="text">While [Name] raised a relevant point about (their idea), I believe he/she is missing a critical idea.</div></div>
+    <div class="row"><div class="part">Expand your point</div><div class="text">To be more specific, (strengthen your opposing viewpoint)</div></div>
+  </div>
+  <p class="g-note">You don't have to follow this exactly — but this 5-part structure reliably covers all scoring criteria: opinion, support, example, and engagement with another student.</p>
+
+  <h2>Template in Action</h2>
+  <div class="g-template-ex">
+    <div class="row"><div class="part">General opinion</div><div class="text">In my opinion, automation will end up harming workers ten or twenty years down the road.</div></div>
+    <div class="row"><div class="part">Specific reason</div><div class="text">My personal belief is that when a company has a choice between compensating an employee or utilizing cheap technology, the company will almost always choose to use technology.</div></div>
+    <div class="row"><div class="part">Example</div><div class="text">For example, the car manufacturing industry used to employ tens of thousands of workers, but due to advances in technology, the workforce has been reduced to a fraction of what it was fifty years ago.</div></div>
+    <div class="row"><div class="part">Acknowledge another speaker</div><div class="text">While Juan raised a relevant point about efficiency leading to the creation of new jobs, I believe he is missing a critical idea.</div></div>
+    <div class="row"><div class="part">Expand your point</div><div class="text">To be more specific, high-skilled jobs like programming and game design are already disappearing due to the advent of AI technology that can do the same job for almost nothing.</div></div>
+  </div>
+
+  <h2>Sample Responses</h2>
+
+  <!-- Sample 1 -->
+  <div class="g-sample">
+    <div class="g-sample-head">
+      <div class="title">Sample 1 — Globalization</div>
+      <div class="meta">Professor: Dr. Williams · Is globalization a positive or negative force in the world today?</div>
+    </div>
+    <div class="g-sample-views">
+      <div class="view"><div class="vname">Bryan</div><div class="vtext">Globalization is mostly positive — it increases trade, travel, cultural exchange, and economic opportunity.</div></div>
+      <div class="view"><div class="vname">Alex</div><div class="vtext">Globalization can hurt developing countries through exploitation and cultural loss, and should be balanced by fair policies.</div></div>
+    </div>
+    <div class="g-sample-body">
+      <div class="resp-text">In my opinion, globalization is a positive force in the world today. My personal belief is that when nations interact together, it leads to less suffering. For example, people who suffer from natural catastrophes can import goods and services to help mitigate their losses and recover quickly. Citizens of nations who may be going through war or famine can flee to neighboring countries for shelter. While Alex raised a relevant point about cultural homogenization, I believe he is missing a critical point. To be more specific, much of the food found in grocery stores around the world is imported. Our very diet is due to the international trade partnerships and alliances forged over the last half of the 20th century. International trade and travel are not possible in a world without globalization, which is why it is crucial to maintain our current global policies for a safer world with a higher standard of living.</div>
+      <div class="wc">Word count: 154</div>
+    </div>
+  </div>
+
+  <!-- Sample 2 -->
+  <div class="g-sample">
+    <div class="g-sample-head">
+      <div class="title">Sample 2 — Remote vs. Office Work</div>
+      <div class="meta">Professor: Mr. Smith · Is it better to work remotely or in a traditional office environment?</div>
+    </div>
+    <div class="g-sample-views">
+      <div class="view"><div class="vname">Sam</div><div class="vtext">Office work is better because in-person relationships and collaboration are stronger.</div></div>
+      <div class="view"><div class="vname">Ally</div><div class="vtext">Remote work is better — it reduces commuting stress and offers flexibility while still allowing communication.</div></div>
+    </div>
+    <div class="g-sample-body">
+      <div class="resp-text">I would argue that working from home is much better than working in an office. I have worked in offices before, and, unfortunately, it almost always devolves into an environment where everyone thinks the same way. I remember when I worked at a school in midtown Manhattan and the entire staff was afraid of getting fired, so no one dissented from the school president's opinion, even though he acted like a tyrant. However, I have to admit that Sam makes a good point. It is much harder to form strong bonds with people who do not share the same physical space. I have tried at my current job from my home office, and Zoom meetups are just not enough to get close to someone. Still, if I had to choose, I would opt for the freedom of working from home.</div>
+    </div>
+  </div>
+
+  <!-- Sample 3 -->
+  <div class="g-sample">
+    <div class="g-sample-head">
+      <div class="title">Sample 3 — Art: Entertainment vs. Greater Purpose</div>
+      <div class="meta">Professor: Dr. Bianchi · Is art only for entertainment, or does it have a greater purpose in society?</div>
+    </div>
+    <div class="g-sample-views">
+      <div class="view"><div class="vname">Susana</div><div class="vtext">Art helps people explore emotions and can inspire social awareness and action.</div></div>
+      <div class="view"><div class="vname">Alex</div><div class="vtext">Entertainment is an important function of art because it helps people relax and enjoy life.</div></div>
+    </div>
+    <div class="g-sample-body">
+      <div class="resp-text">Many people hold different opinions on what exactly makes art so important on a social and individual level. I firmly believe that art is for much more than entertainment. Susana touched on this already, but some people devote their entire lives to learning an art form like music. A world-class violinist not only plays the violin for entertainment but finds purpose in her life through tinkering and getting better at the violin over time. While I do understand Alex's point about entertainment being an important part of art, I believe he is missing the broader context. Art is not only confined to the movies we watch or the books we read, but it applies to painting, sculpture, poetry, woodworking, and other less popular pursuits. These disciplines not only entertain audiences but provide meaning to the artist's lives and inspiration to their viewers.</div>
+    </div>
+  </div>
+
+  <div class="g-summary">
+    <strong>Summary:</strong> State a clear opinion, back it with a reason and concrete example, then engage with one student's view.
+    Aim for 120–150 words. Concise argumentation beats padding every time.
+  </div>
+
+</div>

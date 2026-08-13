@@ -1,0 +1,133 @@
+<style>
+  .g-wrap { font-family: Arial, sans-serif; font-size: 14px; color: #1f2937; line-height: 1.65; max-width: 720px; }
+  .g-wrap h2 { font-size: 1.15rem; font-weight: 700; color: #2a7a7a; margin: 28px 0 10px; border-bottom: 2px solid #e0f0f0; padding-bottom: 6px; }
+  .g-wrap h3 { font-size: 1rem; font-weight: 700; color: #1f2937; margin: 20px 0 8px; }
+  .g-wrap p  { margin: 0 0 10px; }
+  .g-wrap ul { margin: 4px 0 12px 18px; }
+  .g-wrap ul li { margin-bottom: 5px; }
+  .g-overview { background: #f0faf9; border: 1px solid #b2dada; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; }
+  .g-overview ul { margin: 6px 0 0 16px; }
+  .g-template { background: #f9fafb; border: 1px solid #e6e8eb; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; }
+  .g-template .row { display: flex; gap: 12px; margin-bottom: 8px; align-items: flex-start; }
+  .g-template .row:last-child { margin-bottom: 0; }
+  .g-template .part { min-width: 160px; font-weight: 700; color: #2a7a7a; font-size: 0.88rem; }
+  .g-template .text { font-size: 0.88rem; color: #4b5563; font-style: italic; }
+  .g-sample { background: white; border: 1px solid #e6e8eb; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+  .g-sample-head { background: #f0faf9; border-bottom: 1px solid #d1eeee; padding: 12px 18px; }
+  .g-sample-head .title { font-weight: 700; font-size: 0.95rem; color: #1f2937; margin-bottom: 4px; }
+  .g-sample-head .meta { font-size: 0.82rem; color: #6b7280; }
+  .g-sample-req { padding: 12px 18px; border-bottom: 1px solid #e6e8eb; }
+  .g-sample-req .rlabel { font-size: 0.75rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 6px; }
+  .g-sample-req ul { margin: 0 0 0 16px; }
+  .g-sample-req ul li { font-size: 0.85rem; color: #374151; margin-bottom: 3px; }
+  .g-sample-body { padding: 14px 18px; }
+  .g-sample-body .to-line { font-size: 0.82rem; color: #6b7280; margin-bottom: 4px; }
+  .g-sample-body .email-text { font-size: 0.88rem; color: #1f2937; line-height: 1.7; white-space: pre-wrap; background: #f9fafb; border: 1px solid #e6e8eb; border-radius: 8px; padding: 14px 16px; margin-top: 10px; }
+  .g-summary { background: #fff8e1; border: 1px solid #ffe082; border-radius: 10px; padding: 14px 18px; margin-top: 24px; font-size: 0.9rem; }
+  .g-note { font-size: 0.82rem; color: #6b7280; font-style: italic; margin-top: 6px; }
+</style>
+
+<div class="g-wrap">
+
+  <div class="g-overview">
+    <strong>Write an Email — Task Overview</strong>
+    <ul>
+      <li>Time: <strong>7 minutes</strong></li>
+      <li>Recommended length: <strong>100–150 words</strong></li>
+      <li>Respond to <strong>all</strong> prompt requirements</li>
+    </ul>
+  </div>
+
+  <h2>General Email Structure</h2>
+  <div class="g-template">
+    <div class="row"><div class="part">Greeting</div><div class="text">Dear [Name],</div></div>
+    <div class="row"><div class="part">Introduction</div><div class="text">I hope you are doing well, and I apologize for disturbing you.</div></div>
+    <div class="row"><div class="part">Purpose</div><div class="text">I'm writing to…</div></div>
+    <div class="row"><div class="part">Purpose explanation</div><div class="text">You see… / As you know… / Recently…</div></div>
+    <div class="row"><div class="part">Request</div><div class="text">Would it be possible… / Could you…</div></div>
+    <div class="row"><div class="part">Closing</div><div class="text">Thank you for reading, / Thank you for your time,</div></div>
+  </div>
+  <p class="g-note">This structure works most of the time, but adjust it based on the exact prompt — not every situation calls for an apology or the same opener.</p>
+
+  <h2>Sample Prompts &amp; Responses</h2>
+
+  <!-- Sample 1 -->
+  <div class="g-sample">
+    <div class="g-sample-head">
+      <div class="title">Sample 1 — Apartment Maintenance</div>
+      <div class="meta">To: Mr. Hill &nbsp;·&nbsp; Subject: Request for apartment maintenance repairs</div>
+    </div>
+    <div class="g-sample-req">
+      <div class="rlabel">Required points</div>
+      <ul>
+        <li>Describe the maintenance issues</li>
+        <li>Explain how they affect daily life</li>
+        <li>Request quick repairs</li>
+      </ul>
+    </div>
+    <div class="g-sample-body">
+      <div class="email-text">Dear Mr. Hill,
+
+I hope you are doing well, and I apologize for disturbing you. As you know, I moved into your apartment on Highwood Street last week. I'm writing to mention a few maintenance issues that I've noticed since then. Recently, the faucet in the bathroom sink has a steady leak that I cannot stop. I can hear this leak during the night, and it is interrupting my sleep. I'm also worried about wasting water. In addition, the doorbell on the front door does not work. This makes it difficult to receive packages from delivery drivers, since they have no way of letting me know that they have arrived. Would it be possible for you to arrange repairs for both of these issues right away? I will be at home all week, so I can easily let you in no matter when you arrive to take care of them.
+
+Thank you for reading,
+Zorica Hedlund</div>
+    </div>
+  </div>
+
+  <!-- Sample 2 -->
+  <div class="g-sample">
+    <div class="g-sample-head">
+      <div class="title">Sample 2 — Charity Event Donation</div>
+      <div class="meta">To: Drew Houghton &nbsp;·&nbsp; Subject: Request for support with charity event</div>
+    </div>
+    <div class="g-sample-req">
+      <div class="rlabel">Required points</div>
+      <ul>
+        <li>Introduce yourself and explain the purpose of the event</li>
+        <li>Describe how the donation would help</li>
+        <li>Invite participation and provide contact details</li>
+      </ul>
+    </div>
+    <div class="g-sample-body">
+      <div class="email-text">Dear Mr. Houghton,
+
+I apologize for bothering you because I know you must be very busy. My name is George Michaels, and I am a volunteer for an upcoming school event. Soon, the university will begin its annual campaign to collect donations of money and supplies to help local families get through the winter season. I'm writing to ask if your supermarket would be willing to donate some canned food items or other essential goods to the campaign. A contribution from your store would help ensure that families in our area can enjoy healthy and nutritious meals. Would you be interested in donating to these local families in need? If so, please reply to this email or reach out to me by phone at 471-316-2030.
+
+Thank you for reading,
+Sincerely,
+Caleb Fox</div>
+    </div>
+  </div>
+
+  <!-- Sample 3 -->
+  <div class="g-sample">
+    <div class="g-sample-head">
+      <div class="title">Sample 3 — Online Course Technical Issue</div>
+      <div class="meta">To: Dr. Lin &nbsp;·&nbsp; Subject: Issues with online course materials</div>
+    </div>
+    <div class="g-sample-req">
+      <div class="rlabel">Required points</div>
+      <ul>
+        <li>Describe the technical problems</li>
+        <li>Explain how they affected your learning</li>
+        <li>Ask how to complete that part of the course</li>
+      </ul>
+    </div>
+    <div class="g-sample-body">
+      <div class="email-text">Dear Dr. Lin,
+
+I'm writing to let you know about a technical problem I recently experienced while studying for your "Introduction to Geology" online course. Last week, some of the videos about plate tectonics that you assigned would not load properly. I was only able to watch the first five seconds of each video, and after that, they would not continue to play. As a result, I am unable to fully comprehend the lecture you gave, and I'm worried that my final grade will be impacted. Could you let me know if there is another method to access the videos? Once I watch them all, I am sure I will fully understand the topic.
+
+Thank you for your time,
+Talia Brunner</div>
+    </div>
+  </div>
+
+  <div class="g-summary">
+    <strong>Summary:</strong> Use clear organization, polite language, and cover all prompt requirements.
+    Explain the situation directly, include all requested details, and end with a respectful request or closing.
+    Aim for 120–140 words — enough to be thorough without padding.
+  </div>
+
+</div>

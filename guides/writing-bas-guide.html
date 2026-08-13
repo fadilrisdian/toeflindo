@@ -1,0 +1,199 @@
+<style>
+  .g-wrap { font-family: Arial, sans-serif; font-size: 14px; color: #1f2937; line-height: 1.65; max-width: 720px; }
+  .g-wrap h2 { font-size: 1.15rem; font-weight: 700; color: #2a7a7a; margin: 28px 0 10px; border-bottom: 2px solid #e0f0f0; padding-bottom: 6px; }
+  .g-wrap h3 { font-size: 1rem; font-weight: 700; color: #1f2937; margin: 20px 0 8px; }
+  .g-wrap p  { margin: 0 0 10px; }
+  .g-wrap ul { margin: 4px 0 12px 18px; }
+  .g-wrap ul li { margin-bottom: 5px; }
+  .g-overview { background: #f0faf9; border: 1px solid #b2dada; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; }
+  .g-overview ul { margin: 6px 0 0 16px; }
+  .g-tag { display: inline-block; background: #2a7a7a; color: white; font-size: 0.72rem; font-weight: 700; padding: 2px 10px; border-radius: 12px; margin-bottom: 10px; letter-spacing: .03em; text-transform: uppercase; }
+  .g-card { background: white; border: 1px solid #e6e8eb; border-radius: 10px; padding: 16px 20px; margin-bottom: 14px; }
+  .g-card .label { font-size: 0.75rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
+  .g-card .val  { font-size: 0.92rem; color: #1f2937; margin-bottom: 10px; }
+  .g-card .val:last-child { margin-bottom: 0; }
+  .g-answer { color: #2a7a7a; font-weight: 700; }
+  .g-struct { background: #f9fafb; border-left: 4px solid #2a7a7a; border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 18px; }
+  .g-struct .s-name { font-weight: 700; color: #2a7a7a; font-size: 0.95rem; margin-bottom: 4px; }
+  .g-struct .s-def  { font-size: 0.85rem; color: #6b7280; margin-bottom: 10px; }
+  .g-ex-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .g-ex-box { background: white; border: 1px solid #e6e8eb; border-radius: 8px; padding: 12px 14px; }
+  .g-ex-box .elabel { font-size: 0.72rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; }
+  .g-ex-box .etext  { font-size: 0.88rem; color: #1f2937; font-style: italic; }
+  .g-wb { margin: 8px 0; font-size: 0.85rem; color: #555; }
+  .g-wb span { display: inline-block; background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 20px; padding: 1px 9px; margin: 2px 2px; font-size: 0.82rem; color: #1f2937; }
+  .g-summary { background: #fff8e1; border: 1px solid #ffe082; border-radius: 10px; padding: 14px 18px; margin-top: 24px; font-size: 0.9rem; }
+</style>
+
+<div class="g-wrap">
+
+  <div class="g-overview">
+    <strong>Build a Sentence — Task Overview</strong>
+    <ul>
+      <li>Given a statement or question + several words out of order</li>
+      <li>Arrange them into one correct sentence</li>
+      <li>Some words may be <strong>extra</strong> and not used</li>
+      <li>Test day: <strong>10 sentences</strong> · <strong>5 min 50 sec</strong> · ~35 sec per question</li>
+    </ul>
+  </div>
+
+  <h2>Example</h2>
+  <div class="g-card">
+    <div class="label">Statement</div>
+    <div class="val">Lena told me she's learning how to drive.</div>
+    <div class="label">Word bank</div>
+    <div class="g-wb">
+      <span>test</span><span>her</span><span>she</span><span>driving</span><span>scheduled</span><span>has</span><span>yet</span>
+    </div>
+    <div class="label">Correct sentence</div>
+    <div class="val g-answer">Has she scheduled her driving test yet?</div>
+  </div>
+
+  <h2>7 Common Sentence Structures</h2>
+
+  <!-- 1 -->
+  <div class="g-struct">
+    <div class="s-name">1. Embedded Question</div>
+    <div class="s-def">A question hidden inside a statement.</div>
+    <div class="g-ex-row">
+      <div class="g-ex-box">
+        <div class="elabel">Example</div>
+        <div class="etext">He explained where we'd be stopping for lunch.</div>
+      </div>
+      <div class="g-ex-box">
+        <div class="elabel">Prompt</div>
+        <div class="etext">What did the tour guide mention at the start of the trip?</div>
+      </div>
+    </div>
+    <div class="g-wb" style="margin-top:10px">
+      <span>be</span><span>we'd</span><span>where</span><span>explained</span><span>he</span><span>stopping</span><span>for lunch</span><span>was going</span>
+    </div>
+    <div style="font-size:.85rem;margin-top:6px">Answer: <span class="g-answer">He explained where we'd be stopping for lunch.</span></div>
+  </div>
+
+  <!-- 2 -->
+  <div class="g-struct">
+    <div class="s-name">2. Infinitive Included</div>
+    <div class="s-def">Uses <em>to + verb</em> to express intention, desire, or purpose.</div>
+    <div class="g-ex-row">
+      <div class="g-ex-box">
+        <div class="elabel">Example</div>
+        <div class="etext">I wanted to help organize something meaningful for the community.</div>
+      </div>
+      <div class="g-ex-box">
+        <div class="elabel">Prompt</div>
+        <div class="etext">Why did you volunteer for the school event?</div>
+      </div>
+    </div>
+    <div class="g-wb" style="margin-top:10px">
+      <span>something</span><span>wanted</span><span>for</span><span>organize</span><span>meaningful</span><span>help</span><span>to</span>
+    </div>
+    <div style="font-size:.85rem;margin-top:6px">Answer: <span class="g-answer">I wanted to help organize something meaningful for the community.</span></div>
+  </div>
+
+  <!-- 3 -->
+  <div class="g-struct">
+    <div class="s-name">3. Negative Structure</div>
+    <div class="s-def">Includes <em>not</em> or a negative verb form.</div>
+    <div class="g-ex-row">
+      <div class="g-ex-box">
+        <div class="elabel">Example</div>
+        <div class="etext">I didn't enjoy the atmosphere because the music was too loud.</div>
+      </div>
+      <div class="g-ex-box">
+        <div class="elabel">Prompt</div>
+        <div class="etext">Did you like the restaurant we went to last night?</div>
+      </div>
+    </div>
+    <div class="g-wb" style="margin-top:10px">
+      <span>music</span><span>because</span><span>enjoy</span><span>didn't</span><span>the</span><span>was</span><span>the atmosphere</span>
+    </div>
+    <div style="font-size:.85rem;margin-top:6px">Answer: <span class="g-answer">I didn't enjoy the atmosphere because the music was too loud.</span></div>
+  </div>
+
+  <!-- 4 -->
+  <div class="g-struct">
+    <div class="s-name">4. Relative Clause</div>
+    <div class="s-def">Adds extra information about a noun using <em>who, which, when, that</em>.</div>
+    <div class="g-ex-row">
+      <div class="g-ex-box">
+        <div class="elabel">Example</div>
+        <div class="etext">It was the weekend when we all met at the cafe.</div>
+      </div>
+      <div class="g-ex-box">
+        <div class="elabel">Prompt</div>
+        <div class="etext">When was the last time you saw Emma?</div>
+      </div>
+    </div>
+    <div class="g-wb" style="margin-top:10px">
+      <span>met</span><span>we</span><span>was</span><span>weekend</span><span>the</span><span>when</span><span>all</span>
+    </div>
+    <div style="font-size:.85rem;margin-top:6px">Answer: <span class="g-answer">It was the weekend when we all met at the cafe.</span></div>
+  </div>
+
+  <!-- 5 -->
+  <div class="g-struct">
+    <div class="s-name">5. Conditional Style</div>
+    <div class="s-def">Explains what would happen if a condition were met.</div>
+    <div class="g-ex-row">
+      <div class="g-ex-box">
+        <div class="elabel">Example</div>
+        <div class="etext">I would have gone if I hadn't had so much work to do.</div>
+      </div>
+      <div class="g-ex-box">
+        <div class="elabel">Prompt</div>
+        <div class="etext">Why didn't you join us for dinner yesterday?</div>
+      </div>
+    </div>
+    <div class="g-wb" style="margin-top:10px">
+      <span>if</span><span>had</span><span>I</span><span>work</span><span>to do</span><span>not</span><span>hadn't</span><span>so much</span>
+    </div>
+    <div style="font-size:.85rem;margin-top:6px">Answer: <span class="g-answer">I would have gone if I hadn't had so much work to do.</span></div>
+  </div>
+
+  <!-- 6 -->
+  <div class="g-struct">
+    <div class="s-name">6. Adverbial Clause</div>
+    <div class="s-def">Gives information about <em>when, why, how, or under what condition</em> something happens.</div>
+    <div class="g-ex-row">
+      <div class="g-ex-box">
+        <div class="elabel">Example</div>
+        <div class="etext">It will start after everyone completes the registration process.</div>
+      </div>
+      <div class="g-ex-box">
+        <div class="elabel">Prompt</div>
+        <div class="etext">When will the new employee orientation begin?</div>
+      </div>
+    </div>
+    <div class="g-wb" style="margin-top:10px">
+      <span>completes</span><span>start</span><span>everyone</span><span>will</span><span>after</span><span>it</span><span>the registration process</span>
+    </div>
+    <div style="font-size:.85rem;margin-top:6px">Answer: <span class="g-answer">It will start after everyone completes the registration process.</span></div>
+  </div>
+
+  <!-- 7 -->
+  <div class="g-struct">
+    <div class="s-name">7. Follow-up Question</div>
+    <div class="s-def">Asks for more information after a statement is given.</div>
+    <div class="g-ex-row">
+      <div class="g-ex-box">
+        <div class="elabel">Example</div>
+        <div class="etext">Did he tell you what company he's working for?</div>
+      </div>
+      <div class="g-ex-box">
+        <div class="elabel">Prompt</div>
+        <div class="etext">I heard Ethan started a new job last month.</div>
+      </div>
+    </div>
+    <div class="g-wb" style="margin-top:10px">
+      <span>you</span><span>working</span><span>company</span><span>he's</span><span>tell</span><span>new position</span><span>what</span><span>for</span>
+    </div>
+    <div style="font-size:.85rem;margin-top:6px">Answer: <span class="g-answer">Did he tell you what company he's working for?</span></div>
+  </div>
+
+  <div class="g-summary">
+    <strong>Summary:</strong> This task tests your ability to recognize sentence structure quickly under time pressure.
+    Focus on identifying the grammar pattern first, then place the key verb and subject, and use the remaining words to complete the structure. Words that don't fit are decoys — ignore them.
+  </div>
+
+</div>

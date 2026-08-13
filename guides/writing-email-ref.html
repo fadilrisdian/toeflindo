@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TOEFL Writing - Question 1 of 2</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      background: #b0b0b0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .page-wrapper {
+      width: 1060px;
+      min-width: 1060px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #e8e8e8;
+    }
+
+    /* Top bar */
+    .top-bar {
+      background: #2a7a7a;
+      height: 50px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .next-btn {
+      background: white;
+      color: #333;
+      border: none;
+      padding: 8px 20px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 3px;
+    }
+
+    .next-btn:hover { background: #f0f0f0; }
+
+    .next-btn .arrow {
+      font-size: 18px;
+      color: #2a7a7a;
+      font-weight: bold;
+    }
+
+    /* Sub-bar */
+    .sub-bar {
+      background: #f5f5f5;
+      border-bottom: 1px solid #ccc;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+
+    .sub-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .sub-bar-left .writing-label { font-weight: bold; }
+    .sub-bar-left .separator { color: #999; }
+
+    .sub-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+    }
+
+    .timer { font-weight: bold; }
+
+    .hide-time-btn {
+      color: #2a7a7a;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: bold;
+      border: none;
+      background: none;
+      font-size: 14px;
+    }
+
+    .eye-icon {
+      width: 22px;
+      height: 14px;
+      fill: #2a7a7a;
+    }
+
+    /* Main content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      background: white;
+      margin: 8px;
+      border: 1px solid #ccc;
+      overflow: hidden;
+    }
+
+    /* Left panel */
+    .left-panel {
+      width: 400px;
+      min-width: 400px;
+      border-right: 1px solid #ccc;
+      padding: 20px;
+      overflow-y: auto;
+      color: #5a2d82;
+      line-height: 1.6;
+    }
+
+    .left-panel p { margin-bottom: 12px; color: #5a2d82; }
+    .left-panel strong { color: #333; }
+
+    .task-title {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 12px;
+    }
+
+    .bullet-list {
+      list-style: none;
+      margin: 10px 0 16px 10px;
+    }
+
+    .bullet-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+      color: #5a2d82;
+    }
+
+    .bullet-list li::before {
+      content: "•";
+      font-size: 18px;
+      line-height: 1.2;
+      flex-shrink: 0;
+    }
+
+    .note-text { color: #5a2d82; }
+
+    /* Right panel */
+    .right-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .response-label {
+      font-weight: bold;
+      font-size: 15px;
+      margin-bottom: 14px;
+    }
+
+    .email-header {
+      margin-bottom: 10px;
+      line-height: 1.8;
+    }
+
+    .email-header p { font-weight: bold; font-size: 14px; }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 0;
+      padding: 8px 0;
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .tool-btn {
+      padding: 6px 14px;
+      border: 1px solid #ccc;
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+      border-radius: 2px;
+      color: #333;
+    }
+
+    .tool-btn:hover { background: #f0f0f0; }
+
+    .tool-btn.active {
+      background: #2a7a7a;
+      color: white;
+      border-color: #2a7a7a;
+    }
+
+    .word-count-area {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #2a7a7a;
+      font-size: 13px;
+    }
+
+    .word-count-btn {
+      background: none;
+      border: none;
+      color: #2a7a7a;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .word-count-num {
+      font-weight: bold;
+      font-size: 14px;
+      color: #333;
+      min-width: 20px;
+    }
+
+    /* Text area */
+    .writing-area {
+      flex: 1;
+      border: none;
+      outline: none;
+      resize: none;
+      font-size: 14px;
+      line-height: 1.6;
+      font-family: Arial, sans-serif;
+      padding: 10px 0;
+      color: #333;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <button class="next-btn" onclick="window.location.href='academic-discussion.html'">
+      Next <span class="arrow">›</span>
+    </button>
+  </div>
+
+  <!-- Sub-bar -->
+  <div class="sub-bar">
+    <div class="sub-bar-left">
+      <span class="writing-label">Writing</span>
+      <span class="separator">|</span>
+      <span>Question 1 of 2</span>
+    </div>
+    <div class="sub-bar-right">
+      <span class="timer" id="timer">00:06:59</span>
+      <button class="hide-time-btn" onclick="toggleTimer()">
+        <svg class="eye-icon" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="12" cy="8" rx="11" ry="7" fill="none" stroke="#2a7a7a" stroke-width="1.8"/>
+          <circle cx="12" cy="8" r="3.5" fill="#2a7a7a"/>
+        </svg>
+        Hide Time
+      </button>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="main-content">
+
+    <!-- Left panel -->
+    <div class="left-panel">
+      <p>A new poetry magazine has asked its readers for submissions, and you decided to submit two of your poems. However, you had a problem using the online submission form, and you are not certain that your submissions were received.</p>
+
+      <p class="task-title">Write an email to the editor of the magazine. In your email, do the following.</p>
+
+      <ul class="bullet-list">
+        <li>Tell the editor what you like about the new magazine.</li>
+        <li>Describe the problem you experienced.</li>
+        <li>Ask about the status of your submissions.</li>
+      </ul>
+
+      <p class="note-text">Write as much as you can and in complete sentences.</p>
+    </div>
+
+    <!-- Right panel -->
+    <div class="right-panel">
+      <div class="response-label">Your Response:</div>
+
+      <div class="email-header">
+        <p>To: editor@sunshinepoetrymagazine.com</p>
+        <p>Subject: Problem using submission form</p>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <button class="tool-btn active" onclick="handleCut()">Cut</button>
+        <button class="tool-btn" onclick="handlePaste()">Paste</button>
+        <button class="tool-btn" onclick="handleUndo()">Undo</button>
+        <button class="tool-btn" onclick="handleRedo()">Redo</button>
+        <div class="word-count-area">
+          <button class="word-count-btn" onclick="toggleWordCount()">
+            <svg class="eye-icon" viewBox="0 0 24 16" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="12" cy="8" rx="11" ry="7" fill="none" stroke="#2a7a7a" stroke-width="1.8"/>
+              <circle cx="12" cy="8" r="3.5" fill="#2a7a7a"/>
+            </svg>
+            Hide Word Count
+          </button>
+          <span class="word-count-num" id="wordCount">0</span>
+        </div>
+      </div>
+
+      <textarea class="writing-area" id="writingArea" placeholder="" oninput="updateWordCount()"></textarea>
+    </div>
+
+  </div>
+
+  </div><!-- .page-wrapper -->
+
+  <script>
+    // Timer countdown
+    let seconds = 6 * 60 + 59;
+    let timerVisible = true;
+    let timerInterval = setInterval(() => {
+      if (seconds > 0) seconds--;
+      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const s = String(seconds % 60).padStart(2, '0');
+      if (timerVisible) document.getElementById('timer').textContent = `00:${m}:${s}`;
+    }, 1000);
+
+    function toggleTimer() {
+      timerVisible = !timerVisible;
+      const el = document.getElementById('timer');
+      el.style.visibility = timerVisible ? 'visible' : 'hidden';
+    }
+
+    // Word count
+    let wordCountVisible = true;
+    function updateWordCount() {
+      const text = document.getElementById('writingArea').value.trim();
+      const count = text === '' ? 0 : text.split(/\s+/).length;
+      document.getElementById('wordCount').textContent = count;
+    }
+
+    function toggleWordCount() {
+      wordCountVisible = !wordCountVisible;
+      const el = document.getElementById('wordCount');
+      el.style.visibility = wordCountVisible ? 'visible' : 'hidden';
+    }
+
+    // Toolbar actions
+    function handleCut() {
+      const ta = document.getElementById('writingArea');
+      const start = ta.selectionStart, end = ta.selectionEnd;
+      if (start !== end) {
+        navigator.clipboard.writeText(ta.value.substring(start, end));
+        ta.value = ta.value.substring(0, start) + ta.value.substring(end);
+        updateWordCount();
+      }
+    }
+
+    function handlePaste() {
+      navigator.clipboard.readText().then(text => {
+        const ta = document.getElementById('writingArea');
+        const start = ta.selectionStart;
+        ta.value = ta.value.substring(0, start) + text + ta.value.substring(ta.selectionEnd);
+        updateWordCount();
+      });
+    }
+
+    let history = [''], historyIndex = 0;
+    document.getElementById('writingArea').addEventListener('input', () => {
+      const val = document.getElementById('writingArea').value;
+      history = history.slice(0, historyIndex + 1);
+      history.push(val);
+      historyIndex = history.length - 1;
+    });
+
+    function handleUndo() {
+      if (historyIndex > 0) {
+        historyIndex--;
+        document.getElementById('writingArea').value = history[historyIndex];
+        updateWordCount();
+      }
+    }
+
+    function handleRedo() {
+      if (historyIndex < history.length - 1) {
+        historyIndex++;
+        document.getElementById('writingArea').value = history[historyIndex];
+        updateWordCount();
+      }
+    }
+  </script>
+</body>
+</html>
