@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: toefl-litellm-db
+    environment:
+      POSTGRES_USER: litellm
+      POSTGRES_PASSWORD: ${LITELLM_DB_PASSWORD:-litellm}
+      POSTGRES_DB: litellm
+    volumes:
+      - toefl_tracker_litellm-pgdata:/var/lib/postgresql/data
+    networks:
+      - litellm-shared
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U litellm"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  litellm-proxy:
+    image: ghcr.io/berriai/litellm:main-latest
+    container_name: toefl-litellm
+    command: ["--config", "/app/config.yaml", "--host", "0.0.0.0", "--port", "4000"]
+    ports:
+      - "127.0.0.1:8080:4000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://litellm:${LITELLM_DB_PASSWORD:-litellm}@toefl-litellm-db:5432/litellm
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    networks:
+      - litellm-shared
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4000/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+networks:
+  litellm-shared:
+    driver: bridge
+    name: litellm-shared
+
+volumes:
+  toefl_tracker_litellm-pgdata:
+    external: true

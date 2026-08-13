@@ -1,0 +1,75 @@
+services:
+
+  # ── FastAPI backend (pure JSON API + speech analysis) ─────────────────────
+  toefl-api:
+    build:
+      context: ./backend
+    container_name: toefl-v2-api
+    env_file:
+      - .env
+    environment:
+      - LITELLM_PROXY_URL=http://toefl-litellm:4000
+      - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY}
+      - FRONTEND_ORIGIN=https://toeflindo.site
+      - EMBEDDING_SERVICE_URL=http://embedding-service:8100
+    volumes:
+      - ./toefl.db:/data/toefl.db:rw
+      - ./grammar_content.db:/data/grammar_content.db:rw
+      - ./grammar-lesson-prompt.md:/data/grammar-lesson-prompt.md:ro
+      - ./speaking-practice:/audio:rw
+      - ./recordings:/recordings:rw
+      - ./guides/writing-email-ref.html:/app/guides/writing-email-ref.html:ro
+      - ./guides/writing-discussion.html:/app/guides/writing-discussion.html:ro
+      - ./guides/writing-bas-guide.html:/app/guides/writing-bas-guide.html:ro
+      - ./guides/writing-email-guide.html:/app/guides/writing-email-guide.html:ro
+      - ./guides/writing-discussion-guide.html:/app/guides/writing-discussion-guide.html:ro
+    networks:
+      - toefl-v2-internal
+      - litellm-shared
+    restart: always
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
+
+  # ── Next.js frontend ──────────────────────────────────────────────────────
+  # NOT exposed directly — nginx-ssl is the only entry point on 8888
+  toefl-frontend:
+    build:
+      context: ./frontend
+    container_name: toefl-v2-frontend
+    environment:
+      - BACKEND_URL=http://toefl-api:8000
+    networks:
+      - toefl-v2-internal
+    depends_on:
+      toefl-api:
+        condition: service_healthy
+    restart: always
+
+  # ── nginx SSL terminator on port 8888 ────────────────────────────────────
+  # getUserMedia requires HTTPS — nginx terminates TLS using self-signed cert.
+  # This is the only public port.
+  toefl-ssl:
+    image: nginx:alpine
+    container_name: toefl-v2-ssl
+    ports:
+      - "0.0.0.0:8888:8888"
+    volumes:
+      - ./nginx-ssl.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certs/cert.pem:/etc/nginx/certs/cert.pem:ro
+      - ./certs/key.pem:/etc/nginx/certs/key.pem:ro
+    networks:
+      - toefl-v2-internal
+    depends_on:
+      - toefl-frontend
+    restart: always
+
+networks:
+  toefl-v2-internal:
+    driver: bridge
+  litellm-shared:
+    external: true
+    name: litellm-shared

@@ -1,0 +1,21 @@
+services:
+  embedding:
+    build:
+      context: .
+    container_name: embedding-service
+    environment:
+      - MODEL_NAME=ManiacLabs/miniac-embed
+    networks:
+      - litellm-shared
+    restart: always
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8100/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+networks:
+  litellm-shared:
+    external: true
+    name: litellm-shared

@@ -1,0 +1,112 @@
+model_list:
+
+  # --- Grammar analysis (auth_proxy + speech_analyzer) ---
+  # Groq: 30 RPM / 1K RPD / 8K TPM
+  - model_name: gpt-oss-120b
+    litellm_params:
+      model: groq/openai/gpt-oss-120b
+      api_key: os.environ/GROQ_API_KEY
+    rpm: 30
+    tpm: 8000
+    rpd: 1000
+
+  # --- Vocabulary analysis (speech_analyzer) ---
+  # JSON mode required. 30 RPM / 1K RPD / 8K TPM / 200K TPD
+  - model_name: gpt-oss-20b
+    litellm_params:
+      model: groq/openai/gpt-oss-20b
+      api_key: os.environ/GROQ_API_KEY
+    rpm: 30
+    tpm: 8000
+    rpd: 1000
+
+  # --- Rubric scoring primary (no JSON mode — outputs thinking text first) ---
+  # 30 RPM / 1K RPD / 8K TPM / 200K TPD
+  - model_name: qwen3.6-27b
+    litellm_params:
+      model: groq/qwen/qwen3.6-27b
+      api_key: os.environ/GROQ_API_KEY
+    rpm: 30
+    tpm: 8000
+    rpd: 1000
+
+  # --- Rubric scoring fallback 2 ---
+  # JSON mode supported. 30 RPM / 1K RPD / 8K TPM / 200K TPD
+  - model_name: gpt-oss-safeguard-20b
+    litellm_params:
+      model: groq/openai/gpt-oss-safeguard-20b
+      api_key: os.environ/GROQ_API_KEY
+    rpm: 30
+    tpm: 8000
+    rpd: 1000
+
+  # --- STT: load balanced across both whisper variants ---
+  # Combined 40 RPM / 4K RPD (each: 20 RPM / 2K RPD)
+  - model_name: whisper-large-v3
+    litellm_params:
+      model: groq/whisper-large-v3
+      api_key: os.environ/GROQ_API_KEY
+    rpm: 20
+    rpd: 2000
+
+  - model_name: whisper-large-v3
+    litellm_params:
+      model: groq/whisper-large-v3-turbo
+      api_key: os.environ/GROQ_API_KEY
+    rpm: 20
+    rpd: 2000
+
+  # --- OpenRouter free-tier models ---
+  # SHARED account quota: 20 RPM / 50 RPD total across ALL free models combined.
+  # No per-model limits set — proxy handles 429s via retry/cooldown.
+
+  - model_name: gemma-4-31b
+    litellm_params:
+      model: openrouter/google/gemma-4-31b-it:free
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: gemma-4-26b-moe
+    litellm_params:
+      model: openrouter/google/gemma-4-26b-a4b-it:free
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: hy3
+    litellm_params:
+      model: openrouter/tencent/hy3:free
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: nemotron-ultra
+    litellm_params:
+      model: openrouter/nvidia/nemotron-3-ultra-550b-a55b:free
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  - model_name: nemotron-super
+    litellm_params:
+      model: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+      api_key: os.environ/OPENROUTER_API_KEY
+
+  # --- Embedding model (local service) ---
+  - model_name: jina-embeddings-v5
+    litellm_params:
+      model: openai/jinaai/jina-embeddings-v5-text-small
+      api_base: http://embedding-service:8100/v1
+      api_key: "no-key-needed"
+
+router_settings:
+  routing_strategy: usage-based-routing-v2
+  num_retries: 3
+  retry_after: 5
+  allowed_fails: 3
+  cooldown_time: 30
+
+litellm_settings:
+  num_retries: 3
+  request_timeout: 120
+  drop_params: true
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  store_model_in_db: false
+  disable_spend_logs: false
+  disable_reset_budget: false
+  store_prompts_in_spend_logs: true
