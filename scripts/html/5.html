@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Past Simple vs Past Continuous</title>
+<style>
+:root{
+  --color-bg:#f6f7f8;
+  --color-surface:#ffffff;
+  --color-surface-alt:#eaf5f3;
+  --color-header-from:#2c7873;
+  --color-header-to:#173f3b;
+  --color-primary:#2a7a7a;
+  --color-primary-dark:#1f5f59;
+  --color-accent:#2c7873;
+  --color-text:#1f2937;
+  --color-text-muted:#6b7280;
+  --color-text-faint:#9ca3af;
+  --color-border:#e6e8eb;
+  --color-success:#16a34a;
+  --color-success-bg:#e7f7ec;
+  --color-error:#dc2626;
+  --color-error-bg:#fdeaea;
+  --color-warning:#b45309;
+  --color-warning-bg:#fef3e2;
+  --shadow-soft:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.05);
+  --radius-lg:14px;
+  --radius-md:9px;
+  --radius-sm:6px;
+}
+html{font-size:16px;background:var(--color-bg);color:var(--color-text);font-family:system-ui,sans-serif;}
+body{margin:0;padding:0;}
+header{
+  position:sticky;top:0;z-index:10;
+  background:linear-gradient(135deg,var(--color-header-from),var(--color-header-to));
+  color:#fff;padding:1rem 2rem;
+}
+header h1{margin:0;font-size:1.5rem;font-weight:600;}
+header p{margin:0.25rem 0 0;color:#e0e0e0;font-size:0.9rem;}
+.progress-bar{
+  height:4px;background:#e6e8eb;margin-top:0.75rem;
+  border-radius:2px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;width:0;background:var(--color-primary);
+  transition:width .3s;
+}
+main{max-width:800px;margin:2rem auto;padding:0 1rem;}
+section{margin-bottom:2rem;}
+.card{
+  background:var(--color-surface);
+  border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-soft);
+  padding:1.5rem;
+  margin-bottom:1rem;
+}
+h2{margin-top:0;color:var(--color-text);}
+button{
+  background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));
+  color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;
+  font-weight:600;cursor:pointer;
+}
+button:focus{outline:2px solid var(--color-primary);outline-offset:2px;}
+button.secondary{
+  background:var(--color-surface-alt);
+  color:var(--color-accent);
+  border:1px solid var(--color-accent);
+}
+.feedback{
+  margin-top:0.75rem;padding:0.75rem;border-left:4px solid;
+  border-radius:var(--radius-sm);
+  display:flex;align-items:center;gap:0.5rem;
+}
+.feedback.correct{border-color:var(--color-success);background:var(--color-success-bg);color:var(--color-success);}
+.feedback.incorrect{border-color:var(--color-error);background:var(--color-error-bg);color:var(--color-error);}
+.feedback .icon{font-size:1.2rem;}
+.hint-panel{
+  margin-top:0.5rem;padding:0.75rem;background:var(--color-surface-alt);
+  border-left:4px solid var(--color-primary);border-radius:var(--radius-sm);
+}
+input,select{font:inherit;padding:0.4rem;border:1px solid var(--color-border);border-radius:var(--radius-sm);}
+label{display:block;margin-bottom:0.25rem;}
+section{opacity:0;transform:translateY(20px);transition:opacity .4s,transform .4s;}
+section.visible{opacity:1;transform:none;}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Past Simple vs Past Continuous</h1>
+  <p class="subtitle">Practice choosing and forming the right past tense</p>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</header>
+<main id="content">
+  <section class="card" id="section-1">
+    <h2>1. Quick Start</h2>
+    <p>Fill in the blank with the correct past form.</p>
+    <div class="item" data-id="s1q1" data-subskill="form_simple" data-type="fill" data-answer="went">
+      <label>Yesterday, I ___ (go) to the park.</label>
+      <input type="text" placeholder="Your answer">
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    </div>
+    <div class="rule" style="display:none;margin-top:1rem;">
+      <strong>Rule:</strong> Use the past simple for completed actions (e.g., <em>went</em>). Use the past continuous (was/were + -ing) for actions that were in progress at a specific past time.
+    </div>
+  </section>
+
+  <section class="card" id="section-2">
+    <h2>2. Decision Model</h2>
+    <p>Choose the correct tense for the verb in parentheses.</p>
+    <div class="item" data-id="s2q1" data-subskill="choice" data-type="mc" data-answer="was watching">
+      <label>At 9 pm yesterday, I ___ (watch) TV when the power went out.</label>
+      <div class="options">
+        <label><input type="radio" name="s2q1">watched</label>
+        <label><input type="radio" name="s2q1">was watching</label>
+      </div>
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    </div>
+  </section>
+
+  <section class="card" id="section-3">
+    <h2>3. Key Contrasts</h2>
+    <div class="item" data-id="s3q1" data-subskill="choice" data-type="mc" data-answer="were eating">
+      <label>When I arrived, they ___ (eat) dinner.</label>
+      <div class="options">
+        <label><input type="radio" name="s3q1">ate</label>
+        <label><input type="radio" name="s3q1">were eating</label>
+      </div>
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    </div>
+
+    <div class="item" data-id="s3q2" data-subskill="form_simple" data-type="mc" data-answer="broke">
+      <label>She ___ (break) her leg yesterday.</label>
+      <div class="options">
+        <label><input type="radio" name="s3q2">breaked</label>
+        <label><input type="radio" name="s3q2">broke</label>
+      </div>
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    </div>
+
+    <div class="item" data-id="s3q3" data-subskill="choice" data-type="mc" data-answer="was raining">
+      <label>While it ___ (rain), we stayed inside.</label>
+      <div class="options">
+        <label><input type="radio" name="s3q3">rained</label>
+        <label><input type="radio" name="s3q3">was raining</label>
+      </div>
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    </div>
+  </section>
+
+  <section class="card" id="section-4">
+    <h2>4. Common Mistakes</h2>
+    <div class="item" data-id="s4q1" data-subskill="form_simple" data-type="error" data-answer="I went to the store.">
+      <label>Incorrect: I was went to the store.</label>
+      <input type="text" placeholder="Correct the sentence">
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    </div>
+
+    <div class="item" data-id="s4q2" data-subskill="negation" data-type="error" data-answer="She wasn't happy.">
+      <label>Incorrect: She didn't was happy.</label>
+      <input type="text" placeholder="Correct the sentence">
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    </div>
+
+    <div class="item" data-id="s4q3" data-subskill="form_simple" data-type="error" data-answer="They played soccer.">
+      <label>Incorrect: They were played soccer.</label>
+      <input type="text" placeholder="Correct the sentence">
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    </div>
+  </section>
+
+  <section class="card" id="section-5">
+    <h2>5. Mixed Practice</h2>
+    <div class="item" data-id="s5q1" data-subskill="form_simple" data-type="mc" data-answer="started">
+      <label>Yesterday, we ___ (start) work at 8.</label>
+      <div class="options">
+        <label><input type="radio" name="s5q1">started</label>
+        <label><input type="radio" name="s5q1">was starting</label>
+      </div>
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    </div>
+
+    <div class="item" data-id="s5q2" data-subskill="form_continuous" data-type="fill" data-answer="was reading">
+      <label>At 9, I ___ (read) a book.</label>
+      <input type="text" placeholder="Your answer">
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    </div>
+
+    <div class="item" data-id="s5q3" data-subskill="choice" data-type="mc" data-answer="was cooking">
+      <label>While I ___ (cook), the phone rang.</label>
+      <div class="options">
+        <label><input type="radio" name="s5q3">cooked</label>
+        <label><input type="radio" name="s5q3">was cooking</label>
+      </div>
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    </div>
+
+    <div class="item" data-id="s5q4" data-subskill="form_simple" data-type="error" data-answer="He ate breakfast.">
+      <label>Incorrect: He was ate breakfast.</label>
+      <input type="text" placeholder="Correct the sentence">
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    </div>
+
+    <div class="item" data-id="s5q5" data-subskill="negation" data-type="mc" data-answer="didn't enjoy">
+      <label>I ___ (not / enjoy) the movie.</label>
+      <div class="options">
+        <label><input type="radio" name="s5q5">didn't enjoy</label>
+        <label><input type="radio" name="s5q5">wasn't enjoy</label>
+      </div>
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    </div>
+
+    <div class="item" data-id="s5q6" data-subskill="negation" data-type="fill" data-answer="didn't go">
+      <label>They ___ (not / go) to the party.</label>
+      <input type="text" placeholder="Your answer">
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    </div>
+
+    <div class="item" data-id="s5q7" data-subskill="choice" data-type="mc" data-answer="were waiting">
+      <label>When the bus arrived, we ___ (wait) for ten minutes.</label>
+      <div class="options">
+        <label><input type="radio" name="s5q7">waited</label>
+        <label><input type="radio" name="s5q7">were waiting</label>
+      </div>
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    </div>
+
+    <div class="item" data-id="s5q8" data-subskill="choice" data-type="mc" data-answer="was watching">
+      <label>She ___ (watch) TV when I called.</label>
+      <div class="options">
+        <label><input type="radio" name="s5q8">watched</label>
+        <label><input type="radio" name="s5q8">was watching</label>
+      </div>
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    </div>
+  </section>
+
+  <section class="card" id="section-6">
+    <h2>6. Final Quiz (no hints)</h2>
+    <div class="item" data-id="s6q1" data-subskill="choice" data-type="mc" data-answer="was watching">
+      <label>While I ___ (read), the lights went out.</label>
+      <div class="options">
+        <label><input type="radio" name="s6q1">read</label>
+        <label><input type="radio" name="s6q1">was reading</label>
+      </div>
+      <button class="submit">Check</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+    </div>
+
+    <div class="item" data-id="s6q2" data-subskill="form_simple" data-type="fill" data-answer="bought">
+      <label>She ___ (buy) a new laptop last week.</label>
+      <input type="text" placeholder="Your answer">
+      <button class="submit">Check</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+    </div>
+
+    <div class="item" data-id="s6q3" data-subskill="negation" data-type="mc" data-answer="didn't sleep">
+      <label>He ___ (not / sleep) well last night.</label>
+      <div class="options">
+        <label><input type="radio" name="s6q3">didn't sleep</label>
+        <label><input type="radio" name="s6q3">wasn't slept</label>
+      </div>
+      <button class="submit">Check</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+    </div>
+
+    <div class="item" data-id="s6q4" data-subskill="form_continuous" data-type="fill" data-answer="was raining">
+      <label>It ___ (rain) heavily yesterday evening.</label>
+      <input type="text" placeholder="Your answer">
+      <button class="submit">Check</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+    </div>
+
+    <div class="item" data-id="s6q5" data-subskill="choice" data-type="mc" data-answer="were playing">
+      <label>When I called, they ___ (play) chess.</label>
+      <div class="options">
+        <label><input type="radio" name="s6q5">played</label>
+        <label><input type="radio" name="s6q5">were playing</label>
+      </div>
+      <button class="submit">Check</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+    </div>
+
+    <div class="item" data-id="s6q6" data-subskill="form_simple" data-type="mc" data-answer="met">
+      <label>We ___ (meet) at the cafe at 3 pm.</label>
+      <div class="options">
+        <label><input type="radio" name="s6q6">met</label>
+        <label><input type="radio" name="s6q6">were meeting</label>
+      </div>
+      <button class="submit">Check</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+    </div>
+  </section>
+
+  <section class="card" id="section-7">
+    <h2>7. Results</h2>
+    <div id="results"></div>
+    <button id="restartBtn">Restart Lesson</button>
+  </section>
+</main>
+
+<script>
+(() => {
+  const progressFill = document.getElementById('progressFill');
+  const resultsDiv = document.getElementById('results');
+  const restartBtn = document.getElementById('restartBtn');
+
+  const subskills = {
+    form_simple:{correct:0,total:0,streakCorrect:0,streakWrong:0},
+    form_continuous:{correct:0,total:0,streakCorrect:0,streakWrong:0},
+    choice:{correct:0,total:0,streakCorrect:0,streakWrong:0},
+    negation:{correct:0,total:0,streakCorrect:0,streakWrong:0}
+  };
+
+  let totalItems = 0;
+  let completedItems = 0;
+  const reviewQueue = [];
+
+  // Hint data per item id
+  const hints = {
+    s1q1:["Think about the past form of 'go'.","It's an irregular verb.","Correct answer: went"],
+    s2q1:["Is the action ongoing at that moment?","Use past continuous for ongoing actions.","Correct answer: was watching"],
+    s3q1:["Did the action happen continuously?","Use past continuous when something was in progress.","Correct answer: were eating"],
+    s3q2:["What is the past form of 'break'?","It's irregular.","Correct answer: broke"],
+    s3q3:["Is the action happening over a period?","Use past continuous for ongoing actions.","Correct answer: was raining"],
+    s4q1:["The verb after 'was' should be -ing.","Replace 'was went' with simple past.","Correct answer: I went to the store."],
+    s4q2:["Negation with 'was' uses 'wasn't'.","Replace 'didn't was' with 'wasn't'.","Correct answer: She wasn't happy."],
+    s4q3:["Do not use 'were' with a simple past verb.","Replace 'were played' with simple past.","Correct answer: They played soccer."],
+    s5q1:["Completed action at a specific time?","Use past simple.","Correct answer: started"],
+    s5q2:["Action in progress at a past time?","Use past continuous.","Correct answer: was reading"],
+    s5q3:["Ongoing action interrupted?","Use past continuous.","Correct answer: was cooking"],
+    s5q4:["Remove 'was' and use simple past.","Correct answer: He ate breakfast."],
+    s5q5:["Negation of past simple uses 'didn't'.","Correct answer: didn't enjoy"],
+    s5q6:["Negation of past simple uses 'didn't'.","Correct answer: didn't go"],
+    s5q7:["Ongoing action at a past moment?","Use past continuous.","Correct answer: were waiting"],
+    s5q8:["Ongoing action at a past moment?","Use past continuous.","Correct answer: was watching"]
+  };
+
+  // Utility functions
+  function updateProgress(){
+    const percent = (completedItems/totalItems)*100;
+    progressFill.style.width = percent + "%";
+  }
+
+  function showFeedback(itemEl, correct, message){
+    const fb = itemEl.querySelector('.feedback');
+    fb.style.display='flex';
+    fb.innerHTML = `<span class="icon">${correct?'✓':'✗'}</span><span>${message}</span>`;
+    fb.className = 'feedback '+(correct?'correct':'incorrect');
+  }
+
+  function showHint(itemEl, id, stage){
+    const panel = itemEl.querySelector('.hint-panel');
+    panel.style.display='block';
+    panel.textContent = hints[id][stage];
+  }
+
+  function resetHint(itemEl){
+    const panel = itemEl.querySelector('.hint-panel');
+    if(panel) panel.style.display='none';
+  }
+
+  function processAnswer(itemEl){
+    const id = itemEl.dataset.id;
+    const sub = itemEl.dataset.subskill;
+    const type = itemEl.dataset.type;
+    const answer = itemEl.dataset.answer.trim().toLowerCase();
+    let userAns = '';
+    if(type==='fill' || type==='error'){
+      userAns = itemEl.querySelector('input').value.trim().toLowerCase();
+    }else if(type==='mc'){
+      const radios = itemEl.querySelectorAll('input[type=radio]');
+      radios.forEach(r=>{if(r.checked) userAns = r.parentNode.textContent.trim().toLowerCase();});
+    }
+    const isCorrect = userAns===answer;
+    subskills[sub].total++;
+    completedItems++;
+    updateProgress();
+
+    if(isCorrect){
+      subskills[sub].correct++;
+      subskills[sub].streakCorrect++;
+      subskills[sub].streakWrong=0;
+      showFeedback(itemEl,true,"Correct!");
+    }else{
+      subskills[sub].streakWrong++;
+      subskills[sub].streakCorrect=0;
+      showFeedback(itemEl,false,`Incorrect. ${type==='error'?'Check the whole sentence.':'Try again.'}`);
+      // add to review queue
+      reviewQueue.push(itemEl);
+    }
+
+    // adaptivity
+    const note = document.createElement('div');
+    note.style.marginTop='0.5rem';
+    note.style.fontSize='0.9rem';
+    if(subskills[sub].streakWrong>=2){
+      note.textContent='Let’s try a simpler version.';
+      const easy = createEasyItem(sub);
+      itemEl.parentNode.insertBefore(easy, itemEl.nextSibling);
+    }else if(subskills[sub].streakCorrect>=2){
+      note.textContent='You’re doing well – moving to a harder one.';
+    }
+    if(note.textContent) itemEl.appendChild(note);
+  }
+
+  function createEasyItem(subskill){
+    const div = document.createElement('div');
+    div.className='item';
+    div.dataset.subskill=subskill;
+    div.dataset.type='fill';
+    div.dataset.answer='walked';
+    div.innerHTML=`
+      <label>Simple practice: I ___ (walk) yesterday.</label>
+      <input type="text" placeholder="Your answer">
+      <button class="submit">Check</button>
+      <button class="hint">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint-panel" style="display:none;"></div>
+    `;
+    return div;
+  }
+
+  // Event delegation
+  document.addEventListener('click', e=>{
+    if(e.target.matches('.submit')){
+      const item = e.target.closest('.item');
+      processAnswer(item);
+    }else if(e.target.matches('.hint')){
+      const item = e.target.closest('.item');
+      const id = item.dataset.id;
+      if(!item.dataset.hintStage) item.dataset.hintStage=0;
+      const stage = parseInt(item.dataset.hintStage);
+      if(stage<2){
+        showHint(item,id,stage);
+        item.dataset.hintStage = stage+1;
+      }else{
+        // final stage reveals answer
+        showHint(item,id,stage);
+        const panel = item.querySelector('.hint-panel');
+        const ans = document.createElement('div');
+        ans.style.marginTop='0.3rem';
+        ans.textContent='Answer: '+item.dataset.answer;
+        panel.appendChild(ans);
+        item.dataset.hintStage = stage+1;
+      }
+    }
+  });
+
+  // Reveal rule after first attempt in section 1
+  const s1Item = document.querySelector('#section-1 .item');
+  s1Item.addEventListener('click', e=>{
+    if(e.target.matches('.submit')){
+      document.querySelector('#section-1 .rule').style.display='block';
+    }
+  });
+
+  // IntersectionObserver for sections
+  const observer = new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+      }
+    });
+  },{threshold:0.1});
+  document.querySelectorAll('section').forEach(sec=>observer.observe(sec));
+
+  // Count total items (excluding dynamically added)
+  totalItems = document.querySelectorAll('.item').length;
+  updateProgress();
+
+  // Results calculation
+  function showResults(){
+    const frag = document.createDocumentFragment();
+    const ul = document.createElement('ul');
+    for(const [skill,obj] of Object.entries(subskills)){
+      const li = document.createElement('li');
+      const pct = obj.total?Math.round((obj.correct/obj.total)*100):0;
+      li.textContent=`${skill.replace('_',' ')}: ${obj.correct}/${obj.total} (${pct}%)`;
+      ul.appendChild(li);
+    }
+    frag.appendChild(ul);
+    const weakest = Object.entries(subskills).reduce((a,b)=>b[1].correct/b[1].total < a[1].correct/a[1].total?b:a);
+    const advice = document.createElement('p');
+    advice.textContent=`Focus more on "${weakest[0].replace('_',' ')}". Review the examples and try more sentences.`;
+    frag.appendChild(advice);
+    resultsDiv.appendChild(frag);
+  }
+
+  // When all items are done, show results
+  const checkAllDone = setInterval(()=>{
+    if(completedItems>=totalItems){
+      clearInterval(checkAllDone);
+      showResults();
+    }
+  },500);
+
+  // Restart
+  restartBtn.addEventListener('click',()=>location.reload());
+})();
+</script>
+</body>
+</html>

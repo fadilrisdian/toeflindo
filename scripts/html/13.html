@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Present Perfect vs Past Simple</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --color-bg:#f6f7f8;
+  --color-surface:#ffffff;
+  --color-surface-alt:#eaf5f3;
+  --color-header-from:#2c7873;
+  --color-header-to:#173f3b;
+  --color-primary:#2a7a7a;
+  --color-primary-dark:#1f5f59;
+  --color-accent:#2c7873;
+  --color-text:#1f2937;
+  --color-text-muted:#6b7280;
+  --color-text-faint:#9ca3af;
+  --color-border:#e6e8eb;
+  --color-success:#16a34a;
+  --color-success-bg:#e7f7ec;
+  --color-error:#dc2626;
+  --color-error-bg:#fdeaea;
+  --color-warning:#b45309;
+  --color-warning-bg:#fef3e2;
+  --shadow-soft:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.05);
+  --radius-lg:14px;
+  --radius-md:9px;
+  --radius-sm:6px;
+}
+html{font-family:system-ui,Arial,sans-serif;background:var(--color-bg);color:var(--color-text);font-size:16px;line-height:1.5;}
+body{margin:0;padding:0;display:flex;flex-direction:column;align-items:center;}
+h1{margin:0;font-size:1.8rem;color:var(--color-text);}
+h2{margin-top:1.5rem;font-size:1.4rem;color:var(--color-text);}
+p{margin:0.5rem 0;}
+button{cursor:pointer;}
+a{color:var(--color-accent);text-decoration:none;}
+.container{max-width:800px;width:100%;padding:1rem;}
+.card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-soft);margin:1rem 0;padding:1rem;}
+.hidden{display:none;}
+/* Header */
+#header{position:sticky;top:0;z-index:10;width:100%;background:linear-gradient(135deg,var(--color-header-from),var(--color-header-to));color:#fff;padding:0.8rem 1rem;display:flex;flex-direction:column;align-items:flex-start;}
+#progress{width:100%;height:4px;background:#e6e8eb;margin-top:0.4rem;position:relative;}
+#progress::after{content:"";position:absolute;left:0;top:0;height:100%;background:var(--color-primary);width:0%;transition:width .3s;}
+/* Practice items */
+.practice-item{margin:1rem 0;padding:1rem;background:var(--color-surface);border-left:4px solid transparent;border-radius:var(--radius-md);box-shadow:var(--shadow-soft);}
+.practice-item.correct{border-color:var(--color-success);background:var(--color-success-bg);}
+.practice-item.incorrect{border-color:var(--color-error);background:var(--color-error-bg);}
+.feedback{margin-top:0.5rem;padding:0.5rem;border-radius:var(--radius-sm);font-weight:600;}
+.feedback.correct{color:var(--color-success);background:var(--color-success-bg);border-left:4px solid var(--color-success);}
+.feedback.incorrect{color:var(--color-error);background:var(--color-error-bg);border-left:4px solid var(--color-error);}
+.hint-panel{margin-top:0.5rem;padding:0.5rem;background:var(--color-surface-alt);border-left:4px solid var(--color-primary);border-radius:var(--radius-sm);}
+button.primary{background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:600;}
+button.primary:focus{outline:2px solid var(--color-primary);}
+button.secondary{background:var(--color-surface-alt);color:var(--color-text);border:1px solid var(--color-border);border-radius:8px;padding:0.4rem 0.8rem;}
+button.secondary:focus{outline:2px solid var(--color-primary);}
+input[type="text"], textarea{width:100%;padding:0.4rem;border:1px solid var(--color-border);border-radius:var(--radius-sm);}
+input[type="radio"]{margin-right:0.4rem;}
+@media (min-width:900px){
+  .two-col{display:flex;gap:1rem;}
+  .two-col > .card{flex:1;}
+}
+@media (max-width:599px){
+  button{min-height:44px;}
+}
+section{opacity:0;transform:translateY(20px);transition:opacity .4s ease,transform .4s ease;}
+section.visible{opacity:1;transform:none;}
+@media (prefers-reduced-motion:reduce){
+  section{transition:none;}
+}
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>Present Perfect vs Past Simple</h1>
+  <div id="progress"></div>
+</div>
+<div class="container">
+  <!-- Section 1: Immediate start -->
+  <section id="sec-start" class="card">
+    <h2>Quick Check</h2>
+    <p>Choose the correct tense for the sentence.</p>
+    <div class="practice-item" data-id="q1" data-type="mc" data-subskill="time-cue">
+      <p>1. I ____ (lose) my keys ___ this morning.</p>
+      <label><input type="radio" name="q1" value="present">Present Perfect</label><br>
+      <label><input type="radio" name="q1" value="past">Past Simple</label><br>
+      <button class="primary check-btn">Check</button>
+      <button class="secondary hint-btn">Hint</button>
+      <div class="feedback" aria-live="polite"></div>
+      <div class="hint-panel hidden"></div>
+    </div>
+    <div id="rule-reveal" class="hidden">
+      <h3>Core Rule</h3>
+      <p>Use the <strong>present perfect</strong> for actions that have relevance to the present or for an unspecified time period that continues up to now (e.g., “this morning”, “today”, “already”). Use the <strong>past simple</strong> for actions that happened at a finished, specific time in the past (e.g., “yesterday”, “last year”).</p>
+    </div>
+  </section>
+
+  <!-- Section 2: Core decision rule -->
+  <section id="sec-decision" class="card">
+    <h2>Decision Guide</h2>
+    <p>Match the time expression to the correct tense.</p>
+    <div class="two-col">
+      <div class="card">
+        <h3>Time Expressions</h3>
+        <ul id="time-list">
+          <li data-tense="present">this morning</li>
+          <li data-tense="present">today</li>
+          <li data-tense="present">since 2010</li>
+          <li data-tense="past">yesterday</li>
+          <li data-tense="past">last year</li>
+          <li data-tense="past">two weeks ago</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Choose Tense</h3>
+        <button class="primary" id="show-decision">Show Decision Model</button>
+        <div id="decision-model" class="hidden">
+          <p><strong>Present Perfect</strong> → Unfinished/unspecified time, continues to now.</p>
+          <p><strong>Past Simple</strong> → Finished, specific past time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Key contrasts -->
+  <section id="sec-contrasts" class="card">
+    <h2>Key Contrasts</h2>
+    <p>Select the correct tense.</p>
+    <div class="practice-item" data-id="c1" data-type="mc" data-subskill="time-cue">
+      <p>2. She ____ (visit) Paris ___ last summer.</p>
+      <label><input type="radio" name="c1" value="present">Present Perfect</label><br>
+      <label><input type="radio" name="c1" value="past">Past Simple</label><br>
+      <button class="primary check-btn">Check</button>
+      <button class="secondary hint-btn">Hint</button>
+      <div class="feedback" aria-live="polite"></div>
+      <div class="hint-panel hidden"></div>
+    </div>
+    <div class="practice-item" data-id="c2" data-type="mc" data-subskill="time-cue">
+      <p>3. Have you ____ (ever/see) a shooting star?</p>
+      <label><input type="radio" name="c2" value="present">Present Perfect</label><br>
+      <label><input type="radio" name="c2" value="past">Past Simple</label><br>
+      <button class="primary check-btn">Check</button>
+      <button class="secondary hint-btn">Hint</button>
+      <div class="feedback" aria-live="polite"></div>
+      <div class="hint-panel hidden"></div>
+    </div>
+  </section>
+
+  <!-- Section 4: Common mistakes -->
+  <section id="sec-mistakes" class="card">
+    <h2>Common Mistakes</h2>
+    <p>Correct the sentence.</p>
+    <div class="practice-item" data-id="m1" data-type="corr" data-subskill="verb-form">
+      <p>4. I have ate breakfast this morning.</p>
+      <textarea rows="2" placeholder="Rewrite the sentence"></textarea><br>
+      <button class="primary check-btn">Check</button>
+      <button class="secondary hint-btn">Hint</button>
+      <div class="feedback" aria-live="polite"></div>
+      <div class="hint-panel hidden"></div>
+    </div>
+    <div class="practice-item" data-id="m2" data-type="corr" data-subskill="verb-form">
+      <p>5. She visited London last week.</p>
+      <textarea rows="2" placeholder="Rewrite the sentence (if needed)"></textarea><br>
+      <button class="primary check-btn">Check</button>
+      <button class="secondary hint-btn">Hint</button>
+      <div class="feedback" aria-live="polite"></div>
+      <div class="hint-panel hidden"></div>
+    </div>
+  </section>
+
+  <!-- Section 5: Mixed practice -->
+  <section id="sec-mixed" class="card">
+    <h2>Mixed Practice</h2>
+    <p>Try the following items. Missed ones will appear again later.</p>
+    <div id="mixed-container"></div>
+  </section>
+
+  <!-- Section 6: Final quiz -->
+  <section id="sec-quiz" class="card">
+    <h2>Final Quiz (No Hints)</h2>
+    <p>Answer without hints.</p>
+    <div id="quiz-container"></div>
+  </section>
+
+  <!-- Section 7: Results -->
+  <section id="sec-results" class="card">
+    <h2>Results</h2>
+    <div id="results-content"></div>
+    <button class="primary" id="restart-btn">Restart Lesson</button>
+  </section>
+</div>
+
+<script>
+(() => {
+  const state = {
+    mastery: {
+      "time-cue": {correct:0,total:0,streakC:0,streakW:0},
+      "verb-form": {correct:0,total:0,streakC:0,streakW:0}
+    },
+    reviewQueue: [],
+    items: [],
+    currentSection: 0,
+    progressTotal: 0,
+    progressDone: 0
+  };
+
+  // Utility
+  const $ = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+
+  // Data definitions
+  const mixedItems = [
+    {id:"mix1",type:"mc",sub:"time-cue",prompt:"I ____ (finish) my work ___ today.",options:["present","past"],answer:"present"},
+    {id:"mix2",type:"mc",sub:"time-cue",prompt:"He ____ (move) to Canada ___ 2015.",options:["present","past"],answer:"past"},
+    {id:"mix3",type:"fill",sub:"verb-form",prompt:"She ____ (lose) her wallet ___ this morning.",answer:"has lost"},
+    {id:"mix4",type:"fill",sub:"verb-form",prompt:"They ____ (watch) the movie yesterday.",answer:"watched"},
+    {id:"mix5",type:"corr",sub:"verb-form",prompt:"We have went to the park.",correct:"We have gone to the park."},
+    {id:"mix6",type:"corr",sub:"verb-form",prompt:"He didn't see the game last night.",correct:"He didn't see the game last night."},
+    {id:"mix7",type:"mc",sub:"time-cue",prompt:"Have you ____ (ever/see) that film?",options:["present","past"],answer:"present"},
+    {id:"mix8",type:"fill",sub:"verb-form",prompt:"I ____ (be) here since 2010.",answer:"have been"}
+  ];
+
+  const quizItems = [
+    {id:"qz1",type:"mc",sub:"time-cue",prompt:"She ____ (travel) to Japan ___ last year.",options:["present","past"],answer:"past"},
+    {id:"qz2",type:"fill",sub:"verb-form",prompt:"They ____ (just/finish) their project.",answer:"have just finished"},
+    {id:"qz3",type:"mc",sub:"time-cue",prompt:"I ____ (read) that book ___ last month.",options:["present","past"],answer:"past"},
+    {id:"qz4",type:"fill",sub:"verb-form",prompt:"He ____ (live) here ___ five years.",answer:"has lived"},
+    {id:"qz5",type:"mc",sub:"time-cue",prompt:"Did you ____ (ever/see) the Eiffel Tower?",options:["present","past"],answer:"past"},
+    {id:"qz6",type:"fill",sub:"verb-form",prompt:"We ____ (not/meet) before.",answer:"haven't met"}
+  ];
+
+  // Initialize progress
+  function initProgress() {
+    const total = document.querySelectorAll('.practice-item').length + mixedItems.length + quizItems.length;
+    state.progressTotal = total;
+    updateProgress();
+  }
+  function updateProgress() {
+    const percent = (state.progressDone / state.progressTotal) * 100;
+    $('#progress').style.setProperty('--progress', `${percent}%`);
+    $('#progress').firstElementChild?.remove();
+    const bar = document.createElement('div');
+    bar.style.width = `${percent}%`;
+    bar.style.height = '100%';
+    bar.style.background = 'var(--color-primary)';
+    $('#progress').appendChild(bar);
+  }
+
+  // Hint handling
+  function getHintStages(itemId) {
+    const stages = {
+      1:"Think about whether the time expression is specific or ongoing.",
+      2:"If the time is like 'yesterday' or 'last year', use Past Simple. Otherwise, Present Perfect.",
+      3:"Answer revealed below."
+    };
+    return stages;
+  }
+
+  // Render mixed practice
+  function renderMixed() {
+    const container = $('#mixed-container');
+    mixedItems.forEach(item => {
+      const el = createItemElement(item);
+      container.appendChild(el);
+    });
+    state.items = mixedItems.concat(quizItems);
+  }
+
+  // Render final quiz
+  function renderQuiz() {
+    const container = $('#quiz-container');
+    quizItems.forEach(item => {
+      const el = createItemElement(item, true);
+      container.appendChild(el);
+    });
+  }
+
+  // Create item element
+  function createItemElement(item, noHints=false) {
+    const div = document.createElement('div');
+    div.className = 'practice-item';
+    div.dataset.id = item.id;
+    div.dataset.type = item.type;
+    div.dataset.subskill = item.sub;
+    const p = document.createElement('p');
+    p.textContent = `${item.prompt}`;
+    div.appendChild(p);
+    if(item.type === 'mc'){
+      item.options.forEach(opt => {
+        const label = document.createElement('label');
+        const inp = document.createElement('input');
+        inp.type='radio';
+        inp.name=item.id;
+        inp.value=opt;
+        label.appendChild(inp);
+        label.appendChild(document.createTextNode(opt==='present'?'Present Perfect':'Past Simple'));
+        div.appendChild(label);
+        div.appendChild(document.createElement('br'));
+      });
+    } else if(item.type === 'fill'){
+      const inp = document.createElement('input');
+      inp.type='text';
+      inp.placeholder='Type your answer';
+      div.appendChild(inp);
+    } else if(item.type === 'corr'){
+      const textarea = document.createElement('textarea');
+      textarea.rows=2;
+      textarea.placeholder='Rewrite the sentence';
+      div.appendChild(textarea);
+    }
+    const checkBtn = document.createElement('button');
+    checkBtn.className='primary check-btn';
+    checkBtn.textContent='Check';
+    div.appendChild(checkBtn);
+    if(!noHints){
+      const hintBtn = document.createElement('button');
+      hintBtn.className='secondary hint-btn';
+      hintBtn.textContent='Hint';
+      div.appendChild(hintBtn);
+    }
+    const feedback = document.createElement('div');
+    feedback.className='feedback';
+    feedback.setAttribute('aria-live','polite');
+    div.appendChild(feedback);
+    const hintPanel = document.createElement('div');
+    hintPanel.className='hint-panel hidden';
+    div.appendChild(hintPanel);
+    // Event listeners
+    checkBtn.addEventListener('click',()=>handleCheck(div));
+    if(!noHints){
+      hintBtn.addEventListener('click',()=>handleHint(div));
+    }
+    return div;
+  }
+
+  // Handle check
+  function handleCheck(itemDiv){
+    const type = itemDiv.dataset.type;
+    const sub = itemDiv.dataset.subskill;
+    const id = itemDiv.dataset.id;
+    const feedback = itemDiv.querySelector('.feedback');
+    let userAns, correctAns, isCorrect=false;
+    if(type==='mc'){
+      const radios = itemDiv.querySelectorAll('input[type="radio"]');
+      const checked = [...radios].find(r=>r.checked);
+      if(!checked){alert('Please select an option.');return;}
+      userAns = checked.value;
+      const data = mixedItems.concat(quizItems).find(i=>i.id===id);
+      correctAns = data.answer;
+      isCorrect = userAns===correctAns;
+    } else if(type==='fill'){
+      const inp = itemDiv.querySelector('input');
+      userAns = inp.value.trim().toLowerCase();
+      const data = mixedItems.concat(quizItems).find(i=>i.id===id);
+      correctAns = data.answer.toLowerCase();
+      isCorrect = userAns===correctAns;
+    } else if(type==='corr'){
+      const txt = itemDiv.querySelector('textarea').value.trim();
+      const data = mixedItems.concat(quizItems).find(i=>i.id===id);
+      correctAns = data.correct;
+      isCorrect = txt===correctAns;
+    }
+    // Update mastery
+    const mastery = state.mastery[sub];
+    mastery.total++;
+    if(isCorrect){
+      mastery.correct++;
+      mastery.streakC++;
+      mastery.streakW=0;
+    } else {
+      mastery.streakW++;
+      mastery.streakC=0;
+    }
+    // Feedback
+    if(isCorrect){
+      itemDiv.classList.remove('incorrect');
+      itemDiv.classList.add('correct');
+      feedback.className='feedback correct';
+      feedback.textContent='✓ Correct!';
+    } else {
+      itemDiv.classList.remove('correct');
+      itemDiv.classList.add('incorrect');
+      feedback.className='feedback incorrect';
+      feedback.textContent='✗ Incorrect. '+explainError(type, sub);
+    }
+    // Progress
+    state.progressDone++;
+    updateProgress();
+    // Adaptive insert/skip
+    adaptivityCheck(sub);
+    // If wrong, add to review queue
+    if(!isCorrect){
+      state.reviewQueue.push(id);
+    }
+  }
+
+  // Simple explanations
+  function explainError(type, sub){
+    if(sub==='time-cue'){
+      return 'Check the time expression: specific past → Past Simple; ongoing/unspecified → Present Perfect.';
+    }
+    if(sub==='verb-form'){
+      return 'Make sure you use the correct auxiliary “have/has” and the past participle.';
+    }
+    return '';
+  }
+
+  // Hint handling
+  function handleHint(itemDiv){
+    const hintPanel = itemDiv.querySelector('.hint-panel');
+    const btn = itemDiv.querySelector('.hint-btn');
+    const stage = parseInt(itemDiv.dataset.hintStage||'0')+1;
+    itemDiv.dataset.hintStage=stage;
+    const stages = getHintStages(itemDiv.dataset.id);
+    if(stage===1){
+      hintPanel.textContent=stages[1];
+    } else if(stage===2){
+      hintPanel.textContent=stages[2];
+    } else {
+      // reveal answer
+      const type = itemDiv.dataset.type;
+      const data = mixedItems.concat(quizItems).find(i=>i.id===itemDiv.dataset.id);
+      if(type==='mc'){
+        hintPanel.textContent=`Answer: ${data.answer==='present'?'Present Perfect':'Past Simple'}`;
+      } else if(type==='fill'){
+        hintPanel.textContent=`Answer: ${data.answer}`;
+      } else if(type==='corr'){
+        hintPanel.textContent=`Correct sentence: ${data.correct}`;
+      }
+    }
+    hintPanel.classList.remove('hidden');
+  }
+
+  // Adaptive logic
+  function adaptivityCheck(sub){
+    const mastery = state.mastery[sub];
+    // 2 wrong in a row → insert easier item (we'll just show a note)
+    if(mastery.streakW===2){
+      const note = document.createElement('div');
+      note.className='hint-panel';
+      note.textContent='Let’s try a simpler version of this.';
+      $('#mixed-container').appendChild(note);
+      mastery.streakW=0;
+    }
+    // 2 correct in a row → skip next easy item (we'll just show a note)
+    if(mastery.streakC===2){
+      const note = document.createElement('div');
+      note.className='hint-panel';
+      note.textContent='You’ve got this — moving to a harder one.';
+      $('#mixed-container').appendChild(note);
+      mastery.streakC=0;
+    }
+  }
+
+  // Review queue handling
+  function processReviewQueue(){
+    if(state.reviewQueue.length===0) return;
+    const id = state.reviewQueue.shift();
+    const item = mixedItems.find(i=>i.id===id);
+    if(item){
+      const el = createItemElement(item);
+      $('#mixed-container').appendChild(el);
+    }
+  }
+
+  // Results
+  function showResults(){
+    const container = $('#results-content');
+    container.innerHTML='';
+    const ul = document.createElement('ul');
+    for(const sub in state.mastery){
+      const m = state.mastery[sub];
+      const li = document.createElement('li');
+      const perc = m.total?Math.round((m.correct/m.total)*100):0;
+      li.textContent=`${sub}: ${m.correct}/${m.total} (${perc}%)`;
+      ul.appendChild(li);
+    }
+    container.appendChild(ul);
+    // Weakest area
+    const weakest = Object.entries(state.mastery).reduce((a,b)=> (b[1].correct/b[1].total) < (a[1].correct/a[1].total) ? b : a);
+    const advice = document.createElement('p');
+    advice.textContent=`Focus more on "${weakest[0]}" to improve your accuracy.`;
+    container.appendChild(advice);
+  }
+
+  // Restart
+  $('#restart-btn').addEventListener('click',()=>location.reload());
+
+  // Section reveal on scroll
+  const observer = new IntersectionObserver((entries)=> {
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+      }
+    });
+  },{threshold:0.1});
+  $$('section').forEach(sec=>observer.observe(sec));
+
+  // Immediate start logic
+  $('#sec-start .check-btn').addEventListener('click',()=>{
+    const itemDiv = $('#sec-start .practice-item');
+    handleCheck(itemDiv);
+    $('#rule-reveal').classList.remove('hidden');
+  });
+  $('#sec-start .hint-btn').addEventListener('click',()=>handleHint($('#sec-start .practice-item')));
+
+  // Decision guide button
+  $('#show-decision').addEventListener('click',()=>{
+    $('#decision-model').classList.toggle('hidden');
+  });
+
+  // Initialize
+  renderMixed();
+  renderQuiz();
+  initProgress();
+
+  // Periodically process review queue after some interactions
+  document.addEventListener('click', (e)=>{
+    if(e.target.classList.contains('check-btn')){
+      setTimeout(processReviewQueue,500);
+    }
+  });
+
+  // Show results after quiz completed
+  const quizCheckButtons = $$('#quiz-container .check-btn');
+  let quizCompleted=0;
+  quizCheckButtons.forEach(btn=>btn.addEventListener('click',()=>{
+    quizCompleted++;
+    if(quizCompleted===quizCheckButtons.length){
+      showResults();
+    }
+  }));
+})();
+</script>
+</body>
+</html>

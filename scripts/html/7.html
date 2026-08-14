@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Present Perfect Mastery</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --color-bg:#f6f7f8;
+  --color-surface:#ffffff;
+  --color-surface-alt:#eaf5f3;
+  --color-header-from:#2c7873;
+  --color-header-to:#173f3b;
+  --color-primary:#2a7a7a;
+  --color-primary-dark:#1f5f59;
+  --color-accent:#2c7873;
+  --color-text:#1f2937;
+  --color-text-muted:#6b7280;
+  --color-text-faint:#9ca3af;
+  --color-border:#e6e8eb;
+  --color-success:#16a34a;
+  --color-success-bg:#e7f7ec;
+  --color-error:#dc2626;
+  --color-error-bg:#fdeaea;
+  --color-warning:#b45309;
+  --color-warning-bg:#fef3e2;
+  --shadow-soft:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.05);
+  --radius-lg:14px;
+  --radius-md:9px;
+  --radius-sm:6px;
+}
+html{font-family:system-ui,Arial,sans-serif;background:var(--color-bg);color:var(--color-text);font-size:16px;line-height:1.5;}
+body{margin:0;padding:0;overflow-x:hidden;}
+h1,h2,h3{margin:0 0 .5rem;color:var(--color-text);}
+h1{font-size:1.75rem;font-weight:600;}
+h2{font-size:1.5rem;font-weight:600;}
+h3{font-size:1.25rem;font-weight:600;}
+p{margin:0 0 1rem;}
+button{cursor:pointer;}
+a{color:var(--color-accent);text-decoration:none;}
+a:focus{outline:2px solid var(--color-primary);}
+section{max-width:800px;margin:2rem auto;padding:0 1rem;opacity:0;transform:translateY(20px);transition:opacity .4s ease,transform .4s ease;}
+section.visible{opacity:1;transform:none;}
+.card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-soft);padding:1.5rem;margin-bottom:1.5rem;}
+.feedback{margin-top:.75rem;padding:.75rem;border-left:4px solid;display:flex;align-items:center;gap:.5rem;border-radius:var(--radius-sm);}
+.feedback.correct{border-color:var(--color-success);background:var(--color-success-bg);color:var(--color-success);}
+.feedback.incorrect{border-color:var(--color-error);background:var(--color-error-bg);color:var(--color-error);}
+.hint{background:var(--color-surface-alt);border-left:4px solid var(--color-primary);padding:.75rem;margin-top:.75rem;border-radius:var(--radius-sm);}
+input,select,button{font:inherit;}
+input[type=text]{width:100%;padding:.5rem;border:1px solid var(--color-border);border-radius:var(--radius-sm);}
+button{background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));color:#fff;border:none;border-radius:8px;padding:.5rem 1rem;font-weight:600;}
+button:focus{outline:2px solid var(--color-primary);}
+button:disabled{opacity:.6;cursor:not-allowed;}
+.progress-bar{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,var(--color-header-from),var(--color-header-to));color:#fff;padding:.75rem 1rem;display:flex;align-items:center;gap:1rem;}
+.progress{flex:1;height:4px;background:#e6e8eb;border-radius:2px;overflow:hidden;}
+.progress .fill{height:100%;background:var(--color-primary);width:0%;transition:width .3s ease;}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;}
+}
+@media (max-width:600px){
+  .card{padding:1rem;}
+}
+</style>
+</head>
+<body>
+<div class="progress-bar" role="banner">
+  <h1 style="margin:0;font-size:1.25rem;">Present Perfect Mastery</h1>
+  <div class="progress" aria-hidden="true"><div class="fill"></div></div>
+</div>
+
+<main>
+<section id="sec1" class="card">
+  <h2>1. Jump In!</h2>
+  <p>Complete the sentence.</p>
+  <div class="item" data-id="s1q1" data-subskill="formation" data-type="fill">
+    <p>Tom can't find his key. <strong>Tom ___ his key.</strong></p>
+    <input type="text" placeholder="type your answer">
+    <button class="submit">Check</button>
+    <button class="hint">Hint</button>
+    <div class="feedback" aria-live="polite" hidden></div>
+    <div class="hint" hidden></div>
+  </div>
+  <div class="rule" hidden>
+    <h3>Core Rule</h3>
+    <p>We use <strong>have/has + past participle</strong> (the present perfect) to talk about a past action that has relevance now.</p>
+  </div>
+</section>
+
+<section id="sec2" class="card">
+  <h2>2. Decision Model</h2>
+  <p>When should you use the present perfect?</p>
+  <ul>
+    <li>✅ The action started in the past <em>and</em> is still relevant or continues now.</li>
+    <li>❌ The action is finished and the time is specific (e.g., yesterday).</li>
+  </ul>
+  <p>Remember: <strong>have/has + past participle</strong>.</p>
+</section>
+
+<section id="sec3" class="card">
+  <h2>3. Key Contrasts</h2>
+  <div class="item" data-id="s3q1" data-subskill="beenGone" data-type="mc">
+    <p>Which is correct?</p>
+    <p>“She has ___ to Paris.”</p>
+    <select>
+      <option value="">Select</option>
+      <option value="been">been</option>
+      <option value="gone">gone</option>
+    </select>
+    <button class="submit">Check</button>
+    <button class="hint">Hint</button>
+    <div class="feedback" aria-live="polite" hidden></div>
+    <div class="hint" hidden></div>
+  </div>
+  <div class="item" data-id="s3q2" data-subskill="adverb" data-type="mc">
+    <p>Choose the right adverb.</p>
+    <p>“I ___ finished my homework.”</p>
+    <select>
+      <option value="">Select</option>
+      <option value="just">just</option>
+      <option value="already">already</option>
+      <option value="yet">yet</option>
+    </select>
+    <button class="submit">Check</button>
+    <button class="hint">Hint</button>
+    <div class="feedback" aria-live="polite" hidden></div>
+    <div class="hint" hidden></div>
+  </div>
+</section>
+
+<section id="sec4" class="card">
+  <h2>4. Common Mistakes</h2>
+  <div class="item" data-id="s4q1" data-subskill="formation" data-type="correction">
+    <p>Correct the sentence:</p>
+    <p>“Tom has lose his key.”</p>
+    <input type="text" placeholder="type corrected sentence">
+    <button class="submit">Check</button>
+    <button class="hint">Hint</button>
+    <div class="feedback" aria-live="polite" hidden></div>
+    <div class="hint" hidden></div>
+  </div>
+  <div class="item" data-id="s4q2" data-subskill="beenGone" data-type="correction">
+    <p>Correct the sentence:</p>
+    <p>“She has been to the store yesterday.”</p>
+    <input type="text" placeholder="type corrected sentence">
+    <button class="submit">Check</button>
+    <button class="hint">Hint</button>
+    <div class="feedback" aria-live="polite" hidden></div>
+    <div class="hint" hidden></div>
+  </div>
+</section>
+
+<section id="sec5" class="card">
+  <h2>5. Mixed Practice</h2>
+  <div id="mixed-container"></div>
+</section>
+
+<section id="sec6" class="card">
+  <h2>6. Final Quiz (No Hints)</h2>
+  <div id="quiz-container"></div>
+</section>
+
+<section id="sec7" class="card">
+  <h2>7. Results</h2>
+  <div id="results"></div>
+  <button id="restart">Restart Lesson</button>
+</section>
+</main>
+
+<script>
+(() => {
+  const state = {
+    items: [],
+    current: 0,
+    reviewQueue: [],
+    streaks: {},
+    total: 0,
+    completed: 0,
+    mastery: {}
+  };
+
+  const subskills = {
+    formation: 'Forming the present perfect',
+    adverb: 'Using just / already / yet',
+    beenGone: '"Been" vs "gone"',
+    negative: 'Negatives & questions'
+  };
+
+  // Base items for sections 1-5 (excluding mixed practice which will be generated)
+  const baseItems = [
+    // Section 1 already in HTML, we just need to store answer
+    {id:'s1q1',type:'fill',answer:'has lost',subskill:'formation',hint:['Think of have/has + past participle','The verb is "lose" → "lost"', 'Answer: "has lost"']},
+    // Section 3
+    {id:'s3q1',type:'mc',answer:'gone',subskill:'beenGone',hint:['Think of movement away from here','If she is not here, she has "gone"', 'Answer: gone']},
+    {id:'s3q2',type:'mc',answer:'just',subskill:'adverb',hint:['The action just happened','Use "just" for very recent','Answer: just']},
+    // Section 4
+    {id:'s4q1',type:'correction',answer:'Tom has lost his key.',subskill:'formation',hint:['Replace "lose" with past participle','Add have/has','Answer: Tom has lost his key.']},
+    {id:'s4q2',type:'correction',answer:'She has been to the store yesterday.',subskill:'beenGone',hint:['"Yesterday" is a finished time – use simple past','But if you keep present perfect, remove "yesterday"','Answer: She was at the store yesterday.']},
+  ];
+
+  // Mixed practice items
+  const mixedItems = [
+    {prompt:'Maria’s English wasn’t very good. Now it is better.', answer:'Maria’s English has improved.', subskill:'formation', type:'fill', hint:['Use have/has + past participle','Improved is past participle','Answer: has improved']},
+    {prompt:'My bag was here, but it isn’t here any more.', answer:'My bag has disappeared.', subskill:'formation', type:'fill', hint:['Disappearance → past participle','Answer: has disappeared']},
+    {prompt:'Lisa can’t walk and her leg is in plaster.', answer:'Lisa has broken her leg.', subskill:'formation', type:'fill', hint:['Break → broken','Answer: has broken']},
+    {prompt:'The bus fare was £1.80. Now it is £2.', answer:'The bus fare has gone up.', subskill:'formation', type:'fill', hint:['go up → gone up','Answer: has gone up']},
+    {prompt:'Dan didn’t have a beard before. Now he has a beard.', answer:'Dan has grown a beard.', subskill:'formation', type:'fill', hint:['grow → grown','Answer: has grown']},
+    {prompt:'It was raining ten minutes ago. It isn’t raining now.', answer:'It has stopped raining.', subskill:'formation', type:'fill', hint:['stop → stopped','Answer: has stopped']},
+    {prompt:'I have just washed my sweater; now it’s too small.', answer:'My sweater has shrunk.', subskill:'formation', type:'fill', hint:['shrink → shrunk','Answer: has shrunk']},
+    {prompt:'“Have you ever been to China?” – “Yes, I ___ to China twice.”', answer:'have been', subskill:'beenGone', type:'fill', hint:['Use been for experience','Answer: have been']},
+    {prompt:'“Have you ever gone to China?” – “No, I ___ to China.”', answer:'have not been', subskill:'beenGone', type:'fill', hint:['Negate with not','Answer: have not been']},
+    {prompt:'“I ___ finished my homework yet?”', answer:'haven’t', subskill:'adverb', type:'fill', hint:['Negative question with yet → haven’t','Answer: haven’t']},
+  ];
+
+  // Final quiz items (no hints)
+  const quizItems = [
+    {prompt:'She ___ (lose) her passport again.', answer:'has lost', subskill:'formation', type:'fill'},
+    {prompt:'We ___ (be) to Japan three times.', answer:'have been', subskill:'beenGone', type:'fill'},
+    {prompt:'I ___ (just) see him.', answer:'have just', subskill:'adverb', type:'fill'},
+    {prompt:'They ___ (not/finish) the project yet.', answer:'haven’t finished', subskill:'adverb', type:'fill'},
+    {prompt:'He ___ (go) to the gym every day this month.', answer:'has gone', subskill:'beenGone', type:'fill'},
+    {prompt:'I ___ (already) read that book.', answer:'have already', subskill:'adverb', type:'fill'},
+    {prompt:'She ___ (not/see) the movie.', answer:'has not seen', subskill:'formation', type:'fill'},
+    {prompt:'We ___ (just) arrived.', answer:'have just', subskill:'adverb', type:'fill'}
+  ];
+
+  // Initialize streaks
+  Object.keys(subskills).forEach(k=>state.streaks[k]={correct:0,wrong:0});
+
+  // Utility functions
+  const $ = sel=>document.querySelector(sel);
+  const $$ = sel=>Array.from(document.querySelectorAll(sel));
+  const setProgress = ()=> {
+    const pct = state.total===0?0:(state.completed/state.total)*100;
+    $('.fill').style.width=`${pct}%`;
+  };
+  const showFeedback = (itemEl, correct, message, isHintReveal=false)=> {
+    const fb = itemEl.querySelector('.feedback');
+    fb.hidden=false;
+    fb.innerHTML = correct?
+      `<span aria-hidden="true">✓</span> ${message}`:
+      `<span aria-hidden="true">✗</span> ${message}`;
+    fb.className = `feedback ${correct?'correct':'incorrect'}`;
+    if(isHintReveal){
+      fb.innerHTML += ' (answer shown via hint)';
+    }
+  };
+  const showHint = (itemEl, hintText)=> {
+    const hintDiv = itemEl.querySelector('.hint');
+    hintDiv.hidden=false;
+    hintDiv.textContent = hintText;
+  };
+  const resetItem = (itemEl)=> {
+    const fb = itemEl.querySelector('.feedback');
+    fb.hidden=true;
+    const hintDiv = itemEl.querySelector('.hint');
+    hintDiv.hidden=true;
+    const input = itemEl.querySelector('input,select');
+    if(input) input.value='';
+  };
+  const evaluate = (item, userAnswer)=> {
+    const correctAns = item.answer.trim().toLowerCase();
+    const ua = userAnswer.trim().toLowerCase();
+    if(item.type==='mc'){
+      return ua===correctAns;
+    }else{
+      return ua===correctAns;
+    }
+  };
+  const processAnswer = (itemEl, itemData)=> {
+    const input = itemEl.querySelector('input,select');
+    const userAns = input.value;
+    if(!userAns) return;
+    const correct = evaluate(itemData, userAns);
+    const sub = itemData.subskill;
+    if(correct){
+      state.streaks[sub].correct++;
+      state.streaks[sub].wrong=0;
+      showFeedback(itemEl,true,'Correct!');
+    }else{
+      state.streaks[sub].wrong++;
+      state.streaks[sub].correct=0;
+      showFeedback(itemEl,false,'Incorrect. Review the rule and try again.');
+    }
+    state.completed++;
+    setProgress();
+    // Adaptive logic (only for sections 1-5)
+    if(['formation','adverb','beenGone'].includes(sub)){
+      if(state.streaks[sub].wrong>=2){
+        // insert easier item
+        insertEasyItem(sub);
+        state.streaks[sub].wrong=0;
+      }else if(state.streaks[sub].correct>=2){
+        // skip next easy item of same subskill if any remaining
+        skipEasyItem(sub);
+        state.streaks[sub].correct=0;
+      }
+    }
+    // If wrong, add to review queue
+    if(!correct){
+      state.reviewQueue.push(itemData);
+    }
+    // Disable further interaction for this item
+    itemEl.querySelectorAll('button, input, select').forEach(el=>el.disabled=true);
+  };
+  const insertEasyItem = subskill=> {
+    // Simple easy item: fill-in with same answer but clue provided
+    const easy = {
+      prompt:`Easy: Complete – “She ___ (lose) her keys.”`,
+      answer:'has lost',
+      subskill:subskill,
+      type:'fill',
+      hint:['Use have/has + lost','Answer: has lost']
+    };
+    const container = $('#mixed-container');
+    const card = createItemCard(easy);
+    container.appendChild(card);
+    state.total++;
+  };
+  const skipEasyItem = subskill=> {
+    // Find first easy item of that subskill in mixedContainer and hide it
+    const cards = $$('#mixed-container .item');
+    for(const el of cards){
+      const id = el.dataset.id;
+      if(id && id.startsWith('easy-'+subskill)){
+        el.style.display='none';
+        break;
+      }
+    }
+  };
+  const createItemCard = data=> {
+    const div = document.createElement('div');
+    div.className='item';
+    div.dataset.id=data.id||`auto-${Math.random()}`;
+    div.dataset.subskill=data.subskill;
+    div.dataset.type=data.type;
+    const p = document.createElement('p');
+    p.innerHTML = data.prompt;
+    div.appendChild(p);
+    let input;
+    if(data.type==='mc'){
+      const select = document.createElement('select');
+      const opt = document.createElement('option');
+      opt.value='';opt.textContent='Select';
+      select.appendChild(opt);
+      const choices = Array.isArray(data.choices)?data.choices:['been','gone','just','already','yet'];
+      choices.forEach(c=>{
+        const o=document.createElement('option');
+        o.value=c; o.textContent=c;
+        select.appendChild(o);
+      });
+      input=select;
+    }else{
+      input=document.createElement('input');
+      input.type='text';
+      input.placeholder='type answer';
+    }
+    div.appendChild(input);
+    const btn = document.createElement('button');
+    btn.className='submit';
+    btn.textContent='Check';
+    div.appendChild(btn);
+    const hintBtn = document.createElement('button');
+    hintBtn.className='hint';
+    hintBtn.textContent='Hint';
+    div.appendChild(hintBtn);
+    const fb = document.createElement('div');
+    fb.className='feedback';
+    fb.setAttribute('aria-live','polite');
+    fb.hidden=true;
+    div.appendChild(fb);
+    const hintDiv = document.createElement('div');
+    hintDiv.className='hint';
+    hintDiv.hidden=true;
+    div.appendChild(hintDiv);
+    // Event listeners
+    btn.addEventListener('click',()=>processAnswer(div,data));
+    let hintStage=0;
+    hintBtn.addEventListener('click',()=>{
+      if(data.type==='quiz') return; // no hints in final quiz
+      hintStage++;
+      if(hintStage===1){
+        showHint(div,data.hint[0]);
+      }else if(hintStage===2){
+        showHint(div,data.hint[1]);
+      }else{
+        showHint(div,data.hint[2]||data.hint[data.hint.length-1]);
+        // reveal answer
+        const inp = div.querySelector('input,select');
+        if(inp.tagName==='SELECT'){
+          inp.value=data.answer;
+        }else{
+          inp.value=data.answer;
+        }
+        showFeedback(div,true,'Correct! (answer revealed)',true);
+        // disable further interaction
+        div.querySelectorAll('button, input, select').forEach(el=>el.disabled=true);
+        state.completed++;
+        setProgress();
+      }
+    });
+    return div;
+  };
+  // Populate mixed practice
+  const mixedContainer = $('#mixed-container');
+  mixedItems.forEach(it=> {
+    const card = createItemCard(it);
+    mixedContainer.appendChild(card);
+    state.total++;
+  });
+  // Populate final quiz
+  const quizContainer = $('#quiz-container');
+  quizItems.forEach((it,i)=> {
+    const q = Object.assign({},it,{type:'quiz'}); // mark as quiz
+    const card = createItemCard(q);
+    // Remove hint button for quiz
+    const hintBtn = card.querySelector('.hint');
+    if(hintBtn) hintBtn.remove();
+    quizContainer.appendChild(card);
+    state.total++;
+  });
+  // Section 1 rule reveal after first attempt
+  const s1item = $('#sec1 .item');
+  const ruleDiv = $('#sec1 .rule');
+  s1item.querySelector('.submit').addEventListener('click',()=>{
+    if(state.completed===0) ruleDiv.hidden=false;
+  });
+  // IntersectionObserver for sections
+  const observer = new IntersectionObserver((entries)=> {
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+      }
+    });
+  },{threshold:0.1});
+  $$('section').forEach(sec=>observer.observe(sec));
+  // Results
+  const showResults = ()=> {
+    const resDiv = $('#results');
+    resDiv.innerHTML='<h3>Performance</h3>';
+    const ul = document.createElement('ul');
+    Object.entries(state.streaks).forEach(([sub,st])=>{
+      const li=document.createElement('li');
+      const total = st.correct+st.wrong;
+      const pct = total===0?0:Math.round((st.correct/total)*100);
+      li.textContent=`${subskills[sub]}: ${pct}% correct`;
+      ul.appendChild(li);
+    });
+    resDiv.appendChild(ul);
+    const advice = document.createElement('p');
+    advice.textContent='Review the sections where the percentage is low.';
+    resDiv.appendChild(advice);
+  };
+  // Restart
+  $('#restart').addEventListener('click',()=>location.reload());
+  // When all items are done, show results
+  const checkAllDone = setInterval(()=>{
+    if(state.completed>=state.total){
+      $('#sec7').scrollIntoView({behavior:'smooth'});
+      showResults();
+      clearInterval(checkAllDone);
+    }
+  },500);
+})();
+</script>
+</body>
+</html>

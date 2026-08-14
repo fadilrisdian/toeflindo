@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Present Continuous Practice</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --color-bg:#f6f7f8;
+  --color-surface:#ffffff;
+  --color-surface-alt:#eaf5f3;
+  --color-header-from:#2c7873;
+  --color-header-to:#173f3b;
+  --color-primary:#2a7a7a;
+  --color-primary-dark:#1f5f59;
+  --color-accent:#2c7873;
+  --color-text:#1f2937;
+  --color-text-muted:#6b7280;
+  --color-text-faint:#9ca3af;
+  --color-border:#e6e8eb;
+  --color-success:#16a34a;
+  --color-success-bg:#e7f7ec;
+  --color-error:#dc2626;
+  --color-error-bg:#fdeaea;
+  --color-warning:#b45309;
+  --color-warning-bg:#fef3e2;
+  --shadow-soft:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.05);
+  --radius-lg:14px;
+  --radius-md:9px;
+  --radius-sm:6px;
+}
+html{font-size:16px;background:var(--color-bg);color:var(--color-text);font-family:system-ui,Arial,sans-serif;}
+body{margin:0;padding:0;line-height:1.5;}
+h1,h2,h3{margin:0;font-weight:600;color:var(--color-text);}
+h1{font-size:1.75rem;}
+h2{font-size:1.5rem;margin-top:1rem;}
+h3{font-size:1.25rem;margin-top:1rem;}
+p{margin:0.5rem 0;}
+a{color:var(--color-accent);text-decoration:none;}
+button{cursor:pointer;}
+/* Header */
+header{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,var(--color-header-from),var(--color-header-to));color:#fff;padding:1rem 2rem;display:flex;flex-direction:column;gap:0.5rem;}
+header h1{font-size:1.5rem;}
+#progress-bar{height:4px;background:#e6e8eb;position:relative;border-radius:2px;overflow:hidden;}
+#progress{height:100%;background:var(--color-primary);width:0%;transition:width .3s;}
+/* Layout */
+.main{max-width:900px;margin:auto;padding:1rem 2rem;display:grid;gap:2rem;}
+section{background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-soft);padding:1.5rem;display:flex;flex-direction:column;gap:1rem;}
+.card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:1rem;display:flex;flex-direction:column;gap:0.5rem;}
+.feedback{border-left:4px solid;display:flex;align-items:center;gap:0.5rem;padding:0.5rem;}
+.feedback.correct{border-color:var(--color-success);background:var(--color-success-bg);color:var(--color-success);}
+.feedback.incorrect{border-color:var(--color-error);background:var(--color-error-bg);color:var(--color-error);}
+.feedback .icon{font-size:1.2rem;}
+.hint{background:var(--color-surface-alt);border-left:4px solid var(--color-primary);padding:0.5rem;margin-top:0.5rem;}
+button.primary{background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:600;}
+button.primary:focus{outline:2px solid var(--color-primary);}
+button.secondary{background:var(--color-surface-alt);border:1px solid var(--color-primary);color:var(--color-primary);border-radius:8px;padding:0.4rem 0.8rem;}
+button.secondary:focus{outline:2px solid var(--color-primary);}
+input,select,textarea{border:1px solid var(--color-border);border-radius:var(--radius-sm);padding:0.4rem;font-size:1rem;}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--color-primary);}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important;}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Present Continuous Practice</h1>
+  <div id="progress-bar"><div id="progress"></div></div>
+</header>
+<main class="main">
+  <!-- Section 1: Immediate start -->
+  <section id="sec-start">
+    <h2>Start</h2>
+    <div class="card" id="item-0">
+      <p>Fill in the blank with the correct present continuous form.</p>
+      <p><strong>She ___ (take) a picture.</strong></p>
+      <input type="text" aria-label="Answer" id="ans-0">
+      <button class="primary" data-index="0">Check</button>
+      <div class="feedback" aria-live="polite" hidden></div>
+      <button class="secondary hint-btn" data-index="0" hidden>Hint</button>
+      <div class="hint" hidden></div>
+    </div>
+    <div class="card" id="rule-0" hidden>
+      <h3>Rule</h3>
+      <p>The present continuous is formed with <em>am / is / are + verb‑ing</em>. Use it for actions happening right now, temporary situations, or planned future events.</p>
+    </div>
+  </section>
+
+  <!-- Section 2: Core decision rule -->
+  <section id="sec-decision">
+    <h2>When to use Present Continuous?</h2>
+    <div class="card" id="decision-card">
+      <p>Answer the three questions. If you get <strong>YES</strong> to any, use the present continuous.</p>
+      <ol>
+        <li>Is the action happening right now?</li>
+        <li>Is the situation temporary?</li>
+        <li>Is it a future plan?</li>
+      </ol>
+      <button class="primary" id="show-decision">Show Decision Rule</button>
+      <div class="card" id="decision-rule" hidden>
+        <p><strong>Use present continuous when:</strong></p>
+        <ul>
+          <li>Action is occurring at the moment of speaking.</li>
+          <li>Situation is temporary or changing.</li>
+          <li>Future arrangement that is already decided.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Key contrasts -->
+  <section id="sec-contrast">
+    <h2>Key Contrasts</h2>
+    <div class="card" id="item-1">
+      <p>Which sentence uses the present continuous?</p>
+      <select aria-label="options" id="select-1">
+        <option value="">Select...</option>
+        <option value="a">She is taking a picture.</option>
+        <option value="b">She takes a picture.</option>
+      </select>
+      <button class="primary" data-index="1">Check</button>
+      <div class="feedback" aria-live="polite" hidden></div>
+      <button class="secondary hint-btn" data-index="1" hidden>Hint</button>
+      <div class="hint" hidden></div>
+    </div>
+    <div class="card" id="item-2">
+      <p>Choose the correct form.</p>
+      <p>He ___ (play) football now.</p>
+      <select id="select-2">
+        <option value="">Select...</option>
+        <option value="a">plays</option>
+        <option value="b">is playing</option>
+        <option value="c">play</option>
+      </select>
+      <button class="primary" data-index="2">Check</button>
+      <div class="feedback" aria-live="polite" hidden></div>
+      <button class="secondary hint-btn" data-index="2" hidden>Hint</button>
+      <div class="hint" hidden></div>
+    </div>
+  </section>
+
+  <!-- Section 4: Common mistakes -->
+  <section id="sec-mistakes">
+    <h2>Common Mistakes</h2>
+    <div class="card" id="item-3">
+      <p>Correct the sentence.</p>
+      <p>She not (watch) TV.</p>
+      <input type="text" aria-label="Corrected sentence" id="ans-3">
+      <button class="primary" data-index="3">Check</button>
+      <div class="feedback" aria-live="polite" hidden></div>
+      <button class="secondary hint-btn" data-index="3" hidden>Hint</button>
+      <div class="hint" hidden></div>
+    </div>
+    <div class="card" id="item-4">
+      <p>Correct the sentence.</p>
+      <p>They (go) to school tomorrow.</p>
+      <input type="text" aria-label="Corrected sentence" id="ans-4">
+      <button class="primary" data-index="4">Check</button>
+      <div class="feedback" aria-live="polite" hidden></div>
+      <button class="secondary hint-btn" data-index="4" hidden>Hint</button>
+      <div class="hint" hidden></div>
+    </div>
+  </section>
+
+  <!-- Section 5: Mixed practice -->
+  <section id="sec-mixed">
+    <h2>Mixed Practice</h2>
+    <div id="mixed-container"></div>
+  </section>
+
+  <!-- Section 6: Final quiz -->
+  <section id="sec-quiz">
+    <h2>Final Quiz (no hints)</h2>
+    <div id="quiz-container"></div>
+  </section>
+
+  <!-- Section 7: Results -->
+  <section id="sec-results" hidden>
+    <h2>Results</h2>
+    <div id="results-summary"></div>
+    <button class="primary" id="restart">Restart Lesson</button>
+  </section>
+</main>
+
+<script>
+(() => {
+  const state = {
+    totalItems: 0,
+    completed: 0,
+    subSkills: {
+      affirmative: {correct:0, wrong:0, streak:0},
+      negative: {correct:0, wrong:0, streak:0},
+      question: {correct:0, wrong:0, streak:0},
+      usage: {correct:0, wrong:0, streak:0}
+    },
+    reviewQueue: [],
+    recentItems: 0,
+    mixedIndex: 0,
+    quizIndex: 0,
+    hintStages: {}
+  };
+
+  const items = [
+    // index 0 already used in start
+    // index 1 contrast MC
+    {type:'mc', sub:'usage', answer:'a', hints:['Think about the -ing form','Look for “is/are”','The correct sentence is “She is taking a picture.”']},
+    // index 2 contrast MC
+    {type:'mc', sub:'affirmative', answer:'b', hints:['Present continuous needs “am/is/are”','Which option has “is playing”?','Correct: “He is playing football now.”']},
+    // index 3 mistake negative
+    {type:'fix', sub:'negative', answer:'She is not watching TV.', hints:['Add “is” and “not”','Remember the structure “subject + is/am/are + not + verb‑ing”.','Correct sentence: “She is not watching TV.”']},
+    // index 4 mistake future plan
+    {type:'fix', sub:'question', answer:'Are they going to school tomorrow?', hints:['Future plan uses present continuous','Add “are” at the start','Correct: “Are they going to school tomorrow?”']},
+    // mixed practice items (indices 5-14)
+    {type:'fill', sub:'affirmative', prompt:'I ___ (read) a book now.', answer:'am reading', hints:['Use “am” with “I”.','Look for “am reading”.','Correct: “I am reading a book now.”']},
+    {type:'fill', sub:'negative', prompt:'He ___ (not / eat) breakfast.', answer:'is not eating', hints:['Use “is” and “not”.','Look for “is not eating”.','Correct: “He is not eating breakfast.”']},
+    {type:'mc', sub:'question', prompt:'___ you (watch) the game?', options:['Are','Is','Am'], answer:'Are', hints:['Question starts with “Are”.','Pick “Are”.','Correct: “Are you watching the game?”']},
+    {type:'fill', sub:'usage', prompt:'It ___ (rain) at the moment.', answer:'is raining', hints:['Use “is” with “rain”.','Look for “is raining”.','Correct: “It is raining at the moment.”']},
+    {type:'fill', sub:'affirmative', prompt:'They ___ (travel) to Japan next week.', answer:'are traveling', hints:['Future plan uses present continuous','Use “are traveling”.','Correct: “They are traveling to Japan next week.”']},
+    {type:'mc', sub:'negative', prompt:'She ___ (not / like) coffee.', options:['doesn’t like','is not liking','am not liking'], answer:'doesn’t like', hints:['Negative simple present is “doesn’t like”.','Pick “doesn’t like”.','Correct: “She doesn’t like coffee.”']},
+    {type:'fill', sub:'question', prompt:'___ she (work) today?', answer:'Is', hints:['Question starts with “Is”.','Pick “Is”.','Correct: “Is she working today?”']},
+    {type:'fill', sub:'usage', prompt:'We ___ (have) a meeting now.', answer:'are having', hints:['Use “are having”.','Look for “are having”.','Correct: “We are having a meeting now.”']},
+    {type:'mc', sub:'affirmative', prompt:'Tom ___ (play) the piano.', options:['plays','is playing','play'], answer:'is playing', hints:['Present continuous needs “is”.','Pick “is playing”.','Correct: “Tom is playing the piano.”']},
+    // final quiz items (indices 15-22)
+    {type:'fill', sub:'affirmative', prompt:'I ___ (write) an email.', answer:'am writing', hints:[]},
+    {type:'fill', sub:'negative', prompt:'You ___ (not / listen) to music.', answer:'are not listening', hints:[]},
+    {type:'mc', sub:'question', prompt:'___ they (come) soon?', options:['Are','Is','Am'], answer:'Are', hints:[]},
+    {type:'fill', sub:'usage', prompt:'The kids ___ (play) outside right now.', answer:'are playing', hints:[]},
+    {type:'mc', sub:'affirmative', prompt:'She ___ (study) for the exam.', options:['studies','is studying','study'], answer:'is studying', hints:[]},
+    {type:'fill', sub:'negative', prompt:'It ___ (not / snow) today.', answer:'is not snowing', hints:[]},
+    {type:'mc', sub:'question', prompt:'___ he (drive) to work?', options:['Is','Are','Am'], answer:'Is', hints:[]}
+  ];
+
+  // Utility functions
+  const $ = (s)=>document.querySelector(s);
+  const $$ = (s)=>Array.from(document.querySelectorAll(s));
+  const setProgress = () => {
+    const pct = Math.round(state.completed / state.totalItems * 100);
+    $('#progress').style.width = pct + '%';
+  };
+  const showFeedback = (card, correct, message) => {
+    const fb = card.querySelector('.feedback');
+    fb.hidden = false;
+    fb.className = 'feedback ' + (correct ? 'correct' : 'incorrect');
+    fb.innerHTML = `<span class="icon">${correct?'✓':'✗'}</span><span>${message}</span>`;
+  };
+  const showHint = (card, index) => {
+    const hintDiv = card.querySelector('.hint');
+    const btn = card.querySelector('.hint-btn');
+    const stage = state.hintStages[index] || 0;
+    if (stage < 2) {
+      hintDiv.textContent = items[index].hints[stage];
+    } else {
+      hintDiv.innerHTML = `<strong>Answer:</strong> ${formatAnswer(items[index])}`;
+    }
+    hintDiv.hidden = false;
+    btn.textContent = stage < 2 ? `Hint ${stage+1}` : 'Show Answer';
+  };
+  const formatAnswer = (item) => {
+    if (item.type==='fill' || item.type==='fix') return item.answer;
+    if (item.type==='mc') return item.answer;
+    return '';
+  };
+  const updateSubSkill = (sub, correct) => {
+    const ss = state.subSkills[sub];
+    if (correct) {
+      ss.correct++; ss.streak++;
+      ss.wrong = 0;
+    } else {
+      ss.wrong++; ss.streak = 0;
+    }
+    // adaptivity check
+    if (ss.wrong >=2) {
+      // insert easier item later
+      insertEasyItem(sub);
+      ss.wrong = 0;
+    }
+    if (ss.correct >=2 && ss.streak>=2) {
+      // skip next easy item of same subskill
+      skipEasyItem(sub);
+      ss.streak = 0;
+    }
+  };
+  const insertEasyItem = (sub) => {
+    // simple repeat of a previous item of same subskill
+    const easy = items.find(it=>it.sub===sub && it.type!=='fix');
+    if (easy) {
+      const container = $('#mixed-container');
+      const card = createCard(easy, items.indexOf(easy));
+      container.insertBefore(card, container.children[state.mixedIndex+1]||null);
+    }
+  };
+  const skipEasyItem = (sub) => {
+    // find next easy item of same subskill and mark as skipped
+    const upcoming = items.slice(state.mixedIndex+1).find(it=>it.sub===sub && it.type!=='fix');
+    if (upcoming) {
+      const idx = items.indexOf(upcoming);
+      state.skipped = state.skipped || {};
+      state.skipped[idx]=true;
+    }
+  };
+  const createCard = (item, idx) => {
+    const card = document.createElement('div');
+    card.className='card';
+    card.id='item-'+idx;
+    const hintBtn = document.createElement('button');
+    hintBtn.className='secondary hint-btn';
+    hintBtn.dataset.index=idx;
+    hintBtn.textContent='Hint';
+    hintBtn.hidden=true;
+    const hintDiv = document.createElement('div');
+    hintDiv.className='hint';
+    hintDiv.hidden=true;
+    const fbDiv = document.createElement('div');
+    fbDiv.className='feedback';
+    fbDiv.setAttribute('aria-live','polite');
+    fbDiv.hidden=true;
+    // Build based on type
+    if (item.type==='fill') {
+      const p = document.createElement('p');
+      p.textContent=item.prompt;
+      const input = document.createElement('input');
+      input.type='text';
+      input.id='ans-'+idx;
+      input.setAttribute('aria-label','Answer');
+      const btn = document.createElement('button');
+      btn.className='primary';
+      btn.dataset.index=idx;
+      btn.textContent='Check';
+      btn.addEventListener('click',()=>handleSubmit(idx));
+      card.append(p,input,btn,fbDiv,hintBtn,hintDiv);
+    } else if (item.type==='mc') {
+      const p = document.createElement('p');
+      p.textContent=item.prompt;
+      const sel = document.createElement('select');
+      sel.id='select-'+idx;
+      const opt0 = document.createElement('option');
+      opt0.value='';opt0.textContent='Select...';
+      sel.append(opt0);
+      item.options.forEach(o=>{
+        const opt=document.createElement('option');
+        opt.value=o;opt.textContent=o;
+        sel.append(opt);
+      });
+      const btn=document.createElement('button');
+      btn.className='primary';
+      btn.dataset.index=idx;
+      btn.textContent='Check';
+      btn.addEventListener('click',()=>handleSubmit(idx));
+      card.append(p,sel,btn,fbDiv,hintBtn,hintDiv);
+    } else if (item.type==='fix') {
+      const p = document.createElement('p');
+      p.textContent=item.prompt;
+      const input=document.createElement('input');
+      input.type='text';
+      input.id='ans-'+idx;
+      input.setAttribute('aria-label','Corrected sentence');
+      const btn=document.createElement('button');
+      btn.className='primary';
+      btn.dataset.index=idx;
+      btn.textContent='Check';
+      btn.addEventListener('click',()=>handleSubmit(idx));
+      card.append(p,input,btn,fbDiv,hintBtn,hintDiv);
+    }
+    // Hint button logic
+    if (item.hints && item.hints.length>0) {
+      hintBtn.hidden=false;
+      hintBtn.addEventListener('click',()=>{
+        const stage = (state.hintStages[idx]||0)+1;
+        state.hintStages[idx]=stage;
+        showHint(card, idx);
+        if (stage===3) hintBtn.disabled=true;
+      });
+    }
+    return card;
+  };
+  const handleSubmit = (idx) => {
+    const item = items[idx];
+    const card = $('#item-'+idx);
+    let userAns='';
+    if (item.type==='fill' || item.type==='fix') {
+      userAns = $('#ans-'+idx).value.trim();
+    } else if (item.type==='mc') {
+      userAns = $('#select-'+idx).value;
+    }
+    const correct = userAns.toLowerCase()===item.answer.toLowerCase();
+    if (correct) {
+      showFeedback(card,true,'Correct!');
+      state.completed++;
+      updateSubSkill(item.sub,true);
+    } else {
+      showFeedback(card,false,`Incorrect. ${item.hints[0]}`);
+      state.completed++;
+      updateSubSkill(item.sub,false);
+      // add to review queue
+      state.reviewQueue.push(idx);
+    }
+    // disable controls
+    const btns = card.querySelectorAll('button, input, select');
+    btns.forEach(el=>el.disabled=true);
+    setProgress();
+    // after a short delay, maybe show next mixed item
+    if (card.parentElement.id==='mixed-container') {
+      setTimeout(renderNextMixed,500);
+    }
+    if (card.parentElement.id==='quiz-container') {
+      setTimeout(renderNextQuiz,500);
+    }
+  };
+  // Section 1 logic
+  $('#item-0 button').addEventListener('click',()=>handleSubmit(0));
+  // Show hint button for start item
+  const startHintBtn = $('#item-0 .hint-btn');
+  startHintBtn.hidden=false;
+  startHintBtn.addEventListener('click',()=>{
+    const stage = (state.hintStages[0]||0)+1;
+    state.hintStages[0]=stage;
+    const card = $('#item-0');
+    showHint(card,0);
+    if (stage===3) startHintBtn.disabled=true;
+  });
+  // After first attempt, reveal rule
+  const startFeedback = $('#item-0 .feedback');
+  const observerStart = new MutationObserver(()=> {
+    if (!startFeedback.hidden) {
+      $('#rule-0').hidden=false;
+    }
+  });
+  observerStart.observe(startFeedback,{attributes:true,attributeFilter:['hidden']});
+  // Section 2 decision rule
+  $('#show-decision').addEventListener('click',()=>$('#decision-rule').hidden=false);
+  // Section 3 & 4: add listeners
+  [1,2,3,4].forEach(i=>{$('#item-'+i+' button').addEventListener('click',()=>handleSubmit(i));});
+  // Section 5 Mixed practice
+  const mixedItems = items.slice(5,15);
+  state.totalItems = mixedItems.length + 8; // plus final quiz items
+  const renderNextMixed = () => {
+    // check review queue
+    if (state.reviewQueue.length>0 && state.recentItems>=2) {
+      const revIdx = state.reviewQueue.shift();
+      const revItem = items[revIdx];
+      const card = createCard(revItem, revIdx);
+      $('#mixed-container').appendChild(card);
+      state.recentItems=0;
+      return;
+    }
+    if (state.mixedIndex>=mixedItems.length) return;
+    const item = mixedItems[state.mixedIndex];
+    const idx = items.indexOf(item);
+    const card = createCard(item, idx);
+    $('#mixed-container').appendChild(card);
+    state.mixedIndex++;
+    state.recentItems++;
+  };
+  // initial mixed items
+  for(let i=0;i<2;i++) renderNextMixed();
+  // Section 6 Final quiz
+  const quizItems = items.slice(15);
+  const renderNextQuiz = () => {
+    if (state.quizIndex>=quizItems.length) {
+      // show results
+      showResults();
+      return;
+    }
+    const item = quizItems[state.quizIndex];
+    const idx = items.indexOf(item);
+    const card = createCard(item, idx);
+    // remove hint button for final quiz
+    const hintBtn = card.querySelector('.hint-btn');
+    if (hintBtn) hintBtn.remove();
+    $('#quiz-container').appendChild(card);
+    state.quizIndex++;
+  };
+  // start quiz after mixed practice done
+  const checkMixedDone = setInterval(()=>{
+    if (state.mixedIndex>=mixedItems.length && state.reviewQueue.length===0){
+      clearInterval(checkMixedDone);
+      renderNextQuiz();
+    }
+  },500);
+  // Results
+  const showResults = () => {
+    $('#sec-results').hidden=false;
+    const summary = $('#results-summary');
+    const totalCorrect = Object.values(state.subSkills).reduce((a,s)=>a+s.correct,0);
+    const total = state.totalItems;
+    const perc = Math.round(totalCorrect/total*100);
+    const weakest = Object.entries(state.subSkills).reduce((a,b)=>b[1].correct<a[1].correct?b:a);
+    summary.innerHTML = `
+      <p>You answered <strong>${totalCorrect}</strong> out of <strong>${total}</strong> (${perc}%).</p>
+      <p>Weakest area: <strong>${weakest[0]}</strong> (${weakest[1].correct} correct).</p>
+      <p>Review the rules for ${weakest[0]} and try again.</p>
+    `;
+  };
+  $('#restart').addEventListener('click',()=>location.reload());
+
+  // IntersectionObserver for fade-in
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.style.transition='opacity .5s';
+        entry.target.style.opacity='1';
+      }
+    });
+  },{threshold:0.1});
+  $$('section').forEach(sec=>{sec.style.opacity='0';observer.observe(sec);});
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1837 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit 98–99 Grammar Lesson</title>
+    <style>
+      :root {
+        --color-bg: #f6f7f8;
+        --color-surface: #ffffff;
+        --color-surface-alt: #eaf5f3;
+        --color-header-from: #2c7873;
+        --color-header-to: #173f3b;
+        --color-primary: #2a7a7a;
+        --color-primary-dark: #1f5f59;
+        --color-accent: #2c7873;
+        --color-text: #1f2937;
+        --color-text-muted: #6b7280;
+        --color-text-faint: #9ca3af;
+        --color-border: #e6e8eb;
+        --color-success: #16a34a;
+        --color-success-bg: #e7f7ec;
+        --color-error: #dc2626;
+        --color-error-bg: #fdeaea;
+        --color-warning: #b45309;
+        --color-warning-bg: #fef3e2;
+        --shadow-soft:
+          0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.05);
+        --radius-lg: 14px;
+        --radius-md: 9px;
+        --radius-sm: 6px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        background: var(--color-bg);
+        color: var(--color-text);
+        font-size: 16px;
+        line-height: 1.5;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      summary:focus-visible {
+        outline: 2px solid #2a7a7a;
+        outline-offset: 2px;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: linear-gradient(
+          135deg,
+          var(--color-header-from),
+          var(--color-header-to)
+        );
+        color: #ffffff;
+        box-shadow: var(--shadow-soft);
+      }
+
+      .topbar-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 18px 20px 12px;
+      }
+
+      .eyebrow {
+        margin: 0 0 4px;
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 14px;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3 {
+        color: var(--color-text);
+        margin-top: 0;
+      }
+
+      .topbar h1 {
+        color: #ffffff;
+        font-size: 28px;
+        line-height: 1.2;
+        margin: 0 0 12px;
+      }
+
+      .progress-wrap {
+        display: block;
+      }
+
+      .progress-track {
+        width: 100%;
+        height: 4px;
+        background: rgba(230, 232, 235, 0.55);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(
+          135deg,
+          var(--color-primary),
+          var(--color-primary-dark)
+        );
+        transition: width 0.25s ease;
+      }
+
+      .page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px 20px 56px;
+      }
+
+      .section {
+        margin-bottom: 22px;
+        opacity: 0;
+        transform: translateY(14px);
+        transition:
+          opacity 0.4s ease,
+          transform 0.4s ease;
+      }
+
+      .section.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .card {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+        padding: 20px;
+      }
+
+      .section-intro {
+        margin-bottom: 14px;
+      }
+
+      .section-intro p,
+      .muted,
+      .helper {
+        color: var(--color-text-muted);
+      }
+
+      .grid-two {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .sticky-panel {
+        position: sticky;
+        top: 108px;
+        background: var(--color-surface-alt);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        padding: 18px;
+      }
+
+      .panel-list {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--color-text-muted);
+      }
+
+      .practice-list,
+      .results-list,
+      .rule-list {
+        display: grid;
+        gap: 14px;
+      }
+
+      .item-card {
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        background: #ffffff;
+      }
+
+      .item-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: start;
+        margin-bottom: 10px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid var(--color-border);
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 13px;
+        color: var(--color-text-muted);
+        background: var(--color-surface-alt);
+        white-space: nowrap;
+      }
+
+      .question {
+        font-size: 17px;
+        margin: 0 0 10px;
+      }
+
+      .options,
+      .sentence-options {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .option-btn,
+      .token-btn,
+      .action-btn,
+      .ghost-btn,
+      .submit-btn,
+      .small-btn {
+        border-radius: 8px;
+        min-height: 44px;
+        cursor: pointer;
+      }
+
+      .option-btn,
+      .token-btn {
+        border: 1px solid var(--color-border);
+        background: #ffffff;
+        color: var(--color-text);
+        text-align: left;
+        padding: 12px 14px;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease,
+          transform 0.15s ease;
+      }
+
+      .option-btn:hover,
+      .token-btn:hover {
+        border-color: var(--color-accent);
+        background: var(--color-surface-alt);
+      }
+
+      .option-btn.selected,
+      .token-btn.selected {
+        background: var(--color-surface-alt);
+        color: var(--color-accent);
+        border-color: var(--color-accent);
+      }
+
+      .input-row,
+      .build-row,
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .text-input,
+      .select-input {
+        flex: 1 1 220px;
+        min-height: 44px;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        padding: 10px 12px;
+        background: #ffffff;
+        color: var(--color-text);
+      }
+
+      .submit-btn,
+      .action-btn {
+        background: linear-gradient(
+          135deg,
+          var(--color-primary),
+          var(--color-primary-dark)
+        );
+        color: #ffffff;
+        border: none;
+        padding: 11px 16px;
+        font-weight: 600;
+      }
+
+      .submit-btn:hover,
+      .action-btn:hover {
+        filter: brightness(0.98);
+      }
+
+      .ghost-btn,
+      .small-btn {
+        background: #ffffff;
+        color: var(--color-accent);
+        border: 1px solid var(--color-accent);
+        padding: 10px 14px;
+        font-weight: 600;
+      }
+
+      .feedback,
+      .hint-box,
+      .adaptive-note,
+      .rule-box,
+      .example-box {
+        margin-top: 12px;
+        border-radius: var(--radius-md);
+        padding: 12px 14px;
+      }
+
+      .feedback {
+        border-left: 4px solid transparent;
+        border: 1px solid var(--color-border);
+        display: none;
+      }
+
+      .feedback.show {
+        display: block;
+      }
+
+      .feedback.correct {
+        background: var(--color-success-bg);
+        border-left-color: var(--color-success);
+      }
+
+      .feedback.incorrect {
+        background: var(--color-error-bg);
+        border-left-color: var(--color-error);
+      }
+
+      .hint-box {
+        display: none;
+        background: var(--color-surface-alt);
+        border-left: 4px solid var(--color-primary);
+        color: var(--color-text);
+      }
+
+      .hint-box.show,
+      .adaptive-note.show,
+      .rule-box.show {
+        display: block;
+      }
+
+      .adaptive-note {
+        display: none;
+        background: var(--color-warning-bg);
+        border-left: 4px solid var(--color-warning);
+        color: var(--color-text);
+      }
+
+      .rule-box,
+      .example-box {
+        background: var(--color-surface-alt);
+        border: 1px solid var(--color-border);
+      }
+
+      .rule-box {
+        display: none;
+      }
+
+      .answer-mark {
+        font-size: 13px;
+        color: var(--color-warning);
+        font-weight: 600;
+        margin-top: 8px;
+      }
+
+      .mini-title {
+        font-size: 14px;
+        color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        margin: 0 0 8px;
+      }
+
+      .subskill-bars {
+        display: grid;
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      .bar-row {
+        display: grid;
+        grid-template-columns: 160px 1fr 70px;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .bar-track {
+        height: 10px;
+        border-radius: 999px;
+        background: var(--color-border);
+        overflow: hidden;
+      }
+
+      .bar-fill {
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          var(--color-primary),
+          var(--color-primary-dark)
+        );
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      details {
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        background: #ffffff;
+        padding: 12px 14px;
+      }
+
+      details + details {
+        margin-top: 10px;
+      }
+
+      summary {
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--color-text);
+      }
+
+      .inline-rule {
+        color: var(--color-text-muted);
+        font-size: 15px;
+        margin-top: 8px;
+      }
+
+      @media (max-width: 899px) {
+        .grid-two {
+          grid-template-columns: 1fr;
+        }
+
+        .sticky-panel {
+          position: static;
+        }
+      }
+
+      @media (max-width: 599px) {
+        .topbar-inner,
+        .page {
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+
+        .topbar h1 {
+          font-size: 24px;
+        }
+
+        .card {
+          padding: 16px;
+        }
+
+        .bar-row {
+          grid-template-columns: 1fr;
+          gap: 6px;
+        }
+
+        .item-top {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div>
+          <p class="eyebrow">Interactive Grammar Lesson</p>
+          <h1>Unit 98–99: -ing / -ed adjectives and adjective order</h1>
+        </div>
+        <div class="progress-wrap" aria-label="Lesson progress">
+          <div class="progress-track">
+            <div id="progressBar" class="progress-bar"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="page">
+      <noscript>
+        <section class="card">
+          <h2>JavaScript is off</h2>
+          <p>
+            This page still shows the grammar rules and examples, but
+            interactive checking, hints, adaptivity, and progress tracking
+            require JavaScript.
+          </p>
+        </section>
+      </noscript>
+
+      <section class="section visible" id="section-1" data-section="1">
+        <div class="card">
+          <div class="section-intro">
+            <h2>1. Immediate start</h2>
+            <p>
+              Start with one decision right away: choose the adjective that
+              describes the thing, then notice the rule.
+            </p>
+          </div>
+          <div id="immediateStart"></div>
+          <div id="coreRuleReveal" class="rule-box" aria-live="polite">
+            <h3>The main idea</h3>
+            <p>
+              Use <strong>-ing</strong> adjectives to describe the
+              <strong
+                >person, thing, situation, or experience that causes the
+                feeling</strong
+              >: <em>The movie was disappointing.</em>
+            </p>
+            <p>
+              Use <strong>-ed</strong> adjectives to describe the
+              <strong>person who feels that emotion</strong>:
+              <em>We were disappointed.</em>
+            </p>
+            <p class="inline-rule">
+              Quick check: ask yourself, “Is this the cause, or the person
+              feeling it?”
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="section-2" data-section="2">
+        <div class="grid-two">
+          <div class="card">
+            <div class="section-intro">
+              <h2>2. Core decision rule</h2>
+              <p>
+                Use the decision model below to sort examples and build
+                confidence.
+              </p>
+            </div>
+            <div class="rule-list">
+              <div class="example-box">
+                <p class="mini-title">Decision model</p>
+                <p>
+                  <strong>Cause → -ing</strong> | <strong>Feeling → -ed</strong>
+                </p>
+                <p class="muted">
+                  Examples: <em>boring lecture / bored students</em>,
+                  <em>exciting trip / excited traveller</em>.
+                </p>
+              </div>
+              <div id="decisionPractice"></div>
+            </div>
+          </div>
+          <aside class="sticky-panel">
+            <h3>Sub-skills to master</h3>
+            <ol class="panel-list">
+              <li>
+                Choose <strong>-ing</strong> for the thing that causes a
+                feeling.
+              </li>
+              <li>Choose <strong>-ed</strong> for the person who feels it.</li>
+              <li>
+                Fix common mix-ups like <em>I am boring</em> vs
+                <em>I am bored</em>.
+              </li>
+              <li>
+                Order adjectives naturally: opinion before fact, then size, age,
+                colour, origin, material.
+              </li>
+              <li>
+                Notice fixed patterns such as <em>the first two days</em> and
+                adjectives after <em>be / seem / become</em>.
+              </li>
+            </ol>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="section-3" data-section="3">
+        <div class="card">
+          <div class="section-intro">
+            <h2>3. Key contrasts / tricky distinctions</h2>
+            <p>
+              Choose first, then check why one form works better than the other.
+            </p>
+          </div>
+          <div id="contrastPractice" class="practice-list"></div>
+        </div>
+      </section>
+
+      <section class="section" id="section-4" data-section="4">
+        <div class="card">
+          <div class="section-intro">
+            <h2>4. Common mistakes</h2>
+            <p>
+              Correct realistic learner errors about
+              <strong>-ing / -ed</strong> adjectives and adjective order.
+            </p>
+          </div>
+          <div id="mistakePractice" class="practice-list"></div>
+        </div>
+      </section>
+
+      <section class="section" id="section-5" data-section="5">
+        <div class="card">
+          <div class="section-intro">
+            <h2>5. Mixed practice</h2>
+            <p>
+              Work through interleaved items across all sub-skills. Missed items
+              will return later for review.
+            </p>
+          </div>
+          <div
+            id="adaptiveMessage"
+            class="adaptive-note"
+            aria-live="polite"
+          ></div>
+          <div id="mixedPractice"></div>
+        </div>
+      </section>
+
+      <section class="section" id="section-6" data-section="6">
+        <div class="card">
+          <div class="section-intro">
+            <h2>6. Final quiz</h2>
+            <p>
+              No hints here. This section checks whether you can choose the
+              right form and order under less support.
+            </p>
+          </div>
+          <div id="finalQuiz" class="practice-list"></div>
+        </div>
+      </section>
+
+      <section class="section" id="section-7" data-section="7">
+        <div class="card">
+          <div class="section-intro">
+            <h2>7. Results</h2>
+            <p>
+              See your progress by sub-skill, your weakest area, and a focused
+              review suggestion.
+            </p>
+          </div>
+          <div id="resultsPanel" class="results-list">
+            <div class="example-box">
+              <p>
+                <strong
+                  >Complete the lesson to see your mastery summary.</strong
+                >
+              </p>
+              <p class="muted">
+                Your results will update automatically as you work.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="liveRegion" class="sr-only" aria-live="polite"></div>
+
+    <script>
+      (() => {
+        const liveRegion = document.getElementById("liveRegion");
+        const progressBar = document.getElementById("progressBar");
+        const immediateStartEl = document.getElementById("immediateStart");
+        const coreRuleRevealEl = document.getElementById("coreRuleReveal");
+        const decisionPracticeEl = document.getElementById("decisionPractice");
+        const contrastPracticeEl = document.getElementById("contrastPractice");
+        const mistakePracticeEl = document.getElementById("mistakePractice");
+        const mixedPracticeEl = document.getElementById("mixedPractice");
+        const finalQuizEl = document.getElementById("finalQuiz");
+        const resultsPanelEl = document.getElementById("resultsPanel");
+        const adaptiveMessageEl = document.getElementById("adaptiveMessage");
+
+        const subskills = {
+          causeVsFeeling: {
+            label: "-ing for cause / -ed for feeling",
+            correct: 0,
+            attempts: 0,
+            wrongStreak: 0,
+            quickCorrectStreak: 0,
+          },
+          adjectiveOrder: {
+            label: "Adjective order",
+            correct: 0,
+            attempts: 0,
+            wrongStreak: 0,
+            quickCorrectStreak: 0,
+          },
+          errorCorrection: {
+            label: "Error correction",
+            correct: 0,
+            attempts: 0,
+            wrongStreak: 0,
+            quickCorrectStreak: 0,
+          },
+          adjectiveAfterBe: {
+            label: "Adjectives after be / seem / become",
+            correct: 0,
+            attempts: 0,
+            wrongStreak: 0,
+            quickCorrectStreak: 0,
+          },
+          fixedOrderPhrases: {
+            label: "Fixed sequences like the first two days",
+            correct: 0,
+            attempts: 0,
+            wrongStreak: 0,
+            quickCorrectStreak: 0,
+          },
+        };
+
+        const state = {
+          totalAttempts: 0,
+          completedItems: new Set(),
+          firstActionDone: false,
+          reviewQueue: [],
+          mixedIndex: 0,
+          adaptiveHistory: new Set(),
+          skippedEasy: new Set(),
+          mixedRenderedIds: [],
+          answeredMixedCount: 0,
+          finalAnsweredCount: 0,
+          sectionProgress: {
+            1: false,
+            2: false,
+            3: false,
+            4: false,
+            5: false,
+            6: false,
+            7: false,
+          },
+        };
+
+        const lessonSets = {
+          immediate: [
+            {
+              id: "start-1",
+              section: 1,
+              subskill: "causeVsFeeling",
+              type: "mcq",
+              prompt: "The movie was ____.",
+              instruction:
+                "Choose the adjective that describes the movie itself.",
+              options: ["disappointed", "disappointing"],
+              answer: "disappointing",
+              hints: [
+                "Ask: is the movie feeling something, or causing a feeling?",
+                "The movie causes disappointment for other people.",
+                "Use <strong>disappointing</strong> because the movie causes the feeling. People are <strong>disappointed</strong>.",
+              ],
+              explanation:
+                "Use <strong>-ing</strong> for the thing that produces the emotion. The movie causes disappointment, so it is <strong>disappointing</strong>.",
+            },
+          ],
+          decision: [
+            {
+              id: "decision-1",
+              section: 2,
+              subskill: "causeVsFeeling",
+              type: "categorize",
+              prompt: "Sort each adjective into the correct group.",
+              categories: ["Cause (-ing)", "Feeling (-ed)"],
+              tokens: [
+                { text: "boring", group: "Cause (-ing)" },
+                { text: "bored", group: "Feeling (-ed)" },
+                { text: "exciting", group: "Cause (-ing)" },
+                { text: "excited", group: "Feeling (-ed)" },
+              ],
+              hints: [
+                "One group describes a thing or situation. The other describes a person’s emotion.",
+                "Words ending in <strong>-ing</strong> usually describe the cause. Words ending in <strong>-ed</strong> usually describe the person affected.",
+                "<strong>boring</strong> and <strong>exciting</strong> go under cause. <strong>bored</strong> and <strong>excited</strong> go under feeling.",
+              ],
+              explanation:
+                "This distinction helps with many common pairs: <em>amusing/amused</em>, <em>confusing/confused</em>, and <em>terrifying/terrified</em>.",
+            },
+            {
+              id: "decision-2",
+              section: 2,
+              subskill: "adjectiveAfterBe",
+              type: "mcq",
+              prompt: "Choose the sentence that is correct.",
+              options: [
+                "Suzanne plays the piano very good.",
+                "Suzanne plays the piano very well.",
+                "Suzanne plays the piano very careful.",
+              ],
+              answer: "Suzanne plays the piano very well.",
+              hints: [
+                "After a verb like <em>plays</em>, we usually need an adverb, not an adjective.",
+                "The unit says adjectives come after <em>be / get / become / seem</em>, but not for how somebody does something.",
+                "The correct sentence is <strong>Suzanne plays the piano very well.</strong> We use the adverb <strong>well</strong>.",
+              ],
+              explanation:
+                "Unit 99 contrasts adjectives after <em>be / seem / become</em> with adverbs after action verbs like <em>drive</em> or <em>play</em>.",
+            },
+          ],
+          contrasts: [
+            {
+              id: "contrast-1",
+              section: 3,
+              subskill: "causeVsFeeling",
+              type: "mcq",
+              prompt: "I’m very ____ in joining the club.",
+              options: ["interesting", "interested"],
+              answer: "interested",
+              hints: [
+                "The subject is <em>I</em>. Are you the cause, or the person with the feeling?",
+                "A person usually feels <strong>interested</strong>; a thing can be <strong>interesting</strong>.",
+                "Use <strong>interested</strong>: <em>I’m very interested in joining the club.</em>",
+              ],
+              explanation:
+                "Use <strong>-ed</strong> for the person experiencing the feeling.",
+            },
+            {
+              id: "contrast-2",
+              section: 3,
+              subskill: "causeVsFeeling",
+              type: "mcq",
+              prompt: "The new project sounds ____.",
+              options: ["exciting", "excited"],
+              answer: "exciting",
+              hints: [
+                "The project is not feeling emotion. It creates emotion in people.",
+                "Things that produce excitement are <strong>exciting</strong>.",
+                "Use <strong>exciting</strong>: the project causes excitement.",
+              ],
+              explanation:
+                "Even after <em>sounds</em>, we still choose the adjective that matches the noun: the project is <strong>exciting</strong>.",
+            },
+            {
+              id: "contrast-3",
+              section: 3,
+              subskill: "adjectiveOrder",
+              type: "mcq",
+              prompt: "Choose the natural adjective order.",
+              options: [
+                "a wooden round beautiful table",
+                "a beautiful large round wooden table",
+                "a round wooden large beautiful table",
+              ],
+              answer: "a beautiful large round wooden table",
+              hints: [
+                "Opinion adjectives usually come before fact adjectives.",
+                "Among fact adjectives, size usually comes before shape, and material comes near the noun.",
+                "Use <strong>a beautiful large round wooden table</strong>: opinion → size → shape → material.",
+              ],
+              explanation:
+                "Unit 99 gives the pattern clearly: opinion adjectives come first, then fact adjectives in a common order.",
+            },
+            {
+              id: "contrast-4",
+              section: 3,
+              subskill: "fixedOrderPhrases",
+              type: "mcq",
+              prompt: "Choose the correct phrase.",
+              options: ["the two first days", "the first two days"],
+              answer: "the first two days",
+              hints: [
+                "Think about the example from the chapter.",
+                "Words like <em>first</em>, <em>next</em>, and <em>last</em> usually come before the number or quantity phrase here.",
+                "Use <strong>the first two days</strong>, not <strong>the two first days</strong>.",
+              ],
+              explanation:
+                "This is a fixed pattern from Unit 99: <em>the first two days</em>, <em>the next few weeks</em>, <em>the last ten minutes</em>.",
+            },
+          ],
+          mistakes: [
+            {
+              id: "mistake-1",
+              section: 4,
+              subskill: "errorCorrection",
+              type: "text",
+              prompt:
+                "Correct the sentence: <strong>I was very interesting in football.</strong>",
+              placeholder: "Type the corrected sentence",
+              answer: "I was very interested in football.",
+              hints: [
+                "The person feels the interest.",
+                "For a person’s feeling, choose the <strong>-ed</strong> form.",
+                "Correct sentence: <strong>I was very interested in football.</strong>",
+              ],
+              explanation:
+                "A person is <strong>interested</strong>. A thing such as a book, topic, or match can be <strong>interesting</strong>.",
+            },
+            {
+              id: "mistake-2",
+              section: 4,
+              subskill: "errorCorrection",
+              type: "text",
+              prompt:
+                "Correct the sentence: <strong>She looked very tiring after work.</strong>",
+              placeholder: "Type the corrected sentence",
+              answer: "She looked very tired after work.",
+              hints: [
+                "Is she causing tiredness, or feeling tired?",
+                "After work, the person experiences the feeling.",
+                "Correct sentence: <strong>She looked very tired after work.</strong>",
+              ],
+              explanation:
+                "Use <strong>tired</strong> because she feels the tiredness. <strong>Tiring</strong> would describe something that makes other people tired.",
+            },
+            {
+              id: "mistake-3",
+              section: 4,
+              subskill: "adjectiveOrder",
+              type: "text",
+              prompt:
+                "Rewrite this noun phrase naturally: <strong>a wooden old chair</strong>",
+              placeholder: "Type the corrected noun phrase",
+              answer: "an old wooden chair",
+              hints: [
+                "Age usually comes before material.",
+                "The chapter gives patterns like <em>an old white cotton shirt</em>.",
+                "Use <strong>an old wooden chair</strong>.",
+              ],
+              explanation:
+                "With fact adjectives, age often comes before material: <em>old wooden</em>, not <em>wooden old</em>.",
+            },
+            {
+              id: "mistake-4",
+              section: 4,
+              subskill: "fixedOrderPhrases",
+              type: "text",
+              prompt: "Correct the phrase: <strong>the few next weeks</strong>",
+              placeholder: "Type the corrected phrase",
+              answer: "the next few weeks",
+              hints: [
+                "The chapter gives this exact pattern.",
+                "The time word comes first in this expression.",
+                "Use <strong>the next few weeks</strong>.",
+              ],
+              explanation:
+                "Expressions like <em>the next few weeks</em> and <em>the last ten minutes</em> have a fixed order.",
+            },
+          ],
+          mixed: [
+            {
+              id: "mixed-1",
+              section: 5,
+              subskill: "causeVsFeeling",
+              type: "mcq",
+              prompt: "This weather is ____.",
+              options: ["depressing", "depressed"],
+              answer: "depressing",
+              hints: [
+                "The weather causes a feeling.",
+                "The cause takes <strong>-ing</strong>.",
+                "Use <strong>depressing</strong>. The weather causes the emotion.",
+              ],
+              explanation:
+                "The weather itself creates the mood, so we use <strong>depressing</strong>.",
+            },
+            {
+              id: "mixed-2",
+              section: 5,
+              subskill: "causeVsFeeling",
+              type: "text",
+              prompt:
+                "Complete the sentence: <strong>This weather makes me ____.</strong>",
+              placeholder: "Type one word",
+              answer: "depressed",
+              hints: [
+                "Now the sentence is about your feeling.",
+                "After <em>makes me</em>, choose the feeling word.",
+                "Use <strong>depressed</strong> because the person feels the emotion.",
+              ],
+              explanation:
+                "A person feels <strong>depressed</strong>; the weather is <strong>depressing</strong>.",
+            },
+            {
+              id: "mixed-3",
+              section: 5,
+              subskill: "adjectiveOrder",
+              type: "mcq",
+              prompt: "Choose the best phrase.",
+              options: [
+                "a small black plastic bag",
+                "a plastic black small bag",
+              ],
+              answer: "a small black plastic bag",
+              hints: [
+                "Think size → colour → material.",
+                "Unit 99 gives this order for fact adjectives.",
+                "Use <strong>a small black plastic bag</strong>.",
+              ],
+              explanation:
+                "The normal order here is size, then colour, then material.",
+            },
+            {
+              id: "mixed-4",
+              section: 5,
+              subskill: "adjectiveAfterBe",
+              type: "mcq",
+              prompt: "Choose the correct sentence.",
+              options: ["You look tired.", "You look tiredly."],
+              answer: "You look tired.",
+              hints: [
+                "After <em>look</em>, we usually use an adjective to describe the person.",
+                "The chapter says we use adjectives with <em>look, feel, sound, taste, smell</em>.",
+                "Use <strong>You look tired.</strong>",
+              ],
+              explanation:
+                "Linking verbs such as <em>look</em> take adjectives, not adverbs, when they describe a state.",
+            },
+            {
+              id: "mixed-5",
+              section: 5,
+              subskill: "causeVsFeeling",
+              type: "mcq",
+              prompt: "At the end of the day, Donna is often ____.",
+              options: ["exhausting", "exhausted"],
+              answer: "exhausted",
+              hints: [
+                "Donna feels this condition herself.",
+                "A person with the feeling takes <strong>-ed</strong>.",
+                "Use <strong>exhausted</strong>.",
+              ],
+              explanation:
+                "Donna feels the result, so the adjective is <strong>exhausted</strong>.",
+            },
+            {
+              id: "mixed-6",
+              section: 5,
+              subskill: "adjectiveOrder",
+              type: "mcq",
+              prompt: "Choose the natural order.",
+              options: ["a tall young man", "a young tall man"],
+              answer: "a tall young man",
+              hints: [
+                "Size often comes before age.",
+                "The chapter lists <em>a tall young man</em>.",
+                "Use <strong>a tall young man</strong>.",
+              ],
+              explanation:
+                "With fact adjectives, size commonly comes before age.",
+            },
+            {
+              id: "mixed-7",
+              section: 5,
+              subskill: "causeVsFeeling",
+              type: "text",
+              prompt:
+                "Complete the sentence: <strong>Going to new places is always ____.</strong>",
+              placeholder: "Type one word",
+              answer: "exciting",
+              hints: [
+                "The activity creates the feeling.",
+                "Things and experiences that cause emotion take <strong>-ing</strong>.",
+                "Use <strong>exciting</strong>.",
+              ],
+              explanation:
+                "Travel or a new experience is the cause, so we use <strong>exciting</strong>.",
+            },
+            {
+              id: "mixed-8",
+              section: 5,
+              subskill: "fixedOrderPhrases",
+              type: "mcq",
+              prompt: "Choose the correct expression.",
+              options: ["the last ten minutes", "the ten last minutes"],
+              answer: "the last ten minutes",
+              hints: [
+                "Follow the pattern from the unit.",
+                "Time word first, then number phrase.",
+                "Use <strong>the last ten minutes</strong>.",
+              ],
+              explanation:
+                "This belongs to the same pattern as <em>the first two days</em> and <em>the next few weeks</em>.",
+            },
+          ],
+          easier: {
+            causeVsFeeling: {
+              id: "easy-cause-1",
+              section: 5,
+              subskill: "causeVsFeeling",
+              type: "mcq",
+              prompt: "The story was ____.",
+              options: ["interesting", "interested"],
+              answer: "interesting",
+              hints: [
+                "The story causes the feeling.",
+                "Things that create interest are <strong>interesting</strong>.",
+                "Use <strong>interesting</strong>.",
+              ],
+              explanation:
+                "The story causes interest, so it is <strong>interesting</strong>.",
+            },
+            adjectiveOrder: {
+              id: "easy-order-1",
+              section: 5,
+              subskill: "adjectiveOrder",
+              type: "mcq",
+              prompt: "Choose the better order.",
+              options: ["big blue eyes", "blue big eyes"],
+              answer: "big blue eyes",
+              hints: [
+                "Size comes before colour.",
+                "Think of the example in the unit.",
+                "Use <strong>big blue eyes</strong>.",
+              ],
+              explanation:
+                "Size commonly comes before colour in adjective order.",
+            },
+            fixedOrderPhrases: {
+              id: "easy-fixed-1",
+              section: 5,
+              subskill: "fixedOrderPhrases",
+              type: "mcq",
+              prompt: "Choose the correct phrase.",
+              options: ["the next few weeks", "the few next weeks"],
+              answer: "the next few weeks",
+              hints: [
+                "This phrase is given in the chapter.",
+                "The time word comes first.",
+                "Use <strong>the next few weeks</strong>.",
+              ],
+              explanation: "This is a fixed expression from the unit.",
+            },
+          },
+          finalQuiz: [
+            {
+              id: "final-1",
+              section: 6,
+              subskill: "causeVsFeeling",
+              type: "mcq",
+              prompt:
+                "Everybody was very ____ after the terrifying experience.",
+              options: ["shocking", "shocked"],
+              answer: "shocked",
+              explanation:
+                "People feel <strong>shocked</strong>; the experience is <strong>terrifying</strong>.",
+            },
+            {
+              id: "final-2",
+              section: 6,
+              subskill: "adjectiveOrder",
+              type: "mcq",
+              prompt: "Choose the natural phrase.",
+              options: ["a long narrow street", "a narrow long street"],
+              answer: "a long narrow street",
+              explanation: "Length usually comes before shape or width.",
+            },
+            {
+              id: "final-3",
+              section: 6,
+              subskill: "adjectiveAfterBe",
+              type: "mcq",
+              prompt: "Choose the correct sentence.",
+              options: ["The tea tastes strangely.", "The tea tastes strange."],
+              answer: "The tea tastes strange.",
+              explanation:
+                "After <em>taste</em>, use an adjective to describe the tea.",
+            },
+            {
+              id: "final-4",
+              section: 6,
+              subskill: "errorCorrection",
+              type: "text",
+              prompt:
+                "Correct the sentence: <strong>I am very boring in football matches.</strong>",
+              placeholder: "Type the corrected sentence",
+              answer: "I am very bored in football matches.",
+              explanation:
+                "Use <strong>bored</strong> for the person experiencing the feeling.",
+            },
+            {
+              id: "final-5",
+              section: 6,
+              subskill: "fixedOrderPhrases",
+              type: "mcq",
+              prompt: "Choose the correct phrase.",
+              options: ["the first two days", "the two first days"],
+              answer: "the first two days",
+              explanation: "This is the standard fixed pattern from the unit.",
+            },
+            {
+              id: "final-6",
+              section: 6,
+              subskill: "adjectiveOrder",
+              type: "mcq",
+              prompt: "Choose the best phrase.",
+              options: [
+                "an old white cotton shirt",
+                "a cotton white old shirt",
+              ],
+              answer: "an old white cotton shirt",
+              explanation:
+                "Age comes before colour, and colour comes before material.",
+            },
+          ],
+        };
+
+        const normalize = (text) =>
+          text.toLowerCase().replace(/[.!?]/g, "").replace(/\s+/g, " ").trim();
+
+        function announce(message) {
+          liveRegion.textContent = message;
+        }
+
+        function updateProgress() {
+          const totalTargets =
+            1 +
+            lessonSets.decision.length +
+            lessonSets.contrasts.length +
+            lessonSets.mistakes.length +
+            Math.min(state.answeredMixedCount, 8) +
+            lessonSets.finalQuiz.length;
+          const done = state.completedItems.size;
+          const percent = Math.min(
+            100,
+            Math.round((done / totalTargets) * 100),
+          );
+          progressBar.style.width = percent + "%";
+        }
+
+        function markSectionProgress(section, value) {
+          state.sectionProgress[section] = value;
+        }
+
+        function updateSubskill(subskillKey, correct, quick) {
+          const skill = subskills[subskillKey];
+          skill.attempts += 1;
+          state.totalAttempts += 1;
+          if (correct) {
+            skill.correct += 1;
+            skill.wrongStreak = 0;
+            skill.quickCorrectStreak = quick ? skill.quickCorrectStreak + 1 : 0;
+          } else {
+            skill.wrongStreak += 1;
+            skill.quickCorrectStreak = 0;
+          }
+        }
+
+        function maybeScheduleAdaptive(item) {
+          if (item.section !== 5 || item.isReview || item.isEasySupport) return;
+          const skill = subskills[item.subskill];
+          if (
+            skill.wrongStreak >= 2 &&
+            lessonSets.easier[item.subskill] &&
+            !state.adaptiveHistory.has("easy-" + item.subskill)
+          ) {
+            state.adaptiveHistory.add("easy-" + item.subskill);
+            lessonSets.mixed.splice(state.mixedIndex + 1, 0, {
+              ...lessonSets.easier[item.subskill],
+              isEasySupport: true,
+            });
+            adaptiveMessageEl.textContent =
+              "Let's try a simpler version of this.";
+            adaptiveMessageEl.classList.add("show");
+          } else if (
+            skill.quickCorrectStreak >= 2 &&
+            !state.skippedEasy.has(item.subskill)
+          ) {
+            const skipIndex = lessonSets.mixed.findIndex(
+              (entry, index) =>
+                index > state.mixedIndex &&
+                entry.subskill === item.subskill &&
+                !entry.isReview &&
+                !entry.isEasySupport,
+            );
+            if (skipIndex > -1) {
+              lessonSets.mixed.splice(skipIndex, 1);
+              state.skippedEasy.add(item.subskill);
+              adaptiveMessageEl.textContent =
+                "You've got this — moving to a harder one.";
+              adaptiveMessageEl.classList.add("show");
+            }
+          }
+        }
+
+        function queueReview(item) {
+          if (item.section !== 5) return;
+          if (state.reviewQueue.some((entry) => entry.id === item.id)) return;
+          state.reviewQueue.push({
+            ...item,
+            isReview: true,
+            reviewAfter: state.answeredMixedCount + 2,
+          });
+        }
+
+        function getNextMixedItems() {
+          const items = [];
+          while (
+            items.length < 5 &&
+            state.mixedIndex < lessonSets.mixed.length
+          ) {
+            items.push(lessonSets.mixed[state.mixedIndex]);
+            state.mixedIndex += 1;
+          }
+          const readyReviews = state.reviewQueue.filter(
+            (entry) => entry.reviewAfter <= state.answeredMixedCount,
+          );
+          readyReviews.slice(0, 3).forEach((entry) => {
+            if (!items.some((item) => item.id === entry.id + "-review")) {
+              items.push({ ...entry, id: entry.id + "-review" });
+            }
+          });
+          return items;
+        }
+
+        function removeReviewBase(itemId) {
+          state.reviewQueue = state.reviewQueue.filter(
+            (entry) =>
+              entry.id + "-review" !== itemId &&
+              entry.id !== itemId.replace(/-review$/, ""),
+          );
+        }
+
+        function createFeedbackElements(container, allowHint) {
+          const actionRow = document.createElement("div");
+          actionRow.className = "action-row";
+
+          let hintBtn = null;
+          if (allowHint) {
+            hintBtn = document.createElement("button");
+            hintBtn.type = "button";
+            hintBtn.className = "ghost-btn";
+            hintBtn.textContent = "Hint";
+            actionRow.appendChild(hintBtn);
+          }
+
+          const feedback = document.createElement("div");
+          feedback.className = "feedback";
+          const hintBox = document.createElement("div");
+          hintBox.className = "hint-box";
+          container.appendChild(actionRow);
+          container.appendChild(feedback);
+          container.appendChild(hintBox);
+          return { actionRow, feedback, hintBox, hintBtn };
+        }
+
+        function setFeedback(el, type, html) {
+          el.className = "feedback show " + type;
+          const icon = type === "correct" ? "✓" : "✗";
+          const label = type === "correct" ? "Correct" : "Not yet";
+          el.innerHTML = "<strong>" + icon + " " + label + ".</strong> " + html;
+        }
+
+        function setupHint(item, hintBtn, hintBox, answerCallback) {
+          if (!hintBtn) return;
+          let hintStage = 0;
+          let revealed = false;
+          hintBtn.addEventListener("click", () => {
+            hintStage += 1;
+            const message =
+              item.hints[Math.min(hintStage - 1, item.hints.length - 1)];
+            hintBox.innerHTML =
+              "<strong>Hint " + hintStage + ".</strong> " + message;
+            hintBox.classList.add("show");
+            if (hintStage >= 3 && !revealed) {
+              revealed = true;
+              answerCallback();
+            }
+          });
+          return () => revealed;
+        }
+
+        function registerSolved(item, wasCorrect) {
+          if (wasCorrect) {
+            state.completedItems.add(item.id);
+          }
+          updateProgress();
+          updateResults();
+        }
+
+        function renderMCQItem(item, allowHint = true) {
+          const card = document.createElement("div");
+          card.className = "item-card";
+          card.innerHTML =
+            '<div class="item-top"><div><p class="question">' +
+            item.prompt +
+            '</p><p class="helper">' +
+            (item.instruction || "Choose one answer, then check it.") +
+            '</p></div><span class="chip">' +
+            subskills[item.subskill].label +
+            "</span></div>";
+
+          const optionsWrap = document.createElement("div");
+          optionsWrap.className = "options";
+          let selected = "";
+          const startedAt = Date.now();
+          item.options.forEach((option) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "option-btn";
+            btn.textContent = option;
+            btn.addEventListener("click", () => {
+              selected = option;
+              [...optionsWrap.children].forEach((child) =>
+                child.classList.remove("selected"),
+              );
+              btn.classList.add("selected");
+            });
+            optionsWrap.appendChild(btn);
+          });
+          card.appendChild(optionsWrap);
+
+          const submitBtn = document.createElement("button");
+          submitBtn.type = "button";
+          submitBtn.className = "submit-btn";
+          submitBtn.textContent = "Check answer";
+          card.appendChild(submitBtn);
+
+          const { feedback, hintBox, hintBtn } = createFeedbackElements(
+            card,
+            allowHint,
+          );
+          let solved = false;
+          let revealedByHint = false;
+          const wasRevealed = setupHint(item, hintBtn, hintBox, () => {
+            revealedByHint = true;
+            hintBox.innerHTML +=
+              '<div class="answer-mark">Answer revealed by request.</div>';
+          });
+
+          submitBtn.addEventListener("click", () => {
+            if (!selected) {
+              setFeedback(
+                feedback,
+                "incorrect",
+                "Choose an option before checking.",
+              );
+              announce("Please choose an answer first.");
+              return;
+            }
+            const correct = selected === item.answer;
+            const quick = Date.now() - startedAt < 8000;
+            updateSubskill(item.subskill, correct, quick);
+            if (!state.firstActionDone) {
+              state.firstActionDone = true;
+              coreRuleRevealEl.classList.add("show");
+            }
+            if (correct) {
+              const recovery = solved ? " You corrected it." : "";
+              setFeedback(
+                feedback,
+                "correct",
+                item.explanation +
+                  recovery +
+                  (revealedByHint || (wasRevealed && wasRevealed())
+                    ? ' <div class="answer-mark">Solved with learner-requested help.</div>'
+                    : ""),
+              );
+              solved = true;
+              registerSolved(item, true);
+              if (item.section === 5) {
+                state.answeredMixedCount += 1;
+                maybeScheduleAdaptive(item);
+                if (item.isReview) removeReviewBase(item.id);
+              }
+              if (item.section === 6) state.finalAnsweredCount += 1;
+              markSectionProgress(item.section, true);
+              announce("Correct.");
+            } else {
+              setFeedback(
+                feedback,
+                "incorrect",
+                item.explanation + " Try again.",
+              );
+              queueReview(item);
+              if (item.section === 5) {
+                state.answeredMixedCount += 1;
+                maybeScheduleAdaptive(item);
+              }
+              if (item.section === 6) state.finalAnsweredCount += 1;
+              registerSolved(item, false);
+              announce("Not correct yet.");
+            }
+            updateResults();
+          });
+          return card;
+        }
+
+        function renderTextItem(item, allowHint = true) {
+          const card = document.createElement("div");
+          card.className = "item-card";
+          card.innerHTML =
+            '<div class="item-top"><div><p class="question">' +
+            item.prompt +
+            '</p><p class="helper">Type your answer, then check it.</p></div><span class="chip">' +
+            subskills[item.subskill].label +
+            "</span></div>";
+          const row = document.createElement("div");
+          row.className = "input-row";
+          const input = document.createElement("input");
+          input.type = "text";
+          input.className = "text-input";
+          input.placeholder = item.placeholder || "Type your answer";
+          const submitBtn = document.createElement("button");
+          submitBtn.type = "button";
+          submitBtn.className = "submit-btn";
+          submitBtn.textContent = "Check answer";
+          row.appendChild(input);
+          row.appendChild(submitBtn);
+          card.appendChild(row);
+
+          const { feedback, hintBox, hintBtn } = createFeedbackElements(
+            card,
+            allowHint,
+          );
+          const startedAt = Date.now();
+          let revealedByHint = false;
+          const wasRevealed = setupHint(item, hintBtn, hintBox, () => {
+            revealedByHint = true;
+            hintBox.innerHTML +=
+              '<div class="answer-mark">Correct answer: ' +
+              item.answer +
+              "</div>";
+          });
+
+          submitBtn.addEventListener("click", () => {
+            const value = input.value.trim();
+            if (!value) {
+              setFeedback(
+                feedback,
+                "incorrect",
+                "Type an answer before checking.",
+              );
+              announce("Please type an answer first.");
+              return;
+            }
+            const correct = normalize(value) === normalize(item.answer);
+            const quick = Date.now() - startedAt < 10000;
+            updateSubskill(item.subskill, correct, quick);
+            if (!state.firstActionDone) {
+              state.firstActionDone = true;
+              coreRuleRevealEl.classList.add("show");
+            }
+            if (correct) {
+              setFeedback(
+                feedback,
+                "correct",
+                item.explanation +
+                  (revealedByHint || (wasRevealed && wasRevealed())
+                    ? ' <div class="answer-mark">Solved with learner-requested help.</div>'
+                    : ""),
+              );
+              registerSolved(item, true);
+              if (item.section === 5) {
+                state.answeredMixedCount += 1;
+                maybeScheduleAdaptive(item);
+                if (item.isReview) removeReviewBase(item.id);
+              }
+              if (item.section === 6) state.finalAnsweredCount += 1;
+              markSectionProgress(item.section, true);
+              announce("Correct.");
+            } else {
+              setFeedback(
+                feedback,
+                "incorrect",
+                item.explanation + " Try again.",
+              );
+              queueReview(item);
+              if (item.section === 5) {
+                state.answeredMixedCount += 1;
+                maybeScheduleAdaptive(item);
+              }
+              if (item.section === 6) state.finalAnsweredCount += 1;
+              registerSolved(item, false);
+              announce("Not correct yet.");
+            }
+            updateResults();
+          });
+          return card;
+        }
+
+        function renderCategorizeItem(item, allowHint = true) {
+          const card = document.createElement("div");
+          card.className = "item-card";
+          card.innerHTML =
+            '<div class="item-top"><div><p class="question">' +
+            item.prompt +
+            '</p><p class="helper">Choose a category for each word, then check.</p></div><span class="chip">' +
+            subskills[item.subskill].label +
+            "</span></div>";
+          const list = document.createElement("div");
+          list.className = "practice-list";
+          const answers = {};
+          item.tokens.forEach((token, index) => {
+            const row = document.createElement("div");
+            row.className = "input-row";
+            const label = document.createElement("label");
+            label.textContent = token.text;
+            label.style.minWidth = "110px";
+            const select = document.createElement("select");
+            select.className = "select-input";
+            select.innerHTML =
+              '<option value="">Choose a category</option>' +
+              item.categories
+                .map(
+                  (cat) => '<option value="' + cat + '">' + cat + "</option>",
+                )
+                .join("");
+            select.addEventListener("change", () => {
+              answers[index] = select.value;
+            });
+            row.appendChild(label);
+            row.appendChild(select);
+            list.appendChild(row);
+          });
+          card.appendChild(list);
+          const submitBtn = document.createElement("button");
+          submitBtn.type = "button";
+          submitBtn.className = "submit-btn";
+          submitBtn.textContent = "Check answer";
+          card.appendChild(submitBtn);
+
+          const { feedback, hintBox, hintBtn } = createFeedbackElements(
+            card,
+            allowHint,
+          );
+          const startedAt = Date.now();
+          let revealedByHint = false;
+          const wasRevealed = setupHint(item, hintBtn, hintBox, () => {
+            revealedByHint = true;
+            hintBox.innerHTML +=
+              '<div class="answer-mark">Answer revealed by request.</div>';
+          });
+
+          submitBtn.addEventListener("click", () => {
+            const allChosen = item.tokens.every((_, index) => answers[index]);
+            if (!allChosen) {
+              setFeedback(
+                feedback,
+                "incorrect",
+                "Choose a category for every word first.",
+              );
+              announce("Please finish all categories first.");
+              return;
+            }
+            const correct = item.tokens.every(
+              (token, index) => answers[index] === token.group,
+            );
+            const quick = Date.now() - startedAt < 12000;
+            updateSubskill(item.subskill, correct, quick);
+            if (!state.firstActionDone) {
+              state.firstActionDone = true;
+              coreRuleRevealEl.classList.add("show");
+            }
+            if (correct) {
+              setFeedback(
+                feedback,
+                "correct",
+                item.explanation +
+                  (revealedByHint || (wasRevealed && wasRevealed())
+                    ? ' <div class="answer-mark">Solved with learner-requested help.</div>'
+                    : ""),
+              );
+              registerSolved(item, true);
+              markSectionProgress(item.section, true);
+              announce("Correct.");
+            } else {
+              setFeedback(
+                feedback,
+                "incorrect",
+                item.explanation + " Try again.",
+              );
+              registerSolved(item, false);
+              announce("Not correct yet.");
+            }
+            updateResults();
+          });
+          return card;
+        }
+
+        function renderItem(item, allowHint = true) {
+          if (item.type === "mcq") return renderMCQItem(item, allowHint);
+          if (item.type === "text") return renderTextItem(item, allowHint);
+          if (item.type === "categorize")
+            return renderCategorizeItem(item, allowHint);
+          return document.createElement("div");
+        }
+
+        function renderStaticSection(container, items, allowHint = true) {
+          container.innerHTML = "";
+          items.forEach((item) =>
+            container.appendChild(renderItem(item, allowHint)),
+          );
+        }
+
+        function renderMixedPractice() {
+          mixedPracticeEl.innerHTML = "";
+          adaptiveMessageEl.classList.remove("show");
+          adaptiveMessageEl.textContent = "";
+          const nextItems = getNextMixedItems();
+          state.mixedRenderedIds = nextItems.map((item) => item.id);
+          nextItems.forEach((item) =>
+            mixedPracticeEl.appendChild(renderItem(item, true)),
+          );
+          const loadMoreBtn = document.createElement("button");
+          loadMoreBtn.type = "button";
+          loadMoreBtn.className = "action-btn";
+          loadMoreBtn.textContent = "Load more mixed practice";
+          loadMoreBtn.addEventListener("click", renderMixedPractice);
+          mixedPracticeEl.appendChild(loadMoreBtn);
+        }
+
+        function getWeakestSkill() {
+          const entries = Object.entries(subskills).map(([key, value]) => {
+            const score = value.attempts ? value.correct / value.attempts : 0;
+            return { key, label: value.label, score };
+          });
+          entries.sort((a, b) => a.score - b.score);
+          return entries[0];
+        }
+
+        function reviewAdvice(key) {
+          if (key === "causeVsFeeling")
+            return "Review one question: is the noun causing the feeling, or experiencing it?";
+          if (key === "adjectiveOrder")
+            return "Review the order: opinion before fact, then size, age, colour, origin, material.";
+          if (key === "errorCorrection")
+            return "When correcting, identify exactly which word is wrong before changing the whole sentence.";
+          if (key === "adjectiveAfterBe")
+            return "Review which verbs behave like linking verbs: be, seem, become, look, feel, sound, taste, smell.";
+          return "Review the fixed time expressions from Unit 99 such as the first two days and the next few weeks.";
+        }
+
+        function updateResults() {
+          const totalCompleted = state.completedItems.size;
+          const weakest = getWeakestSkill();
+          const bars = Object.entries(subskills)
+            .map(([key, value]) => {
+              const percent = value.attempts
+                ? Math.round((value.correct / value.attempts) * 100)
+                : 0;
+              return (
+                '<div class="bar-row"><div><strong>' +
+                value.label +
+                '</strong></div><div class="bar-track"><div class="bar-fill" style="width:' +
+                percent +
+                '%"></div></div><div>' +
+                percent +
+                "%</div></div>"
+              );
+            })
+            .join("");
+          resultsPanelEl.innerHTML =
+            "" +
+            '<div class="example-box"><p><strong>Items completed:</strong> ' +
+            totalCompleted +
+            '</p><p class="muted">Correct answers increase mastery; wrong answers still teach and can reappear for review.</p></div>' +
+            '<div class="example-box"><h3>Your mastery by sub-skill</h3><div class="subskill-bars">' +
+            bars +
+            "</div></div>" +
+            '<div class="example-box"><h3>Weakest area right now</h3><p><strong>' +
+            weakest.label +
+            '</strong></p><p class="muted">' +
+            reviewAdvice(weakest.key) +
+            "</p></div>" +
+            '<div class="example-box"><h3>Quick reminder from Unit 99</h3><details><summary>Adjective order guide</summary><p>Opinion adjectives usually go before fact adjectives. A common fact-adjective order is size, age, colour, origin, material.</p></details><details><summary>Adjectives after linking verbs</summary><p>Use adjectives after <em>be, get, become, seem, look, feel, sound, taste, smell</em>: <em>You look tired. The tea tastes strange.</em></p></details></div>';
+
+          const restartBtn = document.createElement("button");
+          restartBtn.type = "button";
+          restartBtn.className = "action-btn";
+          restartBtn.textContent = "Restart lesson";
+          restartBtn.addEventListener("click", () => window.location.reload());
+          resultsPanelEl.appendChild(restartBtn);
+        }
+
+        function initSectionReveal() {
+          const sections = document.querySelectorAll(".section");
+          if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            sections.forEach((section) => section.classList.add("visible"));
+            return;
+          }
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add("visible");
+                }
+              });
+            },
+            { threshold: 0.12 },
+          );
+          sections.forEach((section) => observer.observe(section));
+        }
+
+        function init() {
+          renderStaticSection(immediateStartEl, lessonSets.immediate, true);
+          renderStaticSection(decisionPracticeEl, lessonSets.decision, true);
+          renderStaticSection(contrastPracticeEl, lessonSets.contrasts, true);
+          renderStaticSection(mistakePracticeEl, lessonSets.mistakes, true);
+          renderMixedPractice();
+          renderStaticSection(finalQuizEl, lessonSets.finalQuiz, false);
+          updateResults();
+          updateProgress();
+          initSectionReveal();
+        }
+
+        init();
+      })();
+    </script>
+  </body>
+</html>

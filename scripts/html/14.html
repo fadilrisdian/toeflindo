@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Present Perfect vs Past Simple & Past Perfect</title>
+<style>
+:root{
+--color-bg:#f6f7f8;
+--color-surface:#ffffff;
+--color-surface-alt:#eaf5f3;
+--color-header-from:#2c7873;
+--color-header-to:#173f3b;
+--color-primary:#2a7a7a;
+--color-primary-dark:#1f5f59;
+--color-accent:#2c7873;
+--color-text:#1f2937;
+--color-text-muted:#6b7280;
+--color-text-faint:#9ca3af;
+--color-border:#e6e8eb;
+--color-success:#16a34a;
+--color-success-bg:#e7f7ec;
+--color-error:#dc2626;
+--color-error-bg:#fdeaea;
+--color-warning:#b45309;
+--color-warning-bg:#fef3e2;
+--shadow-soft:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.05);
+--radius-lg:14px;
+--radius-md:9px;
+--radius-sm:6px;
+}
+html{font-size:16px;background:var(--color-bg);color:var(--color-text);font-family:system-ui,sans-serif;}
+body{margin:0;padding:0;}
+header{
+position:sticky;top:0;z-index:10;
+background:linear-gradient(135deg,var(--color-header-from),var(--color-header-to));
+color:#fff;padding:16px 24px;
+box-shadow:var(--shadow-soft);
+}
+header h1{margin:0;font-size:1.5rem;font-weight:600;}
+header p{margin:4px 0 0;font-size:0.9rem;color:#e0e0e0;}
+.progress{height:4px;background:#e6e8eb;margin-top:12px;border-radius:2px;overflow:hidden;}
+.progress .fill{height:100%;background:var(--color-primary);width:0%;transition:width .3s;}
+main{max-width:900px;margin:auto;padding:24px 12px;}
+section{margin-bottom:32px;}
+.card{
+background:var(--color-surface);
+border:1px solid var(--color-border);
+border-radius:var(--radius-lg);
+box-shadow:var(--shadow-soft);
+padding:20px;
+margin-bottom:20px;
+}
+.card h2{margin-top:0;color:var(--color-text);}
+button{
+background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));
+color:#fff;border:none;border-radius:8px;padding:8px 12px;
+font-weight:600;cursor:pointer;margin:4px 0;
+}
+button:focus{outline:2px solid var(--color-primary);}
+button.secondary{
+background:none;color:var(--color-accent);border:1px solid var(--color-accent);
+}
+.choice{display:block;width:100%;text-align:left;background:#f9fafb;color:var(--color-text);}
+.choice.selected{background:#e0f2f1;}
+.feedback{margin-top:12px;padding:12px;border-left:4px solid transparent;border-radius:var(--radius-sm);}
+.feedback.correct{border-color:var(--color-success);background:var(--color-success-bg);color:var(--color-success);}
+.feedback.incorrect{border-color:var(--color-error);background:var(--color-error-bg);color:var(--color-error);}
+.hint{background:var(--color-surface-alt);border-left:4px solid var(--color-accent);margin-top:12px;padding:12px;border-radius:var(--radius-sm);}
+.hidden{display:none;}
+@media (prefers-reduced-motion: reduce){
+*{transition:none!important;}
+}
+</style>
+</head>
+<body>
+<header>
+<h1>Present Perfect vs Past Simple & Past Perfect</h1>
+<p class="subtitle">Practice the differences through active tasks</p>
+<div class="progress"><div class="fill" id="progressFill"></div></div>
+</header>
+<main>
+<section id="sec1" class="section">
+<div class="card">
+<h2>1. Quick Start</h2>
+<p>Fill in the blank (choose the correct sentence).</p>
+<div class="question" data-id="q1" data-subskill="present-perfect" data-type="mc">
+<p>_____ (you / ever / be) to Paris?</p>
+<div class="options">
+<button class="choice" data-value="Have you ever been to Paris?">Have you ever been to Paris?</button>
+<button class="choice" data-value="Did you ever be to Paris?">Did you ever be to Paris?</button>
+</div>
+<button class="submit">Submit</button>
+<button class="hint">Hint</button>
+<div class="feedback" aria-live="polite"></div>
+</div>
+</div>
+<div class="card hidden" id="coreRule">
+<h3>Core Rule</h3>
+<p>Use the <strong>present perfect</strong> (have/has + past participle) for actions that have relevance to the present, experiences, or actions that occurred in an unfinished time period (e.g., <em>this week, ever, already</em>). Use the <strong>past simple</strong> for actions that happened at a specific finished time in the past (e.g., <em>yesterday, last week, 1999</em>). The <strong>past perfect</strong> (had + past participle) describes an action that happened before another past event.</p>
+</div>
+</section>
+
+<section id="sec2" class="section">
+<div class="card">
+<h2>2. Decision Model</h2>
+<p>When you see a time expression, decide which tense to use.</p>
+<ul>
+<li>If the time is <strong>unspecified, up to now, or includes the present</strong> → <strong>Present Perfect</strong></li>
+<li>If the time is <strong>specific and finished</strong> → <strong>Past Simple</strong></li>
+<li>If you are talking about an event that happened <strong>before another past event</strong> → <strong>Past Perfect</strong></li>
+</ul>
+</div>
+</section>
+
+<section id="sec3" class="section">
+<div class="card">
+<h2>3. Quick Contrasts</h2>
+<div class="question" data-id="c1" data-subskill="present-perfect" data-type="mc">
+<p>Choose the correct form.</p>
+<p>_____ (I / not / eat) any fruit today.</p>
+<div class="options">
+<button class="choice" data-value="I haven't eaten any fruit today.">I haven't eaten any fruit today.</button>
+<button class="choice" data-value="I didn't eat any fruit today.">I didn't eat any fruit today.</button>
+</div>
+<button class="submit">Submit</button>
+<button class="hint">Hint</button>
+<div class="feedback" aria-live="polite"></div>
+</div>
+<div class="question" data-id="c2" data-subskill="past-simple" data-type="mc">
+<p>_____ (She / go) to the cinema last night.</p>
+<div class="options">
+<button class="choice" data-value="She went to the cinema last night.">She went to the cinema last night.</button>
+<button class="choice" data-value="She has gone to the cinema last night.">She has gone to the cinema last night.</button>
+</div>
+<button class="submit">Submit</button>
+<button class="hint">Hint</button>
+<div class="feedback" aria-live="polite"></div>
+</div>
+<div class="question" data-id="c3" data-subskill="past-perfect" data-type="mc">
+<p>When Sarah arrived, Paul _____ (already / leave).</p>
+<div class="options">
+<button class="choice" data-value="had already left">had already left</button>
+<button class="choice" data-value="already left">already left</button>
+</div>
+<button class="submit">Submit</button>
+<button class="hint">Hint</button>
+<div class="feedback" aria-live="polite"></div>
+</div>
+</div>
+</section>
+
+<section id="sec4" class="section">
+<div class="card">
+<h2>4. Common Mistakes – Fix the Sentence</h2>
+<div class="question" data-id="m1" data-subskill="past-simple" data-type="fix">
+<p>Incorrect: <em>I have ate breakfast yesterday.</em></p>
+<p>Rewrite correctly:</p>
+<input type="text" placeholder="Your sentence" class="answer">
+<button class="submit">Submit</button>
+<button class="hint">Hint</button>
+<div class="feedback" aria-live="polite"></div>
+</div>
+<div class="question" data-id="m2" data-subskill="present-perfect" data-type="fix">
+<p>Incorrect: <em>She didn't see that movie yet.</em></p>
+<p>Rewrite correctly:</p>
+<input type="text" placeholder="Your sentence" class="answer">
+<button class="submit">Submit</button>
+<button class="hint">Hint</button>
+<div class="feedback" aria-live="polite"></div>
+</div>
+</div>
+</section>
+
+<section id="sec5" class="section">
+<div class="card">
+<h2>5. Mixed Practice</h2>
+<div id="practiceContainer"></div>
+</div>
+</section>
+
+<section id="sec6" class="section">
+<div class="card">
+<h2>6. Final Quiz (no hints)</h2>
+<div id="quizContainer"></div>
+</div>
+</section>
+
+<section id="sec7" class="section">
+<div class="card">
+<h2>7. Results</h2>
+<div id="results"></div>
+<button id="restartBtn">Restart Lesson</button>
+</div>
+</section>
+</main>
+<script>
+(()=>{
+
+const state={
+items:[],
+currentIdx:0,
+reviewQueue:[],
+mastery:{},
+streaks:{},
+totalItems:0,
+completed:0,
+hintStages:{},
+};
+
+const coreRule=document.getElementById('coreRule');
+const progressFill=document.getElementById('progressFill');
+const practiceContainer=document.getElementById('practiceContainer');
+const quizContainer=document.getElementById('quizContainer');
+const resultsDiv=document.getElementById('results');
+const restartBtn=document.getElementById('restartBtn');
+
+function init(){
+setupItems();
+renderPracticeItem();
+renderQuiz();
+setupSectionObserver();
+}
+function setupItems(){
+const practiceItems=[
+{ id:'p1', sub:'present-perfect', type:'mc',
+question:'_____ (you / ever / visit) New York?', options:['Have you ever visited New York?','Did you ever visit New York?'], answer:'Have you ever visited New York?' , difficulty:'hard'},
+{ id:'p2', sub:'past-simple', type:'mc',
+question:'_____ (they / finish) the project last month?', options:['They finished the project last month.','They have finished the project last month.'], answer:'They finished the project last month.', difficulty:'hard'},
+{ id:'p3', sub:'negative', type:'mc',
+question:'_____ (he / not / see) the email yet?', options:['He hasn\'t seen the email yet.','He didn\'t see the email yet.'], answer:'He hasn\'t seen the email yet.', difficulty:'hard'},
+{ id:'p4', sub:'question', type:'mc',
+question:'_____ (you / already / eat) dinner?', options:['Have you already eaten dinner?','Did you already eat dinner?'], answer:'Have you already eaten dinner?', difficulty:'hard'},
+{ id:'p5', sub:'past-perfect', type:'mc',
+question:'When I arrived, the train _____ (already / leave).', options:['had already left','already left'], answer:'had already left', difficulty:'hard'},
+];
+state.items=practiceItems;
+state.totalItems=practiceItems.length;
+practiceItems.forEach(it=>{state.mastery[it.sub]={correct:0,total:0};state.streaks[it.sub]={correct:0,wrong:0};});
+}
+function renderPracticeItem(){
+if(state.currentIdx>=state.items.length){
+practiceContainer.innerHTML='<p>All practice done.</p>';
+return;
+}
+const it=state.items[state.currentIdx];
+const div=document.createElement('div');
+div.className='question';
+div.dataset.id=it.id;
+div.dataset.subskill=it.sub;
+div.dataset.type=it.type;
+let html=`<p>${it.question}</p>`;
+if(it.type==='mc'){
+html+=`<div class="options">`;
+it.options.forEach(opt=>{html+=`<button class="choice" data-value="${opt}">${opt}</button>`;});
+html+=`</div>`;
+}else if(it.type==='fix'){
+html+=`<input type="text" class="answer" placeholder="Your sentence">`;
+}
+html+=`<button class="submit">Submit</button>`;
+if(it.sub!=='final'){
+html+=`<button class="hint">Hint</button>`;
+}
+html+=`<div class="feedback" aria-live="polite"></div>`;
+div.innerHTML=html;
+practiceContainer.innerHTML='';
+practiceContainer.appendChild(div);
+attachHandlers(div);
+}
+function attachHandlers(card){
+card.querySelectorAll('.choice').forEach(btn=>{
+btn.addEventListener('click',()=>{card.querySelectorAll('.choice').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');});
+});
+card.querySelector('.submit').addEventListener('click',()=>handleSubmit(card));
+const hintBtn=card.querySelector('.hint');
+if(hintBtn){
+hintBtn.addEventListener('click',()=>handleHint(card));
+}
+}
+function handleSubmit(card){
+const id=card.dataset.id;
+const it=state.items.find(i=>i.id===id);
+let userAns='';
+if(it.type==='mc'){
+const sel=card.querySelector('.choice.selected');
+if(!sel){showFeedback(card,'Please select an answer.',false,true);return;}
+userAns=sel.dataset.value;
+}else if(it.type==='fix'){
+userAns=card.querySelector('.answer').value.trim();
+if(!userAns){showFeedback(card,'Please type your answer.',false,true);return;}
+}
+const correct=it.answer.trim().toLowerCase();
+const isCorrect=userAns.trim().toLowerCase()===correct;
+updateMastery(it.sub,isCorrect);
+updateStreak(it.sub,isCorrect);
+showFeedback(card,isCorrect?`Correct! ${isCorrect?'✓':''}`:`Incorrect. ${explain(it.sub)}`,isCorrect,false);
+state.completed++;
+updateProgress();
+if(!isCorrect){
+state.reviewQueue.push(it);
+}
+setTimeout(()=>{state.currentIdx++;renderPracticeItem();},800);
+}
+function explain(sub){
+if(sub==='present-perfect')return 'Use present perfect for actions with present relevance or unspecific past time.';
+if(sub==='past-simple')return 'Use past simple for finished past actions with a specific time.';
+if(sub==='past-perfect')return 'Use past perfect (had + past participle) for an action that happened before another past event.';
+if(sub==='negative')return 'Remember to use “haven’t/hasn’t” with present perfect negatives.';
+if(sub==='question')return 'Form questions with “Have/Has + subject + past participle”.';
+return '';
+}
+function showFeedback(card,msg,correct,needFocus){
+const fb=card.querySelector('.feedback');
+fb.textContent=msg;
+fb.className='feedback '+(correct?'correct':'incorrect');
+if(needFocus)fb.focus();
+}
+function handleHint(card){
+const id=card.dataset.id;
+if(!state.hintStages[id])state.hintStages[id]=0;
+state.hintStages[id]++;
+const stage=state.hintStages[id];
+let hintText='';
+if(stage===1)hintText='Think about whether the time expression includes the present.';
+else if(stage===2)hintText='Remember: have/has + past participle for present perfect.';
+else if(stage===3){
+hintText='Answer: '+state.items.find(i=>i.id===id).answer;
+}
+let hintDiv=card.querySelector('.hintPanel');
+if(!hintDiv){
+hintDiv=document.createElement('div');
+hintDiv.className='hint';
+card.appendChild(hintDiv);
+}
+hintDiv.textContent=hintText;
+}
+function updateMastery(sub,correct){
+state.mastery[sub].total++;
+if(correct)state.mastery[sub].correct++;
+}
+function updateStreak(sub,correct){
+if(correct){
+state.streaks[sub].correct++;
+state.streaks[sub].wrong=0;
+if(state.streaks[sub].correct===2){
+state.streaks[sub].correct=0;
+showAdaptMessage('skip',sub);
+}
+}else{
+state.streaks[sub].wrong++;
+state.streaks[sub].correct=0;
+if(state.streaks[sub].wrong===2){
+state.streaks[sub].wrong=0;
+showAdaptMessage('easy',sub);
+}
+}
+}
+function showAdaptMessage(type,sub){
+const msg=type==='easy'?
+`Let’s try a simpler question on ${sub.replace('-',' ')}.`:
+`Great! Skipping a easier item on ${sub.replace('-',' ')}.`;
+const note=document.createElement('div');
+note.className='hint';
+note.textContent=msg;
+practiceContainer.appendChild(note);
+setTimeout(()=>note.remove(),3000);
+}
+function updateProgress(){
+const pct=Math.round(state.completed/state.totalItems*100);
+progressFill.style.width=pct+'%';
+}
+function renderQuiz(){
+const quizItems=[
+{ id:'qz1', sub:'present-perfect', type:'mc',
+question:'_____ (we / just / finish) the report.', options:['We have just finished the report.','We just finished the report.'], answer:'We have just finished the report.'},
+{ id:'qz2', sub:'past-simple', type:'mc',
+question:'_____ (he / break) his leg last year.', options:['He broke his leg last year.','He has broken his leg last year.'], answer:'He broke his leg last year.'},
+{ id:'qz3', sub:'past-perfect', type:'mc',
+question:'When they arrived, the show _____ (already / start).', options:['had already started','already started'], answer:'had already started'},
+{ id:'qz4', sub:'negative', type:'mc',
+question:'_____ (I / not / see) that movie yet.', options:['I haven\'t seen that movie yet.','I didn\'t see that movie yet.'], answer:'I haven\'t seen that movie yet.'},
+{ id:'qz5', sub:'question', type:'mc',
+question:'_____ (she / ever / travel) abroad?', options:['Has she ever traveled abroad?','Did she ever travel abroad?'], answer:'Has she ever traveled abroad?'},
+{ id:'qz6', sub:'past-simple', type:'mc',
+question:'_____ (they / move) to Canada in 2010.', options:['They moved to Canada in 2010.','They have moved to Canada in 2010.'], answer:'They moved to Canada in 2010.'},
+];
+quizContainer.innerHTML='';
+quizItems.forEach(it=>{
+const div=document.createElement('div');
+div.className='question';
+div.dataset.id=it.id;
+div.dataset.subskill=it.sub;
+div.dataset.type=it.type;
+let html=`<p>${it.question}</p>`;
+html+=`<div class="options">`;
+it.options.forEach(opt=>{html+=`<button class="choice" data-value="${opt}">${opt}</button>`;});
+html+=`</div>`;
+html+=`<button class="submit">Submit</button>`;
+html+=`<div class="feedback" aria-live="polite"></div>`;
+div.innerHTML=html;
+quizContainer.appendChild(div);
+attachQuizHandlers(div,it);
+});
+}
+function attachQuizHandlers(card,it){
+card.querySelectorAll('.choice').forEach(btn=>{
+btn.addEventListener('click',()=>{card.querySelectorAll('.choice').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');});
+});
+card.querySelector('.submit').addEventListener('click',()=>{
+const sel=card.querySelector('.choice.selected');
+if(!sel){showFeedback(card,'Please select an answer.',false,true);return;}
+const user=sel.dataset.value.trim().toLowerCase();
+const correct=it.answer.trim().toLowerCase();
+const isCorrect=user===correct;
+showFeedback(card,isCorrect?'Correct!':'Incorrect. '+explain(it.sub),isCorrect,false);
+});
+}
+function showResults(){
+let html='<h3>Performance</h3><ul>';
+for(const sub in state.mastery){
+const data=state.mastery[sub];
+const pct=data.total?Math.round(data.correct/data.total*100):0;
+html+=`<li>${sub.replace('-',' ')}: ${data.correct}/${data.total} (${pct}%)</li>`;
+}
+html+='</ul>';
+let weakest='';
+let low=101;
+for(const sub in state.mastery){
+const data=state.mastery[sub];
+if(data.total){
+const pct=Math.round(data.correct/data.total*100);
+if(pct<low){low=pct;weakest=sub;}
+}
+}
+if(weakest){
+html+=`<p>Review: You may want to practice more on <strong>${weakest.replace('-',' ')}</strong>.</p>`;
+}
+resultsDiv.innerHTML=html;
+}
+restartBtn.addEventListener('click',()=>location.reload());
+
+function setupSectionObserver(){
+const sections=document.querySelectorAll('.section');
+const observer=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');}});},{threshold:0.1});
+sections.forEach(s=>observer.observe(s));
+}
+init();
+})();
+</script>
+</body>
+</html>

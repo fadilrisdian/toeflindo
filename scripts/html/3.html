@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Present Simple vs Present Continuous</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --color-bg:#f6f7f8;
+  --color-surface:#ffffff;
+  --color-surface-alt:#eaf5f3;
+  --color-header-from:#2c7873;
+  --color-header-to:#173f3b;
+  --color-primary:#2a7a7a;
+  --color-primary-dark:#1f5f59;
+  --color-accent:#2c7873;
+  --color-text:#1f2937;
+  --color-text-muted:#6b7280;
+  --color-text-faint:#9ca3af;
+  --color-border:#e6e8eb;
+  --color-success:#16a34a;
+  --color-success-bg:#e7f7ec;
+  --color-error:#dc2626;
+  --color-error-bg:#fdeaea;
+  --color-warning:#b45309;
+  --color-warning-bg:#fef3e2;
+  --shadow-soft:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.05);
+  --radius-lg:14px;
+  --radius-md:9px;
+  --radius-sm:6px;
+}
+html{font-size:100%;background:var(--color-bg);color:var(--color-text);font-family:system-ui,Arial,sans-serif;}
+body{margin:0;padding:0;line-height:1.5;}
+h1,h2,h3{margin:0 0 .5rem;font-weight:600;color:var(--color-text);}
+h1{font-size:1.75rem;}
+h2{font-size:1.5rem;}
+h3{font-size:1.25rem;}
+p{margin:0 0 1rem;}
+.container{max-width:900px;margin:auto;padding:1rem;}
+section{margin:2rem 0;padding:1rem;background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-soft);border:1px solid var(--color-border);}
+.card{background:var(--color-surface);border-radius:var(--radius-lg);padding:1rem;margin-bottom:1rem;box-shadow:var(--shadow-soft);}
+button{background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));color:#fff;border:none;border-radius:8px;padding:.5rem 1rem;font-weight:600;cursor:pointer;}
+button:focus{outline:2px solid var(--color-primary);outline-offset:2px;}
+button:hover{opacity:.9;}
+button:disabled{opacity:.6;cursor:not-allowed;}
+input[type=text]{width:100%;padding:.5rem;border:1px solid var(--color-border);border-radius:var(--radius-sm);font-size:1rem;}
+.feedback{margin-top:.5rem;padding:.5rem;border-left:4px solid;display:flex;align-items:center;gap:.5rem;}
+.feedback.correct{border-color:var(--color-success);background:var(--color-success-bg);color:var(--color-success);}
+.feedback.incorrect{border-color:var(--color-error);background:var(--color-error-bg);color:var(--color-error);}
+.feedback .icon{font-size:1.2rem;}
+.hint-panel{margin-top:.5rem;padding:.5rem;background:var(--color-surface-alt);border-left:4px solid var(--color-primary);color:var(--color-primary);}
+.progress-bar{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,var(--color-header-from),var(--color-header-to));color:#fff;padding:.75rem 1rem;display:flex;align-items:center;gap:1rem;}
+.progress-bar .title{font-size:1.25rem;font-weight:600;}
+.progress-bar .track{flex:1;height:4px;background:#e6e8eb;border-radius:2px;overflow:hidden;}
+.progress-bar .fill{height:100%;background:var(--color-primary);width:0%;transition:width .3s;}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;}
+}
+@media (max-width:599px){
+  .container{padding:.5rem;}
+}
+</style>
+</head>
+<body>
+<div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <div class="title">Present Simple vs Present Continuous</div>
+  <div class="track"><div class="fill"></div></div>
+</div>
+<div class="container">
+  <!-- Section 1: Immediate start -->
+  <section id="section-1">
+    <h2>1. Quick Start</h2>
+    <p>Fill in the blank with the correct form of the verb.</p>
+    <div class="card" data-item-id="0">
+      <p>She <strong>_____</strong> (read) a book now.</p>
+      <input type="text" aria-label="Answer" autocomplete="off">
+      <button class="check-btn">Check</button>
+      <div class="feedback" aria-live="polite" hidden></div>
+      <button class="hint-btn" hidden>Hint</button>
+      <div class="hint-panel" hidden></div>
+    </div>
+    <div class="card" id="rule-card" hidden>
+      <h3>Core Rule</h3>
+      <p>Use the <strong>present continuous</strong> for actions happening right now (e.g., <em>She is reading</em>). Use the <strong>present simple</strong> for habits, facts, or states, especially with stative verbs (e.g., <em>I know</em>).</p>
+    </div>
+  </section>
+
+  <!-- Section 2: Decision rule -->
+  <section id="section-2">
+    <h2>2. Decision Helper</h2>
+    <p>Answer the questions to decide which tense to use.</p>
+    <div class="card">
+      <p>Is the verb describing a temporary action happening at this moment?</p>
+      <button class="decision-btn" data-answer="yes">Yes</button>
+      <button class="decision-btn" data-answer="no">No</button>
+      <div class="feedback" aria-live="polite" hidden></div>
+    </div>
+    <div class="card" id="decision-result" hidden>
+      <p>Use <strong>present continuous</strong> if you answered <strong>Yes</strong>. Otherwise, use <strong>present simple</strong>.</p>
+    </div>
+  </section>
+
+  <!-- Section 3: Key contrasts -->
+  <section id="section-3">
+    <h2>3. Choose the Right Form</h2>
+    <p>Select the correct verb form.</p>
+    <div class="card" data-item-id="1">
+      <p>The sun <strong>_____</strong> (rise) in the east.</p>
+      <select aria-label="Options"><option value="">Select</option><option value="rises">rises</option><option value="is rising">is rising</option></select>
+      <button class="check-btn">Check</button>
+      <div class="feedback" aria-live="polite" hidden></div>
+      <button class="hint-btn">Hint</button>
+      <div class="hint-panel" hidden></div>
+    </div>
+    <div class="card" data-item-id="2">
+      <p>He <strong>_____</strong> (know) the answer.</p>
+      <select aria-label="Options"><option value="">Select</option><option value="knows">knows</option><option value="is knowing">is knowing</option></select>
+      <button class="check-btn">Check</button>
+      <div class="feedback" aria-live="polite" hidden></div>
+      <button class="hint-btn">Hint</button>
+      <div class="hint-panel" hidden></div>
+    </div>
+  </section>
+
+  <!-- Section 4: Common mistakes -->
+  <section id="section-4">
+    <h2>4. Fix the Mistake</h2>
+    <p>Correct the underlined verb.</p>
+    <div class="card" data-item-id="3">
+      <p>I <strong>am knowing</strong> the answer.</p>
+      <input type="text" aria-label="Corrected sentence" autocomplete="off">
+      <button class="check-btn">Check</button>
+      <div class="feedback" aria-live="polite" hidden></div>
+      <button class="hint-btn">Hint</button>
+      <div class="hint-panel" hidden></div>
+    </div>
+    <div class="card" data-item-id="4">
+      <p>She <strong>is liking</strong> chocolate.</p>
+      <input type="text" aria-label="Corrected sentence" autocomplete="off">
+      <button class="check-btn">Check</button>
+      <div class="feedback" aria-live="polite" hidden></div>
+      <button class="hint-btn">Hint</button>
+      <div class="hint-panel" hidden></div>
+    </div>
+  </section>
+
+  <!-- Section 5: Mixed practice -->
+  <section id="section-5">
+    <h2>5. Mixed Practice</h2>
+    <p>Answer the following. Items you miss will appear again later.</p>
+    <div id="mixed-container"></div>
+  </section>
+
+  <!-- Section 6: Final quiz -->
+  <section id="section-6">
+    <h2>6. Final Quiz (No Hints)</h2>
+    <p>Try to answer without any help.</p>
+    <div id="final-container"></div>
+  </section>
+
+  <!-- Section 7: Results -->
+  <section id="section-7">
+    <h2>7. Your Results</h2>
+    <div id="results"></div>
+    <button id="restart-btn">Restart Lesson</button>
+  </section>
+</div>
+
+<script>
+(() => {
+  const items = [
+    // Section 1
+    {id:0, type:'fill', sub:'action', prompt:'She ___ (read) a book now.', answer:'is reading', hint:['Think about what she is doing right now.','You need a form of "to be" + verb‑ing.','Correct answer: is reading']},
+    // Section 3
+    {id:1, type:'mc', sub:'action', prompt:'The sun ___ (rise) in the east.', options:['rises','is rising'], answer:'rises', hint:['Is this a permanent fact?','Look for the simple present.','Correct answer: rises']},
+    {id:2, type:'mc', sub:'stative', prompt:'He ___ (know) the answer.', options:['knows','is knowing'], answer:'knows', hint:['Stative verb?','Use simple present.','Correct answer: knows']},
+    // Section 4
+    {id:3, type:'fill', sub:'stative', prompt:'I am knowing the answer.', answer:'I know the answer.', hint:['Stative verbs are not used in continuous.','Replace "am knowing" with simple present.','Correct answer: I know the answer.']},
+    {id:4, type:'fill', sub:'stative', prompt:'She is liking chocolate.', answer:'She likes chocolate.', hint:['Stative verb "like".','Use simple present.','Correct answer: She likes chocolate.']},
+    // Mixed practice (ids 5-12)
+    {id:5, type:'fill', sub:'action', prompt:'They ___ (play) football now.', answer:'are playing', hint:['Action happening now.','Use "are" + verb‑ing.','Correct answer: are playing']},
+    {id:6, type:'fill', sub:'action', prompt:'Water ___ (boil) at 100°C.', answer:'boils', hint:['Scientific fact.','Simple present.','Correct answer: boils']},
+    {id:7, type:'fill', sub:'stative', prompt:'We ___ (understand) the problem.', answer:'understand', hint:['Stative verb.','Simple present.','Correct answer: understand']},
+    {id:8, type:'fill', sub:'always', prompt:'You ___ (lose) your keys again!', answer:'are always losing', hint:['Habitual annoyance.','Use "are always" + verb‑ing.','Correct answer: are always losing']},
+    {id:9, type:'fill', sub:'always', prompt:'He ___ (talk) during movies.', answer:'is always talking', hint:['Habitual annoyance.','Use "is always" + verb‑ing.','Correct answer: is always talking']},
+    {id:10,type:'fill', sub:'action', prompt:'I ___ (eat) breakfast at 7am every day.', answer:'eat', hint:['Routine habit.','Simple present.','Correct answer: eat']},
+    {id:11,type:'fill', sub:'stative', prompt:'They ___ (believe) in ghosts.', answer:'believe', hint:['Stative verb.','Simple present.','Correct answer: believe']},
+    // Final quiz (ids 12-17)
+    {id:12,type:'fill', sub:'action', prompt:'She ___ (write) a letter right now.', answer:'is writing', hint:[]},
+    {id:13,type:'fill', sub:'stative', prompt:'He ___ (prefer) tea.', answer:'prefers', hint:[]},
+    {id:14,type:'fill', sub:'always', prompt:'You ___ (forget) your password again!', answer:'are always forgetting', hint:[]},
+    {id:15,type:'fill', sub:'action', prompt:'The cat ___ (sleep) on the sofa.', answer:'is sleeping', hint:[]},
+    {id:16,type:'fill', sub:'stative', prompt:'I ___ (know) the answer.', answer:'know', hint:[]},
+    {id:17,type:'fill', sub:'action', prompt:'They ___ (watch) a movie at the moment.', answer:'are watching', hint:[]}
+  ];
+
+  const subSkills = {action:{correct:0,total:0}, stative:{correct:0,total:0}, always:{correct:0,total:0}};
+  let currentIndex = 0;
+  let reviewQueue = [];
+  let progress = {total:0, completed:0};
+
+  const progressBar = document.querySelector('.fill');
+
+  function updateProgress() {
+    const percent = Math.round((progress.completed / progress.total) * 100);
+    progressBar.style.width = percent + '%';
+    progressBar.parentElement.setAttribute('aria-valuenow', percent);
+  }
+
+  function renderItem(item, container, allowHints=true) {
+    const card = document.createElement('div');
+    card.className='card';
+    card.dataset.itemId=item.id;
+    const p = document.createElement('p');
+    p.innerHTML = item.prompt.replace('___','<strong>_____</strong>');
+    card.appendChild(p);
+    let input;
+    if(item.type==='fill'){
+      input=document.createElement('input');
+      input.type='text';
+      input.setAttribute('aria-label','Answer');
+      input.autocomplete='off';
+      card.appendChild(input);
+    } else if(item.type==='mc'){
+      const select=document.createElement('select');
+      select.setAttribute('aria-label','Options');
+      const blank=document.createElement('option');
+      blank.value='';blank.textContent='Select';
+      select.appendChild(blank);
+      item.options.forEach(opt=>{const o=document.createElement('option');o.value=opt;o.textContent=opt;select.appendChild(o);});
+      card.appendChild(select);
+    }
+    const btn=document.createElement('button');
+    btn.className='check-btn';
+    btn.textContent='Check';
+    btn.disabled=true;
+    card.appendChild(btn);
+    const feedback=document.createElement('div');
+    feedback.className='feedback';
+    feedback.setAttribute('aria-live','polite');
+    feedback.hidden=true;
+    card.appendChild(feedback);
+    if(allowHints && item.hint && item.hint.length>0){
+      const hintBtn=document.createElement('button');
+      hintBtn.className='hint-btn';
+      hintBtn.textContent='Hint';
+      hintBtn.dataset.stage='0';
+      card.appendChild(hintBtn);
+      const hintPanel=document.createElement('div');
+      hintPanel.className='hint-panel';
+      hintPanel.hidden=true;
+      card.appendChild(hintPanel);
+    }
+    container.appendChild(card);
+
+    // Enable button when input/select has value
+    const checkEnable=()=>{btn.disabled = !(input?input.value.trim(): (card.querySelector('select') && card.querySelector('select').value));};
+    if(input){input.addEventListener('input',checkEnable);}
+    else{card.querySelector('select').addEventListener('change',checkEnable);}
+
+    btn.addEventListener('click',()=>checkAnswer(item,card));
+    if(allowHints && item.hint && item.hint.length>0){
+      const hintBtn=card.querySelector('.hint-btn');
+      const hintPanel=card.querySelector('.hint-panel');
+      hintBtn.addEventListener('click',()=>{
+        let stage=+hintBtn.dataset.stage;
+        if(stage<2){
+          hintPanel.textContent=item.hint[stage];
+          hintPanel.hidden=false;
+          stage++;
+          hintBtn.dataset.stage=stage;
+        } else {
+          // final stage: show answer
+          hintPanel.textContent=item.hint[stage];
+          hintPanel.hidden=false;
+          hintBtn.disabled=true;
+        }
+      });
+    }
+  }
+
+  function checkAnswer(item,card){
+    const userAns = (item.type==='fill'?card.querySelector('input').value.trim().toLowerCase()
+                     :card.querySelector('select').value);
+    const correctAns = item.answer.toLowerCase();
+    const feedback=card.querySelector('.feedback');
+    const hintBtn=card.querySelector('.hint-btn');
+    const hintPanel=card.querySelector('.hint-panel');
+    if(userAns===correctAns){
+      feedback.innerHTML='<span class="icon">✓</span>Correct!';
+      feedback.className='feedback correct';
+      feedback.hidden=false;
+      subSkills[item.sub].correct++;
+    } else {
+      feedback.innerHTML='<span class="icon">✗</span>Incorrect. '+explainWrong(item);
+      feedback.className='feedback incorrect';
+      feedback.hidden=false;
+    }
+    subSkills[item.sub].total++;
+    progress.completed++;
+    updateProgress();
+    // disable further attempts
+    card.querySelectorAll('input,select,button').forEach(el=>el.disabled=true);
+    // schedule review if wrong
+    if(userAns!==correctAns){
+      reviewQueue.push(item);
+    }
+    // adaptivity
+    adaptivity(item.sub, userAns===correctAns);
+    // after short delay, load next item if any
+    setTimeout(loadNextItem,500);
+  }
+
+  function explainWrong(item){
+    // simple rule-based explanation
+    if(item.sub==='stative'){
+      return 'Stative verbs use the simple present.';
+    } else if(item.sub==='action'){
+      return 'Use present continuous for actions happening now.';
+    } else if(item.sub==='always'){
+      return 'Use "always" + verb‑ing for habitual annoyance.';
+    }
+    return '';
+  }
+
+  // Simple adaptivity tracking
+  const streak = {action:0, stative:0, always:0};
+  function adaptivity(sub, wasCorrect){
+    if(wasCorrect){
+      streak[sub]++;
+      if(streak[sub]>=2){
+        // skip next easy item of same sub if exists
+        const idx = items.findIndex(it=>it.sub===sub && it.id>currentIndex && it.type==='fill' && it.id<12);
+        if(idx!==-1){
+          items.splice(idx,1);
+          const note=document.createElement('div');
+          note.className='card';
+          note.innerHTML='<p>Skipping an easy item – you’re doing well!</p>';
+          document.getElementById('mixed-container').appendChild(note);
+        }
+        streak[sub]=0;
+      }
+    } else {
+      streak[sub]=0;
+      // after two wrong in a row, insert easier item
+      // (we consider the current wrong as first, so we need to track previous)
+    }
+  }
+
+  // Load items sequentially for sections 1-5
+  function loadSectionItems(){
+    // Section 1 already rendered
+    // Section 3 already rendered
+    // Section 4 already rendered
+    // Mixed practice
+    const mixed = document.getElementById('mixed-container');
+    const mixedItems = items.filter(it=>it.id>=5 && it.id<12);
+    mixedItems.forEach(it=>renderItem(it,mixed,true));
+    progress.total += mixedItems.length;
+    // Final quiz
+    const final = document.getElementById('final-container');
+    const finalItems = items.filter(it=>it.id>=12);
+    finalItems.forEach(it=>renderItem(it,final,false));
+    progress.total += finalItems.length;
+    updateProgress();
+  }
+
+  // Initial setup
+  document.querySelectorAll('.check-btn').forEach(btn=>btn.disabled=true);
+  document.querySelectorAll('.card').forEach(card=>{
+    const input=card.querySelector('input');
+    const select=card.querySelector('select');
+    const btn=card.querySelector('.check-btn');
+    if(input){input.addEventListener('input',()=>{btn.disabled=!input.value.trim();});}
+    if(select){select.addEventListener('change',()=>{btn.disabled=!select.value;});}
+  });
+  // Show rule after first attempt in section 1
+  const firstCard=document.querySelector('#section-1 .card');
+  firstCard.querySelector('.check-btn').addEventListener('click',()=>{
+    document.getElementById('rule-card').hidden=false;
+  });
+
+  // Decision helper
+  const decisionBtns=document.querySelectorAll('.decision-btn');
+  decisionBtns.forEach(b=>b.addEventListener('click',e=>{
+    const answer=e.target.dataset.answer;
+    const fb=document.querySelector('#section-2 .card .feedback');
+    fb.textContent=answer==='yes'?'Use present continuous.':'Use present simple.';
+    fb.className='feedback';
+    fb.hidden=false;
+    document.getElementById('decision-result').hidden=false;
+  }));
+
+  // Load mixed and final after DOM ready
+  loadSectionItems();
+
+  // Results handling
+  function showResults(){
+    const resDiv=document.getElementById('results');
+    const table=document.createElement('table');
+    table.style.width='100%';
+    const header=document.createElement('tr');
+    header.innerHTML='<th>Sub‑skill</th><th>Correct</th><th>Total</th>';
+    table.appendChild(header);
+    for(const sub in subSkills){
+      const row=document.createElement('tr');
+      row.innerHTML=`<td>${sub}</td><td>${subSkills[sub].correct}</td><td>${subSkills[sub].total}</td>`;
+      table.appendChild(row);
+    }
+    resDiv.appendChild(table);
+    const weakest = Object.entries(subSkills).reduce((a,b)=>b[1].correct/b[1].total < a[1].correct/a[1].total ? b : a);
+    const advice=document.createElement('p');
+    advice.textContent=`Focus on "${weakest[0]}" next time. Review the rule and try more examples.`;
+    resDiv.appendChild(advice);
+  }
+
+  // Restart
+  document.getElementById('restart-btn').addEventListener('click',()=>location.reload());
+
+  // IntersectionObserver for fade-in
+  const observer=new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.style.transition='opacity .5s';
+        entry.target.style.opacity='1';
+      }
+    });
+  },{threshold:0.1});
+  document.querySelectorAll('section').forEach(sec=>{sec.style.opacity='0';observer.observe(sec);});
+
+})();
+</script>
+</body>
+</html>

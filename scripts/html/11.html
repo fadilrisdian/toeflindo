@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Present Perfect & “How Long” Lesson</title>
+<style>
+:root{
+  --color-bg:#f6f7f8;
+  --color-surface:#ffffff;
+  --color-surface-alt:#eaf5f3;
+  --color-header-from:#2c7873;
+  --color-header-to:#173f3b;
+  --color-primary:#2a7a7a;
+  --color-primary-dark:#1f5f59;
+  --color-accent:#2c7873;
+  --color-text:#1f2937;
+  --color-text-muted:#6b7280;
+  --color-text-faint:#9ca3af;
+  --color-border:#e6e8eb;
+  --color-success:#16a34a;
+  --color-success-bg:#e7f7ec;
+  --color-error:#dc2626;
+  --color-error-bg:#fdeaea;
+  --color-warning:#b45309;
+  --color-warning-bg:#fef3e2;
+  --shadow-soft:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.05);
+  --radius-lg:14px;
+  --radius-md:9px;
+  --radius-sm:6px;
+}
+html{font-family:system-ui,Arial,sans-serif;background:var(--color-bg);color:var(--color-text);font-size:16px;line-height:1.5;}
+body{margin:0;padding:0;}
+header{
+  position:sticky;top:0;z-index:10;
+  background:linear-gradient(135deg,var(--color-header-from),var(--color-header-to));
+  color:#fff;padding:1rem 2rem;
+}
+h1{margin:0;font-size:1.5rem;font-weight:600;}
+h2{margin:0.5rem 0 0;color:var(--color-text-muted);}
+#progress{
+  height:4px;background:#e6e8eb;margin-top:0.5rem;
+  position:relative;
+}
+#progress div{
+  height:100%;background:var(--color-primary);width:0;
+}
+section{max-width:800px;margin:2rem auto;padding:1rem;}
+.card{
+  background:var(--color-surface);
+  border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-soft);
+  padding:1.5rem;
+  margin-bottom:1.5rem;
+}
+button{
+  background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));
+  color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;
+  font-weight:600;cursor:pointer;
+}
+button:focus{outline:2px solid var(--color-primary);outline-offset:2px;}
+button:disabled{opacity:0.6;cursor:not-allowed;}
+select, input[type=text]{
+  padding:0.4rem;
+  border:1px solid var(--color-border);
+  border-radius:var(--radius-sm);
+}
+.feedback{
+  margin-top:0.75rem;padding:0.75rem;border-left:4px solid;
+  border-radius:var(--radius-sm);
+}
+.correct{background:var(--color-success-bg);border-color:var(--color-success);}
+.incorrect{background:var(--color-error-bg);border-color:var(--color-error);}
+.hint{
+  background:var(--color-surface-alt);
+  border-left:4px solid var(--color-accent);
+  padding:0.75rem;margin-top:0.75rem;
+}
+.hidden{display:none;}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none!important;}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Present Perfect & “How Long”</h1>
+  <h2>Practice choosing the right tense and using for/since</h2>
+  <div id="progress"><div></div></div>
+</header>
+
+<main>
+  <!-- Section 1 -->
+  <section id="sec1" class="card">
+    <h3>1️⃣ Try first!</h3>
+    <p>Fill the blank. (Choose the correct form.)</p>
+    <p>I ____ him very well.</p>
+    <select id="q1">
+      <option value="">--Select--</option>
+      <option value="know">know</option>
+      <option value="have known">have known</option>
+    </select>
+    <button id="sub1">Submit</button>
+    <button class="hintBtn" data-q="1">Hint</button>
+    <div id="fb1" class="feedback hidden" aria-live="polite"></div>
+    <div id="hint1" class="hint hidden"></div>
+  </section>
+
+  <!-- Section 2 -->
+  <section id="sec2" class="card hidden">
+    <h3>2️⃣ Core Decision Rule</h3>
+    <p>When do we use <strong>present perfect</strong> for “how long” questions?</p>
+    <ol>
+      <li>Is the action still happening now? <select id="rule1"><option value="">--</option><option value="yes">Yes</option><option value="no">No</option></select></li>
+      <li>Do we talk about the length of time? <select id="rule2"><option value="">--</option><option value="yes">Yes</option><option value="no">No</option></select></li>
+    </ol>
+    <button id="ruleCheck">Check</button>
+    <div id="ruleFb" class="feedback hidden" aria-live="polite"></div>
+    <p class="hidden" id="ruleExplain">
+      Use <strong>present perfect (simple or continuous)</strong> when the action started in the past and continues up to now, and the question asks about the length of time (e.g., “How long have you lived here?”). Use simple present for habits or states that are always true.
+    </p>
+  </section>
+
+  <!-- Section 3 -->
+  <section id="sec3" class="card hidden">
+    <h3>3️⃣ Key Contrasts</h3>
+    <div id="contrastContainer"></div>
+  </section>
+
+  <!-- Section 4 -->
+  <section id="sec4" class="card hidden">
+    <h3>4️⃣ Common Mistakes</h3>
+    <div id="mistakeContainer"></div>
+  </section>
+
+  <!-- Section 5 -->
+  <section id="sec5" class="card hidden">
+    <h3>5️⃣ Mixed Practice</h3>
+    <div id="mixContainer"></div>
+  </section>
+
+  <!-- Section 6 -->
+  <section id="sec6" class="card hidden">
+    <h3>6️⃣ Final Quiz (no hints)</h3>
+    <div id="finalContainer"></div>
+  </section>
+
+  <!-- Section 7 -->
+  <section id="sec7" class="card hidden">
+    <h3>7️⃣ Results</h3>
+    <div id="resultContent"></div>
+    <button id="restartBtn">Restart Lesson</button>
+  </section>
+</main>
+
+<script>
+(() => {
+  const state = {
+    progress: 0,
+    totalItems: 0,
+    subSkills: {
+      tense: {correct:0,total:0,streakC:0,streakW:0},
+      forSince: {correct:0,total:0,streakC:0,streakW:0},
+      question: {correct:0,total:0,streakC:0,streakW:0}
+    },
+    reviewQueue: [],
+    recentCount: 0
+  };
+
+  // Utility
+  const $ = s=>document.querySelector(s);
+  const $$ = s=>Array.from(document.querySelectorAll(s));
+  const setProgress = () => {
+    const pct = (state.progress/state.totalItems)*100;
+    $('#progress div').style.width = pct+'%';
+  };
+
+  // Section 1
+  $('#sub1').addEventListener('click',()=> {
+    const ans = $('#q1').value;
+    if(!ans){alert('Please choose an answer');return;}
+    const fb = $('#fb1');
+    if(ans==='have known'){
+      fb.textContent='✅ Correct! The present perfect shows the action started in the past and continues.';
+      fb.className='feedback correct';
+      record('tense',true);
+    }else{
+      fb.textContent='✗ Incorrect. “have known” is needed because the knowing started earlier and continues.';
+      fb.className='feedback incorrect';
+      record('tense',false);
+      state.reviewQueue.push(item1);
+    }
+    fb.classList.remove('hidden');
+    $('#sub1').disabled=true;
+    state.progress++;
+    setProgress();
+    // reveal section 2 after first attempt
+    $('#sec2').classList.remove('hidden');
+  });
+
+  // Hint system for Q1
+  const item1 = {
+    id:1,
+    hints:['Think about whether the knowing started before now.',
+          'The action started in the past and is still true.',
+          'The correct form is “have known”.'],
+    hintStage:0,
+    answer:'have known'
+  };
+  $('.hintBtn[data-q="1"]').addEventListener('click',()=> {
+    const h = item1;
+    if(h.hintStage<2){
+      h.hintStage++;
+      $('#hint1').textContent=h.hints[h.hintStage-1];
+      $('#hint1').classList.remove('hidden');
+    }else{
+      h.hintStage++;
+      $('#hint1').textContent=h.hints[2]+' (Answer: '+h.answer+')';
+    }
+  });
+
+  // Section 2 rule check
+  $('#ruleCheck').addEventListener('click',()=> {
+    const a = $('#rule1').value;
+    const b = $('#rule2').value;
+    const fb = $('#ruleFb');
+    if(a==='yes' && b==='yes'){
+      fb.textContent='✅ Right! Both conditions point to present perfect.';
+      fb.className='feedback correct';
+    }else{
+      fb.textContent='✗ Not quite. For “how long” we need both the action still happening and a length of time.';
+      fb.className='feedback incorrect';
+    }
+    fb.classList.remove('hidden');
+    $('#ruleExplain').classList.remove('hidden');
+    // reveal section 3
+    $('#sec3').classList.remove('hidden');
+    renderContrast();
+  });
+
+  // Section 3: Key contrasts
+  const contrastItems = [
+    {q:'How long ___ you live here?', type:'mc', options:['do','have'], answer:'have', sub:'tense', hints:['Ask if the action started in the past and continues.','Use “have” for present perfect.','Answer: have']},
+    {q:'The weather ___ awful since I arrived.', type:'mc', options:['is','has been'], answer:'has been', sub:'tense', hints:['The situation started in the past and continues.','Use present perfect “has been”.','Answer: has been']},
+    {q:'I ___ known her very long.', type:'mc', options:['don’t','haven’t'], answer:'haven’t', sub:'tense', hints:['Negative present perfect uses “haven’t”.','Answer: haven’t']},
+  ];
+  function renderContrast(){
+    const container = $('#contrastContainer');
+    contrastItems.forEach((it,i)=>{
+      const div=document.createElement('div');
+      div.className='item';
+      div.innerHTML=`<p>${it.q}</p>
+        <select id="c${i}"><option value="">--Select--</option>${it.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select>
+        <button id="cs${i}">Submit</button>
+        <button class="hintBtn" data-q="c${i}">Hint</button>
+        <div id="cfb${i}" class="feedback hidden" aria-live="polite"></div>
+        <div id="chint${i}" class="hint hidden"></div>`;
+      container.appendChild(div);
+      $(`#cs${i}`).addEventListener('click',()=> {
+        const ans=$(`#c${i}`).value;
+        const fb=$(`#cfb${i}`);
+        if(!ans){alert('Select an answer');return;}
+        if(ans===it.answer){
+          fb.textContent='✅ Correct!';
+          fb.className='feedback correct';
+          record(it.sub,true);
+        }else{
+          fb.textContent='✗ Incorrect. '+it.hints[1];
+          fb.className='feedback incorrect';
+          record(it.sub,false);
+          state.reviewQueue.push(it);
+        }
+        fb.classList.remove('hidden');
+        $(`#cs${i}`).disabled=true;
+        state.progress++;
+        setProgress();
+        // after last item, show next section
+        if(i===contrastItems.length-1) $('#sec4').classList.remove('hidden');
+      });
+      // hint
+      const hObj={...it, hintStage:0};
+      $(`.hintBtn[data-q="c${i}"]`).addEventListener('click',()=> {
+        if(hObj.hintStage<2){
+          hObj.hintStage++;
+          $(`#chint${i}`).textContent=hObj.hints[hObj.hintStage-1];
+          $(`#chint${i}`).classList.remove('hidden');
+        }else{
+          hObj.hintStage++;
+          $(`#chint${i}`).textContent=hObj.hints[2]+' (Answer: '+hObj.answer+')';
+        }
+      });
+    });
+  }
+
+  // Section 4: Common mistakes
+  const mistakeItems = [
+    {wrong:"I know him very well.", correct:"I have known him very well.", sub:'tense', hints:['The action started in the past and continues.','Use present perfect “have known”.','Answer: I have known him very well.']},
+    {wrong:"She’s in Germany.", correct:"She’s been in Germany.", sub:'tense', hints:['She arrived earlier and is still there.','Use present perfect “has been”.','Answer: She’s been in Germany.']},
+    {wrong:"How long do you live here?", correct:"How long have you lived here?", sub:'tense', hints:['Ask about duration up to now.','Use present perfect “have lived”.','Answer: How long have you lived here?']},
+  ];
+  function renderMistakes(){
+    const container = $('#mistakeContainer');
+    mistakeItems.forEach((it,i)=>{
+      const div=document.createElement('div');
+      div.className='item';
+      div.innerHTML=`<p>Correct the sentence:</p>
+        <p class="text-muted">${it.wrong}</p>
+        <input type="text" id="m${i}" placeholder="Type corrected sentence">
+        <button id="ms${i}">Check</button>
+        <button class="hintBtn" data-q="m${i}">Hint</button>
+        <div id="mfb${i}" class="feedback hidden" aria-live="polite"></div>
+        <div id="mhint${i}" class="hint hidden"></div>`;
+      container.appendChild(div);
+      $(`#ms${i}`).addEventListener('click',()=> {
+        const ans=$(`#m${i}`).value.trim();
+        const fb=$(`#mfb${i}`);
+        if(!ans){alert('Enter a sentence');return;}
+        if(ans.toLowerCase()===it.correct.toLowerCase()){
+          fb.textContent='✅ Correct!';
+          fb.className='feedback correct';
+          record(it.sub,true);
+        }else{
+          fb.textContent='✗ Incorrect. '+it.hints[1];
+          fb.className='feedback incorrect';
+          record(it.sub,false);
+          state.reviewQueue.push(it);
+        }
+        fb.classList.remove('hidden');
+        $(`#ms${i}`).disabled=true;
+        state.progress++;
+        setProgress();
+        if(i===mistakeItems.length-1) $('#sec5').classList.remove('hidden');
+      });
+      const hObj={...it, hintStage:0};
+      $(`.hintBtn[data-q="m${i}"]`).addEventListener('click',()=> {
+        if(hObj.hintStage<2){
+          hObj.hintStage++;
+          $(`#mhint${i}`).textContent=hObj.hints[hObj.hintStage-1];
+          $(`#mhint${i}`).classList.remove('hidden');
+        }else{
+          hObj.hintStage++;
+          $(`#mhint${i}`).textContent=hObj.hints[2]+' (Answer: '+hObj.correct+')';
+        }
+      });
+    });
+  }
+
+  // Section 5: Mixed practice
+  const mixedPool = [
+    {q:'How long ___ you have been waiting?', type:'mc', options:['have','has','did'], answer:'have', sub:'tense', easy:true,
+      hints:['Present perfect continuous for ongoing action.','Answer: have']},
+    {q:'I ___ in this city for five years.', type:'mc', options:['live','have lived','have been living'], answer:'have lived', sub:'tense', easy:true,
+      hints:['Duration up to now uses present perfect.','Answer: have lived']},
+    {q:'She ___ since 2010.', type:'mc', options:['has lived','has been living','lived'], answer:'has lived', sub:'tense', easy:false,
+      hints:['Since + start point uses present perfect.','Answer: has lived']},
+    {q:'We ___ a holiday for ten years.', type:'mc', options:['haven’t had','didn’t have','don’t have'], answer:'haven’t had', sub:'tense', easy:false,
+      hints:['Negative present perfect uses haven’t.','Answer: haven’t had']},
+    {q:'How long ___ you know Jane?', type:'mc', options:['did','have','do'], answer:'have', sub:'tense', easy:true,
+      hints:['Ask about duration up to now.','Answer: have']},
+    {q:'I ___ coffee every morning.', type:'mc', options:['drink','have drunk','am drinking'], answer:'drink', sub:'tense', easy:true,
+      hints:['Habitual action uses simple present.','Answer: drink']},
+    {q:'He ___ in London since March.', type:'mc', options:['has lived','has been living','lives'], answer:'has lived', sub:'tense', easy:false,
+      hints:['Since + start point uses present perfect.','Answer: has lived']},
+    {q:'They ___ for two hours.', type:'mc', options:['have waited','waited','are waiting'], answer:'have waited', sub:'tense', easy:true,
+      hints:['Duration up to now uses present perfect.','Answer: have waited']},
+  ];
+  let mixedQueue = [...mixedPool];
+  let mixIndex = 0;
+  function renderMixed(){
+    const container = $('#mixContainer');
+    if(mixIndex>=mixedQueue.length){
+      $('#sec6').classList.remove('hidden');
+      renderFinal();
+      return;
+    }
+    const it = mixedQueue[mixIndex];
+    const div=document.createElement('div');
+    div.className='item';
+    div.innerHTML=`<p>${it.q}</p>
+      <select id="mix${mixIndex}"><option value="">--Select--</option>${it.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select>
+      <button id="mixs${mixIndex}">Submit</button>
+      <button class="hintBtn" data-q="mix${mixIndex}">Hint</button>
+      <div id="mixfb${mixIndex}" class="feedback hidden" aria-live="polite"></div>
+      <div id="mixhint${mixIndex}" class="hint hidden"></div>`;
+    container.appendChild(div);
+    $(`#mixs${mixIndex}`).addEventListener('click',()=> {
+      const ans=$(`#mix${mixIndex}`).value;
+      const fb=$(`#mixfb${mixIndex}`);
+      if(!ans){alert('Select an answer');return;}
+      if(ans===it.answer){
+        fb.textContent='✅ Correct!';
+        fb.className='feedback correct';
+        record(it.sub,true);
+        // adaptivity: 2 correct streak -> skip next easy if any
+        const stats=state.subSkills[it.sub];
+        stats.streakC++;
+        stats.streakW=0;
+        if(stats.streakC===2){
+          // skip next easy item
+          const skipIdx=mixedQueue.findIndex((x,i)=>i>mixIndex && x.easy);
+          if(skipIdx!==-1){
+            mixedQueue.splice(skipIdx,1);
+            const note=document.createElement('div');
+            note.className='hint';
+            note.textContent='Skipped an easy item because you’re doing well.';
+            $('#mixContainer').appendChild(note);
+          }
+          stats.streakC=0;
+        }
+      }else{
+        fb.textContent='✗ Incorrect. '+it.hints[1];
+        fb.className='feedback incorrect';
+        record(it.sub,false);
+        state.reviewQueue.push(it);
+        // adaptivity: 2 wrong streak -> insert easier item
+        const stats=state.subSkills[it.sub];
+        stats.streakW++;
+        stats.streakC=0;
+        if(stats.streakW===2){
+          const easyItem = mixedPool.find(x=>x.easy && !mixedQueue.includes(x));
+          if(easyItem){
+            mixedQueue.splice(mixIndex+1,0,easyItem);
+            const note=document.createElement('div');
+            note.className='hint';
+            note.textContent='Added a simpler item because of recent mistakes.';
+            $('#mixContainer').appendChild(note);
+          }
+          stats.streakW=0;
+        }
+      }
+      fb.classList.remove('hidden');
+      $(`#mixs${mixIndex}`).disabled=true;
+      state.progress++;
+      setProgress();
+      // handle review queue insertion after 2 other items
+      state.recentCount++;
+      if(state.recentCount>=2 && state.reviewQueue.length){
+        const reviewItem = state.reviewQueue.shift();
+        mixedQueue.splice(mixIndex+1,0,reviewItem);
+        const note=document.createElement('div');
+        note.className='hint';
+        note.textContent='Re‑trying a previous mistake.';
+        $('#mixContainer').appendChild(note);
+        state.recentCount=0;
+      }
+      mixIndex++;
+      renderMixed();
+    });
+    // hint
+    const hObj={...it, hintStage:0};
+    $(`.hintBtn[data-q="mix${mixIndex}"]`).addEventListener('click',()=> {
+      if(hObj.hintStage<2){
+        hObj.hintStage++;
+        $(`#mixhint${mixIndex}`).textContent=hObj.hints[hObj.hintStage-1];
+        $(`#mixhint${mixIndex}`).classList.remove('hidden');
+      }else{
+        hObj.hintStage++;
+        $(`#mixhint${mixIndex}`).textContent=hObj.hints[2]+' (Answer: '+hObj.answer+')';
+      }
+    });
+  }
+
+  // Section 6: Final quiz (no hints)
+  const finalItems = [
+    {q:'How long ___ you been waiting?', options:['have','has','did'], answer:'have', sub:'tense'},
+    {q:'She ___ in Japan since 2015.', options:['has lived','has been living','lives'], answer:'has lived', sub:'tense'},
+    {q:'We ___ a coffee every morning.', options:['drink','have drunk','are drinking'], answer:'drink', sub:'tense'},
+    {q:'I ___ him for three years.', options:['know','have known','am knowing'], answer:'have known', sub:'tense'},
+    {q:'How long ___ they been married?', options:['have','has','did'], answer:'have', sub:'tense'},
+    {q:'He ___ in London for ten years.', options:['has lived','has been living','lives'], answer:'has lived', sub:'tense'},
+  ];
+  function renderFinal(){
+    const container = $('#finalContainer');
+    finalItems.forEach((it,i)=>{
+      const div=document.createElement('div');
+      div.className='item';
+      div.innerHTML=`<p>${it.q}</p>
+        <select id="fin${i}"><option value="">--Select--</option>${it.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select>
+        <button id="fins${i}">Submit</button>
+        <div id="finfb${i}" class="feedback hidden" aria-live="polite"></div>`;
+      container.appendChild(div);
+      $(`#fins${i}`).addEventListener('click',()=> {
+        const ans=$(`#fin${i}`).value;
+        const fb=$(`#finfb${i}`);
+        if(!ans){alert('Select an answer');return;}
+        if(ans===it.answer){
+          fb.textContent='✅ Correct!';
+          fb.className='feedback correct';
+          record(it.sub,true);
+        }else{
+          fb.textContent='✗ Incorrect. The correct answer is “'+it.answer+'”.';
+          fb.className='feedback incorrect';
+          record(it.sub,false);
+        }
+        fb.classList.remove('hidden');
+        $(`#fins${i}`).disabled=true;
+        state.progress++;
+        setProgress();
+        if(i===finalItems.length-1) $('#sec7').classList.remove('hidden');
+      });
+    });
+  }
+
+  // Record results
+  function record(subSkill,correct){
+    const stats = state.subSkills[subSkill];
+    stats.total++;
+    if(correct) stats.correct++;
+  }
+
+  // Results
+  $('#restartBtn').addEventListener('click',()=>location.reload());
+  function showResults(){
+    const container = $('#resultContent');
+    const rows = Object.entries(state.subSkills).map(([k,v])=>{
+      const pct = v.total?Math.round(v.correct/v.total*100):0;
+      return `<p><strong>${k}:</strong> ${v.correct}/${v.total} (${pct}%)</p>`;
+    }).join('');
+    const weakest = Object.entries(state.subSkills).reduce((a,b)=>b[1].correct/b[1].total < a[1].correct/a[1].total ? b : a);
+    const advice = `Focus on "${weakest[0]}" to improve further.`;
+    container.innerHTML=`<div>${rows}</div><p>${advice}</p>`;
+  }
+
+  // IntersectionObserver for fade-in
+  const observer = new IntersectionObserver((entries)=> {
+    entries.forEach(e=>{
+      if(e.isIntersecting) e.target.classList.add('visible');
+    });
+  },{threshold:0.1});
+  $$('section').forEach(s=>observer.observe(s));
+
+  // Initialize
+  state.totalItems = 1+contrastItems.length+mistakeItems.length+mixedPool.length+finalItems.length;
+  renderMistakes();
+  renderMixed();
+  // Show results after final section appears
+  const sec7Observer = new IntersectionObserver((e)=>{if(e[0].isIntersecting){showResults();sec7Observer.disconnect();}}, {threshold:0.2});
+  sec7Observer.observe($('#sec7'));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Present Perfect Continuous – Interactive Lesson</title>
+<style>
+:root{
+  --color-bg:#f6f7f8;
+  --color-surface:#ffffff;
+  --color-surface-alt:#eaf5f3;
+  --color-header-from:#2c7873;
+  --color-header-to:#173f3b;
+  --color-primary:#2a7a7a;
+  --color-primary-dark:#1f5f59;
+  --color-accent:#2c7873;
+  --color-text:#1f2937;
+  --color-text-muted:#6b7280;
+  --color-text-faint:#9ca3af;
+  --color-border:#e6e8eb;
+  --color-success:#16a34a;
+  --color-success-bg:#e7f7ec;
+  --color-error:#dc2626;
+  --color-error-bg:#fdeaea;
+  --color-warning:#b45309;
+  --color-warning-bg:#fef3e2;
+  --shadow-soft:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.05);
+  --radius-lg:14px;
+  --radius-md:9px;
+  --radius-sm:6px;
+}
+html{font-size:16px;background:var(--color-bg);font-family:system-ui,sans-serif;color:var(--color-text);}
+body{margin:0;padding:0;line-height:1.5;}
+h1,h2,h3{margin:0;font-weight:600;color:var(--color-text);}
+h1{font-size:1.75rem;}
+h2{font-size:1.25rem;margin-top:0.5rem;}
+p{margin:0.5rem 0;}
+a{color:var(--color-accent);text-decoration:none;}
+button{cursor:pointer;}
+/* Header */
+#header{
+  position:sticky;top:0;z-index:10;
+  background:linear-gradient(135deg,var(--color-header-from),var(--color-header-to));
+  color:#fff;padding:1rem;
+}
+#progress-bar{
+  height:4px;background:#e6e8eb;position:relative;margin-top:0.5rem;
+}
+#progress-fill{
+  height:100%;background:var(--color-primary);width:0%;
+}
+section{
+  max-width:800px;margin:2rem auto;padding:0 1rem;
+}
+.card{
+  background:var(--color-surface);
+  border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-soft);
+  padding:1.5rem;
+  margin-bottom:2rem;
+}
+.feedback{
+  margin-top:0.75rem;padding:0.75rem;border-left:4px solid;
+  border-radius:var(--radius-sm);
+}
+.correct{border-color:var(--color-success);background:var(--color-success-bg);}
+.incorrect{border-color:var(--color-error);background:var(--color-error-bg);}
+.hint{
+  background:var(--color-surface-alt);
+  border-left:4px solid var(--color-primary);
+  padding:0.75rem;margin-top:0.75rem;
+}
+button.primary{
+  background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));
+  color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;
+  font-weight:600;
+}
+button.primary:focus{outline:2px solid var(--color-primary);}
+button.secondary{
+  background:var(--color-surface-alt);
+  color:var(--color-accent);
+  border:1px solid var(--color-accent);
+  border-radius:8px;padding:0.5rem 1rem;
+}
+button.secondary:focus{outline:2px solid var(--color-primary);}
+input,select{
+  padding:0.5rem;
+  border:1px solid var(--color-border);
+  border-radius:var(--radius-sm);
+  width:100%;
+  box-sizing:border-box;
+}
+input:focus,select:focus{outline:2px solid var(--color-primary);}
+.hidden{display:none;}
+.visible{opacity:1;transform:none;transition:opacity .4s,transform .4s;}
+.fade-in{opacity:0;transform:translateY(20px);}
+@media (prefers-reduced-motion:reduce){
+  .fade-in{transition:none;}
+}
+@media (min-width:900px){
+  .two-col{display:flex;gap:2rem;}
+  .two-col > .card{flex:1;}
+}
+@media (max-width:599px){
+  button{min-height:44px;}
+}
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>Present Perfect Continuous</h1>
+  <h2>Practice the form, use, and contrast</h2>
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+</div>
+
+<section id="section1" class="card fade-in">
+  <h3>1. Immediate Start</h3>
+  <p>Fill in the blank with the correct question.</p>
+  <div class="item" data-id="s1i1" data-type="fill" data-answer="Have you been swimming?" data-subskill="Question formation">
+    <p>Hi Kate, (you / swim?)</p>
+    <input type="text" aria-label="Your answer">
+    <button class="primary submit">Submit</button>
+    <button class="secondary hint">Hint</button>
+    <div class="feedback" aria-live="polite"></div>
+  </div>
+</section>
+
+<section id="section2" class="card fade-in">
+  <h3>2. Core Decision Rule</h3>
+  <p>When do you use the Present Perfect Continuous?</p>
+  <div class="item" data-id="s2i1" data-type="choice" data-answer="yes" data-subskill="Choosing">
+    <p>Is the activity still happening now?</p>
+    <select aria-label="Select yes or no">
+      <option value="">— Choose —</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+    <button class="primary submit">Submit</button>
+    <button class="secondary hint">Hint</button>
+    <div class="feedback" aria-live="polite"></div>
+  </div>
+  <div class="rule hidden">
+    <p><strong>Rule:</strong> Use <em>have/has been + –ing</em> when the action started in the past and is still continuing.</p>
+  </div>
+</section>
+
+<section id="section3" class="card fade-in">
+  <h3>3. Key Contrasts</h3>
+  <p>Choose the correct form.</p>
+  <div class="item" data-id="s3i1" data-type="choice" data-answer="continuous" data-subskill="Choosing">
+    <p>“I ___ (read) that book for two hours.”</p>
+    <select aria-label="Select form">
+      <option value="">— Choose —</option>
+      <option value="simple">have read</option>
+      <option value="continuous">have been reading</option>
+    </select>
+    <button class="primary submit">Submit</button>
+    <button class="secondary hint">Hint</button>
+    <div class="feedback" aria-live="polite"></div>
+  </div>
+  <div class="item" data-id="s3i2" data-type="choice" data-answer="simple" data-subskill="Choosing">
+    <p>“She ___ (paint) the bedroom.”</p>
+    <select aria-label="Select form">
+      <option value="">— Choose —</option>
+      <option value="simple">has painted</option>
+      <option value="continuous">has been painting</option>
+    </select>
+    <button class="primary submit">Submit</button>
+    <button class="secondary hint">Hint</button>
+    <div class="feedback" aria-live="polite"></div>
+  </div>
+  <div class="item" data-id="s3i3" data-type="choice" data-answer="continuous" data-subskill="For/Since">
+    <p>“They ___ (play) tennis since 2 o’clock.”</p>
+    <select aria-label="Select form">
+      <option value="">— Choose —</option>
+      <option value="simple">have played</option>
+      <option value="continuous">have been playing</option>
+    </select>
+    <button class="primary submit">Submit</button>
+    <button class="secondary hint">Hint</button>
+    <div class="feedback" aria-live="polite"></div>
+  </div>
+</section>
+
+<section id="section4" class="card fade-in">
+  <h3>4. Common Mistakes</h3>
+  <p>Correct the sentence.</p>
+  <div class="item" data-id="s4i1" data-type="fill" data-answer="I have been learning Japanese since December." data-subskill="Forming">
+    <p>I’m learning Japanese. I started classes in December.</p>
+    <input type="text" aria-label="Corrected sentence">
+    <button class="primary submit">Submit</button>
+    <button class="secondary hint">Hint</button>
+    <div class="feedback" aria-live="polite"></div>
+  </div>
+  <div class="item" data-id="s4i2" data-type="fill" data-answer="She has been working here for three years." data-subskill="For/Since">
+    <p>She works here. She started three years ago.</p>
+    <input type="text" aria-label="Corrected sentence">
+    <button class="primary submit">Submit</button>
+    <button class="secondary hint">Hint</button>
+    <div class="feedback" aria-live="polite"></div>
+  </div>
+</section>
+
+<section id="section5" class="card fade-in">
+  <h3>5. Mixed Practice</h3>
+  <p>Answer the following.</p>
+  <div class="item" data-id="s5i1" data-type="fill" data-answer="Have you been waiting?" data-subskill="Question formation">
+    <p>(you / wait / long?)</p>
+    <input type="text" aria-label="Your answer">
+    <button class="primary submit">Submit</button>
+    <button class="secondary hint">Hint</button>
+    <div class="feedback" aria-live="polite"></div>
+  </div>
+  <div class="item" data-id="s5i2" data-type="choice" data-answer="continuous" data-subskill="Choosing">
+    <p>“It ___ (rain) for two hours.”</p>
+    <select aria-label="Select form">
+      <option value="">— Choose —</option>
+      <option value="simple">has rained</option>
+      <option value="continuous">has been raining</option>
+    </select>
+    <button class="primary submit">Submit</button>
+    <button class="secondary hint">Hint</button>
+    <div class="feedback" aria-live="polite"></div>
+  </div>
+  <div class="item" data-id="s5i3" data-type="fill" data-answer="I have been thinking about what you said." data-subskill="Forming">
+    <p>(I / think) about what you said and I’ve decided to take your advice.</p>
+    <input type="text" aria-label="Your answer">
+    <button class="primary submit">Submit</button>
+    <button class="secondary hint">Hint</button>
+    <div class="feedback" aria-live="polite"></div>
+  </div>
+  <div class="item" data-id="s5i4" data-type="choice" data-answer="simple" data-subskill="Choosing">
+    <p>“She ___ (teach) for ten years.”</p>
+    <select aria-label="Select form">
+      <option value="">— Choose —</option>
+      <option value="simple">has taught</option>
+      <option value="continuous">has been teaching</option>
+    </select>
+    <button class="primary submit">Submit</button>
+    <button class="secondary hint">Hint</button>
+    <div class="feedback" aria-live="polite"></div>
+  </div>
+</section>
+
+<section id="section6" class="card fade-in">
+  <h3>6. Final Quiz (no hints)</h3>
+  <p>Answer the following without hints.</p>
+  <div class="item" data-id="s6i1" data-type="fill" data-answer="I have been repairing my bike." data-subskill="Forming">
+    <p>My hands are very dirty. ___ (repair) my bike.</p>
+    <input type="text" aria-label="Your answer">
+    <button class="primary submit">Submit</button>
+    <div class="feedback" aria-live="polite"></div>
+  </div>
+  <div class="item" data-id="s6i2" data-type="choice" data-answer="continuous" data-subskill="Choosing">
+    <p>“We ___ (play) tennis this week.”</p>
+    <select aria-label="Select form">
+      <option value="">— Choose —</option>
+      <option value="simple">have played</option>
+      <option value="continuous">have been playing</option>
+    </select>
+    <button class="primary submit">Submit</button>
+    <div class="feedback" aria-live="polite"></div>
+  </div>
+  <div class="item" data-id="s6i3" data-type="fill" data-answer="She has been working here for three years." data-subskill="For/Since">
+    <p>She works here. She started three years ago.</p>
+    <input type="text" aria-label="Your answer">
+    <button class="primary submit">Submit</button>
+    <div class="feedback" aria-live="polite"></div>
+  </div>
+</section>
+
+<section id="section7" class="card fade-in">
+  <h3>7. Results</h3>
+  <div id="results"></div>
+  <button class="primary" id="restart">Restart Lesson</button>
+</section>
+
+<script>
+(() => {
+  const sections = Array.from(document.querySelectorAll('section'));
+  const progressFill = document.getElementById('progress-fill');
+  const resultsDiv = document.getElementById('results');
+  const restartBtn = document.getElementById('restart');
+  const totalSections = sections.length;
+  let completedSections = 0;
+  const mastery = {}; // subskill => {correct,total}
+  const streak = {}; // subskill => {correct:0,wrong:0}
+  const reviewQueue = [];
+  let itemsSinceLastReview = 0;
+
+  // Helper functions
+  const normalize = s => s.trim().toLowerCase();
+  const setProgress = () => {
+    const pct = (completedSections / totalSections) * 100;
+    progressFill.style.width = pct + '%';
+  };
+  const updateMastery = (subskill, correct) => {
+    if (!mastery[subskill]) mastery[subskill] = {correct:0,total:0};
+    mastery[subskill].total++;
+    if (correct) mastery[subskill].correct++;
+    if (!streak[subskill]) streak[subskill] = {correct:0,wrong:0};
+    if (correct){
+      streak[subskill].correct++;
+      streak[subskill].wrong=0;
+    } else {
+      streak[subskill].wrong++;
+      streak[subskill].correct=0;
+    }
+  };
+  const showFeedback = (itemEl, correct, explanation) => {
+    const fb = itemEl.querySelector('.feedback');
+    fb.className = 'feedback aria-live="polite"';
+    fb.innerHTML = '';
+    const icon = document.createElement('span');
+    const msg = document.createElement('span');
+    if (correct){
+      fb.classList.add('correct');
+      icon.textContent = '✓ ';
+      msg.textContent = 'Correct! ';
+    } else {
+      fb.classList.add('incorrect');
+      icon.textContent = '✗ ';
+      msg.textContent = 'Incorrect. ';
+    }
+    fb.append(icon,msg);
+    const expl = document.createElement('div');
+    expl.textContent = explanation;
+    fb.appendChild(expl);
+  };
+  const getHintStage = (itemEl) => Number(itemEl.dataset.hintStage||0);
+  const setHintStage = (itemEl, stage) => itemEl.dataset.hintStage = stage;
+  const showHint = (itemEl, data) => {
+    const stage = getHintStage(itemEl);
+    const hintDiv = itemEl.querySelector('.hint');
+    if (!hintDiv){
+      const nd = document.createElement('div');
+      nd.className='hint';
+      itemEl.appendChild(nd);
+    }
+    const hint = itemEl.querySelector('.hint');
+    if (stage===0){
+      hint.textContent = 'Think about whether the action is still happening.';
+    } else if (stage===1){
+      hint.textContent = 'If it is ongoing, use “have/has been + –ing”.';
+    } else if (stage===2){
+      hint.textContent = `Answer: ${data.answer}`;
+    }
+    setHintStage(itemEl, stage+1);
+  };
+  const evaluate = (itemEl) => {
+    const type = itemEl.dataset.type;
+    const answer = itemEl.dataset.answer;
+    let userAns = '';
+    if (type==='fill'){
+      userAns = normalize(itemEl.querySelector('input').value);
+    } else if (type==='choice'){
+      const sel = itemEl.querySelector('select');
+      userAns = normalize(sel.value);
+    }
+    const correct = normalize(answer)===userAns;
+    const subskill = itemEl.dataset.subskill;
+    const explanation = correct ? '' : `The correct form is: ${answer}`;
+    showFeedback(itemEl, correct, explanation);
+    updateMastery(subskill, correct);
+    // Adaptive logic
+    const st = streak[subskill];
+    if (st.wrong>=2){
+      // insert easier item after current
+      insertEasyItem(itemEl);
+      st.wrong=0;
+    } else if (st.correct>=2){
+      // skip next easy item (if any)
+      skipNextEasyItem(itemEl);
+      st.correct=0;
+    }
+    // Review queue
+    if (!correct){
+      reviewQueue.push(itemEl);
+    }
+    // Mark item as done
+    itemEl.dataset.done='true';
+    // Disable controls
+    itemEl.querySelectorAll('input,select,button').forEach(el=>el.disabled=true);
+    // Move to next after short delay
+    setTimeout(()=>{
+      const next = getNextItem(itemEl);
+      if (next){
+        next.scrollIntoView({behavior:'smooth',block:'center'});
+      } else {
+        // Section completed
+        completedSections++;
+        setProgress();
+        // If this is final section, show results
+        if (itemEl.closest('section').id==='section7'){
+          showResults();
+        }
+      }
+    },500);
+  };
+  const getNextItem = (current) => {
+    // Find next item in DOM that is not done
+    let el = current.parentElement.nextElementSibling;
+    while (el){
+      if (el.classList.contains('item') && !el.dataset.done){
+        return el;
+      }
+      el = el.nextElementSibling;
+    }
+    // If review queue has items and enough other items passed
+    if (reviewQueue.length && itemsSinceLastReview>=2){
+      itemsSinceLastReview=0;
+      const rev = reviewQueue.shift();
+      rev.dataset.done='false';
+      rev.querySelectorAll('input,select,button').forEach(el=>el.disabled=false);
+      rev.querySelector('.feedback').innerHTML='';
+      rev.querySelector('.hint')?.remove();
+      rev.dataset.hintStage=0;
+      rev.scrollIntoView({behavior:'smooth',block:'center'});
+      return rev;
+    }
+    return null;
+  };
+  const insertEasyItem = (afterEl) => {
+    const easy = document.createElement('div');
+    easy.className='item';
+    easy.dataset.type='choice';
+    easy.dataset.answer='simple';
+    easy.dataset.subskill=afterEl.dataset.subskill;
+    easy.innerHTML=`
+      <p>Easy: “She ___ (paint) the bedroom.”</p>
+      <select aria-label="Select form"><option value="">— Choose —</option><option value="simple">has painted</option><option value="continuous">has been painting</option></select>
+      <button class="primary submit">Submit</button>
+      <button class="secondary hint">Hint</button>
+      <div class="feedback" aria-live="polite"></div>
+    `;
+    afterEl.parentElement.insertBefore(easy, afterEl.nextSibling);
+  };
+  const skipNextEasyItem = (afterEl) => {
+    let nxt = afterEl.parentElement.nextElementSibling;
+    while (nxt){
+      if (nxt.classList.contains('item') && nxt.dataset.answer==='simple'){
+        nxt.remove();
+        const note = document.createElement('div');
+        note.className='hint';
+        note.textContent='Skipping an easy item – you\'re ready for a harder one.';
+        afterEl.parentElement.insertBefore(note, afterEl.nextSibling);
+        break;
+      }
+      nxt = nxt.nextElementSibling;
+    }
+  };
+  const showResults = () => {
+    resultsDiv.innerHTML='<h4>Mastery by Sub‑skill</h4>';
+    const list = document.createElement('ul');
+    for (const sub in mastery){
+      const li = document.createElement('li');
+      const data = mastery[sub];
+      const pct = Math.round((data.correct/data.total)*100);
+      li.textContent = `${sub}: ${data.correct}/${data.total} (${pct}%)`;
+      list.appendChild(li);
+    }
+    resultsDiv.appendChild(list);
+    const weakest = Object.entries(mastery).reduce((a,b)=>b[1].correct/b[1].total < a[1].correct/a[1].total?b:a,[Object.entries(mastery)[0][0],mastery[Object.entries(mastery)[0][0]]));
+    const advice = document.createElement('p');
+    advice.textContent = `Focus more on "${weakest[0]}" to improve your accuracy.`;
+    resultsDiv.appendChild(advice);
+  };
+  // Event listeners
+  document.querySelectorAll('.item').forEach(item=>{
+    const submitBtn = item.querySelector('.submit');
+    const hintBtn = item.querySelector('.hint');
+    submitBtn.addEventListener('click',()=>evaluate(item));
+    if (hintBtn){
+      hintBtn.addEventListener('click',()=>showHint(item, item.dataset));
+    }
+  });
+  // Section 2 rule reveal after first attempt
+  const s2item = document.querySelector('#section2 .item');
+  s2item.querySelector('.submit').addEventListener('click',()=>{
+    document.querySelector('#section2 .rule').classList.remove('hidden');
+  });
+  // Restart
+  restartBtn.addEventListener('click',()=>location.reload());
+  // IntersectionObserver for fade-in
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if (entry.isIntersecting){
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  },{threshold:0.1});
+  document.querySelectorAll('.fade-in').forEach(sec=>observer.observe(sec));
+  // Initial progress
+  setProgress();
+})();
+</script>
+</body>
+</html>

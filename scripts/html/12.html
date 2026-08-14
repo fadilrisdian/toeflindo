@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Since / For & Present Perfect Practice</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --color-bg:#f6f7f8;
+  --color-surface:#ffffff;
+  --color-surface-alt:#eaf5f3;
+  --color-header-from:#2c7873;
+  --color-header-to:#173f3b;
+  --color-primary:#2a7a7a;
+  --color-primary-dark:#1f5f59;
+  --color-accent:#2c7873;
+  --color-text:#1f2937;
+  --color-text-muted:#6b7280;
+  --color-text-faint:#9ca3af;
+  --color-border:#e6e8eb;
+  --color-success:#16a34a;
+  --color-success-bg:#e7f7ec;
+  --color-error:#dc2626;
+  --color-error-bg:#fdeaea;
+  --color-warning:#b45309;
+  --color-warning-bg:#fef3e2;
+  --shadow-soft:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.05);
+  --radius-lg:14px;
+  --radius-md:9px;
+  --radius-sm:6px;
+}
+html{font-size:16px;background:var(--color-bg);color:var(--color-text);font-family:system-ui,sans-serif;line-height:1.5;}
+body{margin:0;padding:0;}
+h1,h2,h3{margin:0;font-weight:600;color:var(--color-text);}
+h1{font-size:1.75rem;}
+h2{font-size:1.5rem;margin-top:1rem;}
+h3{font-size:1.25rem;margin-top:0.75rem;}
+p{margin:0.5rem 0;}
+a{color:var(--color-accent);text-decoration:none;}
+button{cursor:pointer;}
+/* Header */
+#header{
+  position:sticky;top:0;z-index:10;
+  background:linear-gradient(135deg,var(--color-header-from),var(--color-header-to));
+  color:#fff;padding:1rem 2rem;
+  display:flex;flex-direction:column;gap:0.5rem;
+}
+#title{font-size:1.5rem;}
+#progress{
+  height:4px;background:#e6e8eb;overflow:hidden;border-radius:2px;
+}
+#progress .fill{height:100%;background:var(--color-primary);width:0%;transition:width .3s;}
+/* Layout */
+.container{max-width:900px;margin:auto;padding:1rem;}
+.section{margin:2rem 0;padding:1rem;background:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-soft);border:1px solid var(--color-border);}
+.section.hidden{opacity:0;transform:translateY(20px);transition:opacity .4s,transform .4s;}
+.section.visible{opacity:1;transform:none;}
+.card{margin:1rem 0;padding:1rem;background:var(--color-surface-alt);border-radius:var(--radius-md);}
+.feedback{margin-top:0.5rem;padding:0.75rem;border-left:4px solid;display:flex;align-items:center;gap:0.5rem;}
+.feedback.correct{border-color:var(--color-success);background:var(--color-success-bg);}
+.feedback.incorrect{border-color:var(--color-error);background:var(--color-error-bg);}
+.feedback .icon{font-size:1.2rem;}
+.hint{margin-top:0.5rem;padding:0.75rem;background:var(--color-surface-alt);border-left:4px solid var(--color-primary);border-radius:var(--radius-sm);}
+button.primary{
+  background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));
+  color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:600;
+}
+button.primary:hover{opacity:0.9;}
+button.hint{
+  background:var(--color-surface-alt);color:var(--color-primary);border:1px solid var(--color-primary);
+}
+button:focus{outline:2px solid var(--color-primary);outline-offset:2px;}
+input,select{padding:0.4rem;border:1px solid var(--color-border);border-radius:var(--radius-sm);}
+input:focus,select:focus{outline:2px solid var(--color-primary);}
+</style>
+</head>
+<body>
+<header id="header">
+  <div id="title">Since / For & Present Perfect Practice</div>
+  <div id="subtitle">Master the use of “since”, “for”, and the present perfect</div>
+  <div id="progress"><div class="fill"></div></div>
+</header>
+<main class="container">
+  <!-- Section 1: Immediate start -->
+  <section class="section" id="sec-start">
+    <h2>1. Immediate start</h2>
+    <div class="card">
+      <p>Fill the blank with <strong>since</strong> or <strong>for</strong>:</p>
+      <p>It’s been raining ___ lunchtime.</p>
+      <input type="text" id="ans-start" placeholder="since / for">
+      <button class="primary" data-item="start-0">Check</button>
+      <button class="hint" data-item="start-0">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint" style="display:none;"></div>
+    </div>
+  </section>
+
+  <!-- Section 2: Core decision rule -->
+  <section class="section" id="sec-rule">
+    <h2>2. Core decision rule</h2>
+    <div class="card">
+      <p>When do we use <strong>since</strong> and when do we use <strong>for</strong> with the present perfect?</p>
+      <ul>
+        <li>Use <strong>since</strong> with a specific point in time (e.g., Monday, 2010, when I arrived).</li>
+        <li>Use <strong>for</strong> with a length of time (e.g., three days, five years).</li>
+      </ul>
+      <p>Check your understanding:</p>
+      <p>Choose the correct word for each sentence.</p>
+      <p>1. I have lived here ___ ten years.</p>
+      <label><input type="radio" name="rule-0" value="since"> since</label>
+      <label><input type="radio" name="rule-0" value="for"> for</label>
+      <button class="primary" data-item="rule-0">Check</button>
+      <button class="hint" data-item="rule-0">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint" style="display:none;"></div>
+    </div>
+  </section>
+
+  <!-- Section 3: Key contrasts -->
+  <section class="section" id="sec-contrast">
+    <h2>3. Key contrasts</h2>
+    <div class="card" data-index="0">
+      <p>Choose the correct word.</p>
+      <p>She has been waiting ___ an hour.</p>
+      <label><input type="radio" name="contrast-0" value="since"> since</label>
+      <label><input type="radio" name="contrast-0" value="for"> for</label>
+      <button class="primary" data-item="contrast-0">Check</button>
+      <button class="hint" data-item="contrast-0">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint" style="display:none;"></div>
+    </div>
+    <div class="card" data-index="1">
+      <p>Choose the correct word.</p>
+      <p>We haven’t seen him ___ last week.</p>
+      <label><input type="radio" name="contrast-1" value="since"> since</label>
+      <label><input type="radio" name="contrast-1" value="for"> for</label>
+      <button class="primary" data-item="contrast-1">Check</button>
+      <button class="hint" data-item="contrast-1">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint" style="display:none;"></div>
+    </div>
+    <div class="card" data-index="2">
+      <p>Choose the correct word.</p>
+      <p>It hasn’t rained ___ a few weeks.</p>
+      <label><input type="radio" name="contrast-2" value="since"> since</label>
+      <label><input type="radio" name="contrast-2" value="for"> for</label>
+      <button class="primary" data-item="contrast-2">Check</button>
+      <button class="hint" data-item="contrast-2">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint" style="display:none;"></div>
+    </div>
+  </section>
+
+  <!-- Section 4: Common mistakes -->
+  <section class="section" id="sec-mistakes">
+    <h2>4. Common mistakes</h2>
+    <div class="card" data-index="0">
+      <p>Correct the sentence:</p>
+      <p>“I have lived here since five years.”</p>
+      <input type="text" placeholder="Enter corrected word">
+      <button class="primary" data-item="mistake-0">Check</button>
+      <button class="hint" data-item="mistake-0">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint" style="display:none;"></div>
+    </div>
+    <div class="card" data-index="1">
+      <p>Correct the sentence:</p>
+      <p>“She has been married for a year ago.”</p>
+      <input type="text" placeholder="Enter corrected word">
+      <button class="primary" data-item="mistake-1">Check</button>
+      <button class="hint" data-item="mistake-1">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint" style="display:none;"></div>
+    </div>
+  </section>
+
+  <!-- Section 5: Mixed practice -->
+  <section class="section" id="sec-mixed">
+    <h2>5. Mixed practice</h2>
+    <div class="card" data-index="0">
+      <p>Fill the blank (since / for):</p>
+      <p>Kevin has been looking for a job ___ he left school.</p>
+      <input type="text" placeholder="since / for">
+      <button class="primary" data-item="mixed-0">Check</button>
+      <button class="hint" data-item="mixed-0">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint" style="display:none;"></div>
+    </div>
+    <div class="card" data-index="1">
+      <p>Choose the correct form (present perfect vs past simple):</p>
+      <p>“I ___ (repair) the washing machine yesterday.”</p>
+      <label><input type="radio" name="mixed-1" value="have repaired"> have repaired</label>
+      <label><input type="radio" name="mixed-1" value="repaired"> repaired</label>
+      <button class="primary" data-item="mixed-1">Check</button>
+      <button class="hint" data-item="mixed-1">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint" style="display:none;"></div>
+    </div>
+    <div class="card" data-index="2">
+      <p>Fill the blank (since / for):</p>
+      <p>It’s been raining ___ lunchtime.</p>
+      <input type="text" placeholder="since / for">
+      <button class="primary" data-item="mixed-2">Check</button>
+      <button class="hint" data-item="mixed-2">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint" style="display:none;"></div>
+    </div>
+    <div class="card" data-index="3">
+      <p>Choose the correct word:</p>
+      <p>“I have known her ___ years.”</p>
+      <label><input type="radio" name="mixed-3" value="since"> since</label>
+      <label><input type="radio" name="mixed-3" value="for"> for</label>
+      <button class="primary" data-item="mixed-3">Check</button>
+      <button class="hint" data-item="mixed-3">Hint</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+      <div class="hint" style="display:none;"></div>
+    </div>
+  </section>
+
+  <!-- Section 6: Final quiz -->
+  <section class="section" id="sec-final">
+    <h2>6. Final quiz (no hints)</h2>
+    <div class="card" data-index="0">
+      <p>Choose the correct word (since / for):</p>
+      <p>“She has been waiting ___ two hours.”</p>
+      <label><input type="radio" name="final-0" value="since"> since</label>
+      <label><input type="radio" name="final-0" value="for"> for</label>
+      <button class="primary" data-item="final-0">Check</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+    </div>
+    <div class="card" data-index="1">
+      <p>Choose the correct form (present perfect vs past simple):</p>
+      <p>“They ___ (go) away last week.”</p>
+      <label><input type="radio" name="final-1" value="have gone"> have gone</label>
+      <label><input type="radio" name="final-1" value="went"> went</label>
+      <button class="primary" data-item="final-1">Check</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+    </div>
+    <div class="card" data-index="2">
+      <p>Fill the blank (since / for):</p>
+      <p>“It’s been dry ___ a few weeks.”</p>
+      <input type="text" placeholder="since / for">
+      <button class="primary" data-item="final-2">Check</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+    </div>
+    <div class="card" data-index="3">
+      <p>Choose the correct form (present perfect vs past simple):</p>
+      <p>“I ___ (see) that movie yesterday.”</p>
+      <label><input type="radio" name="final-3" value="have seen"> have seen</label>
+      <label><input type="radio" name="final-3" value="saw"> saw</label>
+      <button class="primary" data-item="final-3">Check</button>
+      <div class="feedback" aria-live="polite" style="display:none;"></div>
+    </div>
+  </section>
+
+  <!-- Section 7: Results -->
+  <section class="section" id="sec-results">
+    <h2>7. Results</h2>
+    <div id="results-summary"></div>
+    <button class="primary" id="restart">Restart Lesson</button>
+  </section>
+</main>
+
+<script>
+(() => {
+  const items = {
+    // format: {type, subSkill, answer, hints, correct:false, attempts:0, hintStage:0}
+    "start-0":{type:"fill",subSkill:"since-for",answer:"since",hints:["Think of a point in time.", "The phrase refers to a specific moment.", "Correct answer: since"]},
+    "rule-0":{type:"mc",subSkill:"since-for",answer:"for",hints:["Length of time needs ‘for’.","Remember: for = duration.", "Correct answer: for"]},
+    "contrast-0":{type:"mc",subSkill:"since-for",answer:"for",hints:["Duration → for","‘An hour’ is a length.", "Correct answer: for"]},
+    "contrast-1":{type:"mc",subSkill:"since-for",answer:"since",hints:["‘last week’ is a point in time.", "Use since with a specific past moment.", "Correct answer: since"]},
+    "contrast-2":{type:"mc",subSkill:"since-for",answer:"for",hints:["‘a few weeks’ is a period.", "Use for with periods.", "Correct answer: for"]},
+    "mistake-0":{type:"correct",subSkill:"since-for",answer:"for",hints:["‘since’ needs a point, not a period.", "Replace with ‘for’.","Correct word: for"]},
+    "mistake-1":{type:"correct",subSkill:"present-perfect",answer:"for",hints:["‘for a year ago’ mixes tenses.", "Use ‘for a year’ with present perfect.", "Correct word: for"]},
+    "mixed-0":{type:"fill",subSkill:"since-for",answer:"since",hints:["‘He left school’ is a point.", "Use since with that point.", "Correct answer: since"]},
+    "mixed-1":{type:"mc",subSkill:"present-perfect",answer:"repaired",hints:["Past simple for finished past event.", "Yesterday → past simple.", "Correct answer: repaired"]},
+    "mixed-2":{type:"fill",subSkill:"since-for",answer:"since",hints:["‘lunchtime’ is a point.", "Use since.", "Correct answer: since"]},
+    "mixed-3":{type:"mc",subSkill:"since-for",answer:"for",hints:["‘years’ is a period.", "Use for.", "Correct answer: for"]},
+    "final-0":{type:"mc",subSkill:"since-for",answer:"for",hints:[]},
+    "final-1":{type:"mc",subSkill:"present-perfect",answer:"went",hints:[]},
+    "final-2":{type:"fill",subSkill:"since-for",answer:"for",hints:[]},
+    "final-3":{type:"mc",subSkill:"present-perfect",answer:"saw",hints:[]}
+  };
+  const subSkillStats = {
+    "since-for":{correct:0,total:0},
+    "present-perfect":{correct:0,total:0}
+  };
+  let totalItems = Object.keys(items).length;
+  let answeredCount = 0;
+  const progressFill = document.querySelector('#progress .fill');
+
+  function updateProgress(){
+    const percent = Math.round((answeredCount/totalItems)*100);
+    progressFill.style.width = percent+'%';
+  }
+
+  function showFeedback(card, correct, message){
+    const fb = card.querySelector('.feedback');
+    fb.style.display='flex';
+    fb.innerHTML = `<span class="icon">${correct?'✓':'✗'}</span><span>${message}</span>`;
+    fb.className = 'feedback '+(correct?'correct':'incorrect');
+  }
+
+  function showHint(card, item){
+    const hintDiv = card.querySelector('.hint');
+    hintDiv.style.display='block';
+    const stage = item.hintStage;
+    if(stage<2){
+      hintDiv.textContent = item.hints[stage];
+    }else{
+      hintDiv.textContent = item.hints[stage] || 'Answer: '+item.answer;
+    }
+  }
+
+  function resetHint(card){
+    const hintDiv = card.querySelector('.hint');
+    hintDiv.style.display='none';
+  }
+
+  function handleCheck(e){
+    const btn = e.target;
+    const itemKey = btn.dataset.item;
+    const item = items[itemKey];
+    const card = btn.closest('.card');
+    const input = card.querySelector('input');
+    const radios = card.querySelectorAll('input[type=radio]');
+    let userAnswer='';
+    if(item.type==='fill'){
+      userAnswer = (input.value||'').trim().toLowerCase();
+    }else if(item.type==='mc'){
+      radios.forEach(r=>{if(r.checked) userAnswer=r.value;});
+    }else if(item.type==='correct'){
+      userAnswer = (input.value||'').trim().toLowerCase();
+    }
+    if(!userAnswer){
+      showFeedback(card,false,'Please select or type an answer.');
+      return;
+    }
+    const isCorrect = userAnswer===item.answer;
+    item.attempts++;
+    subSkillStats[item.subSkill].total++;
+    if(isCorrect){
+      subSkillStats[item.subSkill].correct++;
+      showFeedback(card,true,'Correct!');
+    }else{
+      showFeedback(card,false,`Incorrect. ${item.type==='correct'?'The correct word is':'The correct answer is'} ${item.answer}.`);
+    }
+    answeredCount++;
+    updateProgress();
+    // disable controls after correct
+    if(isCorrect){
+      btn.disabled=true;
+      const hintBtn = card.querySelector('.hint');
+      if(hintBtn) hintBtn.disabled=true;
+      if(radios.length) radios.forEach(r=>r.disabled=true);
+      if(input) input.disabled=true;
+    }
+  }
+
+  function handleHint(e){
+    const btn = e.target;
+    const itemKey = btn.dataset.item;
+    const item = items[itemKey];
+    const card = btn.closest('.card');
+    if(item.hintStage===undefined) item.hintStage=0;
+    if(item.hintStage<2){
+      showHint(card,item);
+    }else if(item.hintStage===2){
+      // reveal answer
+      showHint(card,item);
+    }
+    item.hintStage++;
+  }
+
+  function init(){
+    document.querySelectorAll('button.primary').forEach(b=>b.addEventListener('click',handleCheck));
+    document.querySelectorAll('button.hint').forEach(b=>b.addEventListener('click',handleHint));
+    // IntersectionObserver for sections
+    const observer = new IntersectionObserver((entries)=> {
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add('visible');
+          entry.target.classList.remove('hidden');
+        }
+      });
+    },{threshold:0.1});
+    document.querySelectorAll('.section').forEach(sec=>{sec.classList.add('hidden');observer.observe(sec);});
+    // Results button
+    document.getElementById('restart').addEventListener('click',()=>location.reload());
+    // Results calculation after final quiz
+    const finalSection = document.getElementById('sec-final');
+    const finalObserver = new IntersectionObserver((entries)=> {
+      if(entries[0].isIntersecting){
+        // compute results
+        const summary = document.getElementById('results-summary');
+        let html='<h3>Performance</h3><ul>';
+        for(const skill in subSkillStats){
+          const s=subSkillStats[skill];
+          const pct = s.total?Math.round((s.correct/s.total)*100):0;
+          html+=`<li>${skill}: ${s.correct}/${s.total} (${pct}%)</li>`;
+        }
+        html+='</ul>';
+        const weakest = Object.entries(subSkillStats).reduce((a,b)=>b[1].correct/b[1].total < a[1].correct/a[1].total?b:a);
+        html+=`<p>Focus on: <strong>${weakest[0]}</strong>. Review the key rule and try more practice.</p>`;
+        summary.innerHTML=html;
+      }
+    },{threshold:0.5});
+    finalObserver.observe(finalSection);
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>

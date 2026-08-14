@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Present Perfect & Present Perfect Continuous</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --color-bg:#f6f7f8;
+  --color-surface:#ffffff;
+  --color-surface-alt:#eaf5f3;
+  --color-header-from:#2c7873;
+  --color-header-to:#173f3b;
+  --color-primary:#2a7a7a;
+  --color-primary-dark:#1f5f59;
+  --color-accent:#2c7873;
+  --color-text:#1f2937;
+  --color-text-muted:#6b7280;
+  --color-text-faint:#9ca3af;
+  --color-border:#e6e8eb;
+  --color-success:#16a34a;
+  --color-success-bg:#e7f7ec;
+  --color-error:#dc2626;
+  --color-error-bg:#fdeaea;
+  --color-warning:#b45309;
+  --color-warning-bg:#fef3e2;
+  --shadow-soft:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.05);
+  --radius-lg:14px;
+  --radius-md:9px;
+  --radius-sm:6px;
+}
+html{font-size:16px;background:var(--color-bg);color:var(--color-text);font-family:system-ui,Arial,sans-serif;line-height:1.5}
+body{margin:0;padding:0}
+h1,h2,h3{margin:0 0 .5rem;font-weight:600;color:var(--color-text)}
+h1{font-size:1.75rem}
+h2{font-size:1.5rem}
+h3{font-size:1.25rem}
+p{margin:0 0 1rem}
+button{cursor:pointer}
+a{color:var(--color-accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.container{max-width:800px;margin:auto;padding:1rem}
+.card{
+  background:var(--color-surface);
+  border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-soft);
+  padding:1.5rem;
+  margin-bottom:1.5rem;
+}
+.header{
+  position:sticky;top:0;z-index:10;
+  background:linear-gradient(135deg,var(--color-header-from),var(--color-header-to));
+  color:#fff;padding:1rem 0;
+}
+.progress-bar{
+  height:4px;background:#e6e8eb;position:relative;margin-top:.5rem;
+}
+.progress{
+  height:100%;background:var(--color-primary);width:0;
+}
+button.primary{
+  background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));
+  color:#fff;border:none;border-radius:8px;padding:.5rem 1rem;font-weight:600;
+}
+button.primary:focus{outline:2px solid var(--color-primary);outline-offset:2px}
+select, input[type=text]{
+  padding:.4rem .6rem;border:1px solid var(--color-border);
+  border-radius:var(--radius-sm);font-size:1rem;
+}
+select:focus, input:focus{outline:2px solid var(--color-primary);outline-offset:2px}
+.feedback{
+  margin-top:.5rem;padding:.5rem 1rem;border-left:4px solid;
+  border-radius:var(--radius-sm);
+}
+.correct{background:var(--color-success-bg);border-color:var(--color-success);color:var(--color-success)}
+.incorrect{background:var(--color-error-bg);border-color:var(--color-error);color:var(--color-error)}
+.hint{
+  background:var(--color-surface-alt);
+  border-left:4px solid var(--color-primary);
+  padding:.5rem 1rem;margin-top:.5rem;
+}
+.hidden{display:none}
+@media (prefers-reduced-motion:reduce){
+  .fade{animation:none}
+}
+.fade{
+  opacity:0;transform:translateY(20px);
+  animation:fadein .5s forwards;
+}
+@keyframes fadein{to{opacity:1;transform:none}}
+@media (min-width:900px){
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+}
+@media (max-width:599px){
+  button,select,input{min-height:44px}
+}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="container">
+    <h1>Present Perfect & Continuous</h1>
+    <p>Master using “ever”, “never”, and “have/has been + -ing”.</p>
+    <div class="progress-bar"><div class="progress" id="progress"></div></div>
+  </div>
+</header>
+<main class="container">
+  <!-- Section 1: Immediate start -->
+  <section class="card" id="sec1">
+    <h2>1️⃣ Try it first</h2>
+    <p>Fill the blanks. Choose the correct words.</p>
+    <div class="item" data-id="s1q1" data-subskill="ever">
+      <p>____ you ever <select class="ans"><option value="">—</option><option>have</option><option>has</option></select> <select class="ans"><option value="">—</option><option>ridden</option><option>rode</option></select> a horse?</p>
+      <button class="primary check">Check</button>
+      <button class="hint-btn">Hint</button>
+      <div class="feedback hidden" aria-live="polite"></div>
+    </div>
+    <div class="explanation hidden" id="rule1">
+      <h3>Rule</h3>
+      <p>Use <strong>have/has + past participle</strong> for experiences up to now. <strong>Ever</strong> is used in questions, <strong>never</strong> in negatives.</p>
+    </div>
+  </section>
+
+  <!-- Section 2: Core decision rule -->
+  <section class="card" id="sec2">
+    <h2>2️⃣ Decision guide</h2>
+    <p>When to use each form.</p>
+    <div class="two-col">
+      <div>
+        <h3>Present Perfect</h3>
+        <ul>
+          <li>have/has + past participle</li>
+          <li>Used for experiences, actions with result now</li>
+          <li>Often with <em>ever/never</em>, <em>for/since</em> (duration)</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Present Perfect Continuous</h3>
+        <ul>
+          <li>have/has been + verb‑ing</li>
+          <li>Action started in past and continues or just stopped</li>
+          <li>Often with <em>for</em> or <em>since</em></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Key contrasts -->
+  <section class="card" id="sec3">
+    <h2>3️⃣ Quick contrasts</h2>
+    <p>Select the correct word.</p>
+    <div class="item" data-id="s3q1" data-subskill="continuous">
+      <p>I <select class="ans"><option>have</option><option>has</option></select> been working for two hours.</p>
+      <button class="primary check">Check</button>
+      <button class="hint-btn">Hint</button>
+      <div class="feedback hidden" aria-live="polite"></div>
+    </div>
+    <div class="item" data-id="s3q2" data-subskill="ever">
+      <p>She ___ ever visited Paris?</p>
+      <p><select class="ans"><option>ever</option><option>never</option></select></p>
+      <button class="primary check">Check</button>
+      <button class="hint-btn">Hint</button>
+      <div class="feedback hidden" aria-live="polite"></div>
+    </div>
+    <div class="item" data-id="s3q3" data-subskill="ever">
+      <p>They ___ never seen a tiger.</p>
+      <p><select class="ans"><option>have</option><option>has</option></select></p>
+      <button class="primary check">Check</button>
+      <button class="hint-btn">Hint</button>
+      <div class="feedback hidden" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- Section 4: Common mistakes -->
+  <section class="card" id="sec4">
+    <h2>4️⃣ Fix the mistake</h2>
+    <p>Rewrite the sentence correctly.</p>
+    <div class="item" data-id="s4q1" data-subskill="ever">
+      <p>Incorrect: I have ate breakfast.</p>
+      <p>Correct: I have <input type="text" class="ans" placeholder="..."></p>
+      <button class="primary check">Check</button>
+      <button class="hint-btn">Hint</button>
+      <div class="feedback hidden" aria-live="polite"></div>
+    </div>
+    <div class="item" data-id="s4q2" data-subskill="continuous">
+      <p>Incorrect: She has been to the gym yesterday.</p>
+      <p>Correct: She <input type="text" class="ans" placeholder="..."></p>
+      <button class="primary check">Check</button>
+      <button class="hint-btn">Hint</button>
+      <div class="feedback hidden" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- Section 5: Mixed practice -->
+  <section class="card" id="sec5">
+    <h2>5️⃣ Mixed practice</h2>
+    <p>Try the items. Missed ones will appear again.</p>
+    <div id="mixed-container"></div>
+  </section>
+
+  <!-- Section 6: Final quiz -->
+  <section class="card" id="sec6">
+    <h2>6️⃣ Final quiz (no hints)</h2>
+    <p>Show what you know.</p>
+    <div id="quiz-container"></div>
+  </section>
+
+  <!-- Section 7: Results -->
+  <section class="card" id="sec7">
+    <h2>7️⃣ Results</h2>
+    <div id="results"></div>
+    <button class="primary" id="restart">Restart lesson</button>
+  </section>
+</main>
+
+<script>
+(()=>{
+
+// ---------- Data ----------
+const items = {
+  // mixed practice items (will be shuffled)
+  mixed:[
+    {id:'m1',type:'fill',sub:'ever',prompt:'____ you ever <select class="ans"><option>have</option><option>has</option></select> <select class="ans"><option>ridden</option><option>rode</option></select> a comet?',answer:['have','ridden'],hints:['Think about the auxiliary for “you”.','Past participle of “ride”.','Correct: have ridden']},
+    {id:'m2',type:'fill',sub:'continuous',prompt:'How long <select class="ans"><option>have</option><option>has</option></select> you <select class="ans"><option>been studying</option><option>studied</option></select> English?',answer:['have','been studying'],hints:['Auxiliary matches “you”.','Use “been + -ing”.','Correct: have been studying']},
+    {id:'m3',type:'mc',sub:'ever',prompt:'_____ you ever visited London?',options:['ever','never'],answer:'ever',hints:['It’s a question about experience.','The word “ever” is used in questions.','Correct: ever']},
+    {id:'m4',type:'mc',sub:'continuous',prompt:'She ___ been waiting for an hour.',options:['has','have'],answer:'has',hints:['Subject is “She”.','Use “has” with third‑person singular.','Correct: has']},
+    {id:'m5',type:'fill',sub:'ever',prompt:'I ___ never ___ (be) to Japan.',answer:['have','been'],hints:['Negative uses “never”.','Past participle of “be”.','Correct: have been']},
+    {id:'m6',type:'fill',sub:'continuous',prompt:'We ___ ___ (watch) TV all day.',answer:['have','been watching'],hints:['Subject “We” uses “have”.','Use “been + -ing”.','Correct: have been watching']},
+    {id:'m7',type:'mc',sub:'ever',prompt:'He has ___ (ever/never) tried sushi.',options:['ever','never'],answer:'ever',hints:['Positive statement about experience.','Use “ever”.','Correct: ever']},
+    {id:'m8',type:'fill',sub:'continuous',prompt:'It ___ ___ (be) raining for two hours.',answer:['has','been raining'],hints:['Subject “It” uses “has”.','Use “been + -ing”.','Correct: has been raining']},
+  ],
+  // final quiz items (no hints)
+  quiz:[
+    {id:'q1',type:'fill',sub:'ever',prompt:'____ you ever ___ (see) a shooting star?',answer:['have','seen']},
+    {id:'q2',type:'mc',sub:'continuous',prompt:'They ___ ___ (work) on the project since Monday.',options:['have been working','has been working'],answer:'have been working'},
+    {id:'q3',type:'fill',sub:'ever',prompt:'She ___ never ___ (visit) Africa.',answer:['has','visited']},
+    {id:'q4',type:'mc',sub:'continuous',prompt:'I ___ ___ (run) for 30 minutes.',options:['have been running','has been running'],answer:'have been running'},
+    {id:'q5',type:'fill',sub:'ever',prompt:'_____ you ever ___ (eat) escargot?',answer:['have','eaten']},
+    {id:'q6',type:'mc',sub:'continuous',prompt:'He ___ ___ (study) French for three years.',options:['has been studying','have been studying'],answer:'has been studying'},
+  ]
+};
+
+// ---------- State ----------
+let state = {
+  progressTotal:0,
+  progressDone:0,
+  mastery:{ever:{correct:0,total:0},continuous:{correct:0,total:0}},
+  streak:{ever:0,continuous:0},
+  wrongStreak:{ever:0,continuous:0},
+  reviewQueue:[],
+  mixedIndex:0,
+  mixedItems:[],
+  quizIndex:0
+};
+
+// ---------- Utilities ----------
+function $(sel){return document.querySelector(sel)}
+function $$(sel){return document.querySelectorAll(sel)}
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()* (i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function updateProgress(){
+  const pct = state.progressDone / state.progressTotal *100;
+  $('#progress').style.width = pct+'%';
+}
+function renderMixed(){
+  const container = $('#mixed-container');
+  container.innerHTML='';
+  state.mixedItems.forEach((it,i)=>renderItem(it,container,i));
+}
+function renderQuiz(){
+  const container = $('#quiz-container');
+  container.innerHTML='';
+  items.quiz.forEach((it,i)=>renderItem(it,container,i,true));
+}
+function renderItem(it,parent,index,disableHints=false){
+  const div=document.createElement('div');
+  div.className='item';
+  div.dataset.id=it.id;
+  div.dataset.subskill=it.sub;
+  const p=document.createElement('p');
+  p.innerHTML=it.prompt.replace(/<select class="ans">.*?<\/select>/g,()=>'<select class="ans"><option value=""></option><option>have</option><option>has</option></select>').replace(/<input class="ans".*?>/g,()=>'<input type="text" class="ans" placeholder="...">');
+  div.appendChild(p);
+  const btnCheck=document.createElement('button');
+  btnCheck.className='primary check';
+  btnCheck.textContent='Check';
+  div.appendChild(btnCheck);
+  if(!disableHints){
+    const hintBtn=document.createElement('button');
+    hintBtn.className='hint-btn';
+    hintBtn.textContent='Hint';
+    div.appendChild(hintBtn);
+  }
+  const fb=document.createElement('div');
+  fb.className='feedback hidden';
+  fb.setAttribute('aria-live','polite');
+  div.appendChild(fb);
+  parent.appendChild(div);
+}
+function getAnswers(itemElem){
+  const selects=itemElem.querySelectorAll('select');
+  const inputs=itemElem.querySelectorAll('input');
+  const answers=[];
+  selects.forEach(s=>answers.push(s.value.trim()));
+  inputs.forEach(i=>answers.push(i.value.trim()));
+  return answers.filter(a=>a!=='');
+}
+function checkAnswer(itemElem, itemData){
+  const userAns=getAnswers(itemElem);
+  const correctAns=itemData.answer;
+  const isCorrect = Array.isArray(correctAns)?
+    JSON.stringify(userAns)===JSON.stringify(correctAns):
+    userAns[0]===correctAns;
+  const fb=itemElem.querySelector('.feedback');
+  fb.classList.remove('hidden');
+  if(isCorrect){
+    fb.className='feedback correct';
+    fb.innerHTML='✓ Correct!';
+    state.mastery[itemData.sub].correct++;
+    state.streak[itemData.sub]++;
+    state.wrongStreak[itemData.sub]=0;
+  }else{
+    fb.className='feedback incorrect';
+    fb.innerHTML='✗ Incorrect. '+explainWrong(itemData.sub);
+    state.streak[itemData.sub]=0;
+    state.wrongStreak[itemData.sub]++;
+    // queue for review
+    if(!state.reviewQueue.includes(itemData)){
+      state.reviewQueue.push(itemData);
+    }
+  }
+  state.mastery[itemData.sub].total++;
+  state.progressDone++;
+  updateProgress();
+  adaptIfNeeded(itemData.sub);
+}
+function explainWrong(sub){
+  if(sub==='ever'){
+    return 'Remember: use “have/has + past participle”. Use “ever” in questions, “never” in negatives.';
+  }else{
+    return 'Remember: use “have/has been + -ing” for actions that started in the past and continue.';
+  }
+}
+function adaptIfNeeded(sub){
+  // 2 wrong in a row -> insert easier item
+  if(state.wrongStreak[sub]>=2){
+    const easy = {
+      id:'easy-'+Math.random(),
+      type:'mc',
+      sub:sub,
+      prompt: sub==='ever'?'_____ you ever visited Italy?':'She ___ ___ (wait) for an hour.',
+      options: sub==='ever'?['ever','never']:['has','have'],
+      answer: sub==='ever'?'ever':'has',
+      hints:['Easy reminder.','Check the subject.','Correct answer shown.']
+    };
+    state.mixedItems.splice(state.mixedIndex+1,0,easy);
+    state.wrongStreak[sub]=0;
+  }
+  // 2 correct in a row -> skip next easy item if exists
+  if(state.streak[sub]>=2){
+    // find next easy item
+    for(let i=state.mixedIndex+1;i<state.mixedItems.length;i++){
+      if(state.mixedItems[i].id.startsWith('easy-')){
+        state.mixedItems.splice(i,1);
+        break;
+      }
+    }
+    state.streak[sub]=0;
+  }
+}
+function init(){
+  // Section 1 check
+  $('.check').addEventListener('click',e=>{
+    const item=e.target.parentElement;
+    const ans=item.querySelectorAll('.ans');
+    const aux=ans[0].value;
+    const pp=ans[1].value;
+    const fb=item.querySelector('.feedback');
+    if(aux && pp){
+      if(aux==='have' && pp==='ridden'){
+        fb.className='feedback correct';
+        fb.innerHTML='✓ Correct!';
+      }else{
+        fb.className='feedback incorrect';
+        fb.innerHTML='✗ Incorrect. Use “have” with “ridden”.';
+      }
+      fb.classList.remove('hidden');
+      $('#rule1').classList.remove('hidden');
+      state.progressDone++;
+      updateProgress();
+    }else{
+      fb.className='feedback incorrect';
+      fb.innerHTML='✗ Please select both words.';
+      fb.classList.remove('hidden');
+    }
+  });
+  // Hint handling
+  $$( '.hint-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>handleHint(btn));
+  });
+  // Check buttons for other sections
+  $$( '.check').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const item=btn.parentElement;
+      const id=item.dataset.id;
+      const sub=item.dataset.subskill;
+      const data=findItemById(id);
+      if(!data)return;
+      checkAnswer(item,data);
+    });
+  });
+  // Prepare mixed practice
+  state.mixedItems=shuffle(items.mixed);
+  state.progressTotal = 1 /*sec1*/ + items.mixed.length + items.quiz.length;
+  renderMixed();
+  renderQuiz();
+  // Final quiz check (no hints)
+  $$( '#quiz-container .check').forEach(btn=>{
+    btn.addEventListener('click',()=>{ 
+      const item=btn.parentElement;
+      const id=item.dataset.id;
+      const data=findItemById(id);
+      if(!data)return;
+      checkAnswer(item,data);
+    });
+  });
+  // Restart
+  $('#restart').addEventListener('click',()=>location.reload());
+  // IntersectionObserver for fade-in
+  const observer=new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('fade');
+        observer.unobserve(entry.target);
+      }
+    });
+  },{threshold:0.1});
+  $$( '.card').forEach(c=>observer.observe(c));
+  // Results after all done
+  const totalItems = state.progressTotal;
+  const checkCompletion = setInterval(()=>{
+    if(state.progressDone>=totalItems){
+      clearInterval(checkCompletion);
+      showResults();
+    }
+  },500);
+}
+function findItemById(id){
+  const all=[...items.mixed,...items.quiz];
+  return all.find(it=>it.id===id);
+}
+function handleHint(btn){
+  const item=btn.parentElement;
+  const id=item.dataset.id;
+  const data=findItemById(id);
+  if(!data||!data.hints)return;
+  if(!btn.dataset.stage) btn.dataset.stage='0';
+  let stage=+btn.dataset.stage;
+  if(stage<2){
+    // show next hint
+    const hintDiv=document.createElement('div');
+    hintDiv.className='hint';
+    hintDiv.textContent=data.hints[stage];
+    item.appendChild(hintDiv);
+    stage++;
+    btn.dataset.stage=stage;
+    btn.textContent='Hint ('+stage+')';
+  }else{
+    // final stage: show answer
+    const hintDiv=document.createElement('div');
+    hintDiv.className='hint';
+    hintDiv.innerHTML='<strong>Answer:</strong> '+(Array.isArray(data.answer)?data.answer.join(' / '):data.answer);
+    item.appendChild(hintDiv);
+    btn.disabled=true;
+  }
+}
+function showResults(){
+  const resDiv=$('#results');
+  const ever=state.mastery.ever;
+  const cont=state.mastery.continuous;
+  const everPct=ever.total?Math.round(ever.correct/ever.total*100):0;
+  const contPct=cont.total?Math.round(cont.correct/cont.total*100):0;
+  resDiv.innerHTML=`
+    <p><strong>Ever (present perfect):</strong> ${ever.correct}/${ever.total} (${everPct}%)</p>
+    <p><strong>Continuous (present perfect continuous):</strong> ${cont.correct}/${cont.total} (${contPct}%)</p>
+    <p>${(everPct+contPct)/2<70?'Keep practicing the weaker area.':'Great job!'} </p>
+  `;
+}
+init();
+
+})();
+</script>
+</body>
+</html>

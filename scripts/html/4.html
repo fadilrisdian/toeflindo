@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Present Simple vs. Present Continuous</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+--color-bg:#f6f7f8;
+--color-surface:#ffffff;
+--color-surface-alt:#eaf5f3;
+--color-header-from:#2c7873;
+--color-header-to:#173f3b;
+--color-primary:#2a7a7a;
+--color-primary-dark:#1f5f59;
+--color-accent:#2c7873;
+--color-text:#1f2937;
+--color-text-muted:#6b7280;
+--color-text-faint:#9ca3af;
+--color-border:#e6e8eb;
+--color-success:#16a34a;
+--color-success-bg:#e7f7ec;
+--color-error:#dc2626;
+--color-error-bg:#fdeaea;
+--color-warning:#b45309;
+--color-warning-bg:#fef3e2;
+--shadow-soft:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.05);
+--radius-lg:14px;
+--radius-md:9px;
+--radius-sm:6px;
+}
+html{font-family:system-ui,Arial,sans-serif;background:var(--color-bg);color:var(--color-text);font-size:16px;line-height:1.5;}
+body{margin:0;padding:0;}
+h1,h2,h3{margin:0 0 .5rem;color:var(--color-text);}
+h1{font-size:1.75rem;font-weight:600;}
+h2{font-size:1.5rem;font-weight:600;}
+h3{font-size:1.25rem;font-weight:600;}
+p{margin:0 0 1rem;}
+button{cursor:pointer;}
+a{color:var(--color-accent);text-decoration:none;}
+a:focus{outline:2px solid var(--color-primary);}
+.container{max-width:900px;margin:auto;padding:1rem;}
+.card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-soft);padding:1.5rem;margin-bottom:1.5rem;}
+.header{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,var(--color-header-from),var(--color-header-to));color:#fff;padding:1rem 1rem 0.5rem;display:flex;flex-direction:column;gap:.5rem;}
+.progress-bar{height:4px;background:#e6e8eb;position:relative;overflow:hidden;border-radius:2px;}
+.progress{height:100%;background:var(--color-primary);width:0%;transition:width .3s;}
+section{opacity:0;transform:translateY(20px);transition:opacity .4s,transform .4s;}
+section.visible{opacity:1;transform:none;}
+.feedback{margin-top:.5rem;padding:.75rem;border-left:4px solid;display:flex;align-items:center;gap:.5rem;border-radius:var(--radius-sm);}
+.feedback.correct{border-color:var(--color-success);background:var(--color-success-bg);color:var(--color-success);}
+.feedback.incorrect{border-color:var(--color-error);background:var(--color-error-bg);color:var(--color-error);}
+.feedback .icon{font-size:1.2rem;line-height:1;}
+.hint-panel{background:var(--color-surface-alt);border-left:4px solid var(--color-primary);padding:.75rem;margin-top:.5rem;border-radius:var(--radius-sm);}
+button.primary{background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));color:#fff;border:none;border-radius:8px;padding:.5rem 1rem;font-weight:600;}
+button.primary:focus{outline:2px solid var(--color-primary);}
+button.secondary{background:var(--color-surface-alt);color:var(--color-accent);border:1px solid var(--color-primary);border-radius:8px;padding:.5rem 1rem;}
+button.secondary:focus{outline:2px solid var(--color-primary);}
+input,select,textarea{font:inherit;padding:.5rem;border:1px solid var(--color-border);border-radius:var(--radius-sm);width:100%;box-sizing:border-box;}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--color-primary);}
+@media (prefers-reduced-motion:reduce){
+section{transition:none;}
+}
+</style>
+</head>
+<body>
+<header class="header">
+<h1>Present Simple vs. Present Continuous</h1>
+<h2>Choose the right verb form</h2>
+<div class="progress-bar"><div class="progress" id="progress"></div></div>
+</header>
+<main class="container">
+<!-- Section 1: Immediate start -->
+<section class="card" id="sec1">
+<h3>1. Quick Start</h3>
+<p>Fill in the blank with the correct form.</p>
+<div class="item" data-id="s1q1" data-type="fill" data-subskill="choice">
+<p>She <strong>(watch)</strong> TV right now.</p>
+<input type="text" placeholder="Your answer">
+<button class="primary submit">Check</button>
+<div class="feedback" aria-live="polite" hidden></div>
+<div class="hint-panel" hidden>
+<button class="secondary hint">Hint</button>
+<div class="hint-content" hidden></div>
+</div>
+</div>
+</section>
+
+<!-- Section 2: Core decision rule -->
+<section class="card" id="sec2">
+<h3>2. Decision Helper</h3>
+<p>Read the situation and decide which tense to use.</p>
+<div class="item" data-id="s2q1" data-type="choice" data-subskill="decision">
+<p>It is raining heavily outside.</p>
+<button class="primary choice-btn" data-choice="simple">Present Simple</button>
+<button class="primary choice-btn" data-choice="continuous">Present Continuous</button>
+<div class="feedback" aria-live="polite" hidden></div>
+<div class="hint-panel" hidden>
+<button class="secondary hint">Hint</button>
+<div class="hint-content" hidden></div>
+</div>
+</div>
+</section>
+
+<!-- Section 3: Key contrasts -->
+<section class="card" id="sec3">
+<h3>3. Spot the Difference</h3>
+<p>Select the correct verb form.</p>
+<div class="item" data-id="s3q1" data-type="mc" data-subskill="choice">
+<p>He ___ (like) pizza.</p>
+<select><option value="">--Select--</option><option value="likes">likes</option><option value="is liking">is liking</option></select>
+<button class="primary submit">Check</button>
+<div class="feedback" aria-live="polite" hidden></div>
+<div class="hint-panel" hidden>
+<button class="secondary hint">Hint</button>
+<div class="hint-content" hidden></div>
+</div>
+</div>
+<div class="item" data-id="s3q2" data-type="mc" data-subskill="choice">
+<p>They ___ (watch) a movie at the moment.</p>
+<select><option value="">--Select--</option><option value="watch">watch</option><option value="are watching">are watching</option></select>
+<button class="primary submit">Check</button>
+<div class="feedback" aria-live="polite" hidden></div>
+<div class="hint-panel" hidden>
+<button class="secondary hint">Hint</button>
+<div class="hint-content" hidden></div>
+</div>
+</div>
+<div class="item" data-id="s3q3" data-type="mc" data-subskill="choice">
+<p>Water ___ (boil) at 100°C.</p>
+<select><option value="">--Select--</option><option value="boils">boils</option><option value="is boiling">is boiling</option></select>
+<button class="primary submit">Check</button>
+<div class="feedback" aria-live="polite" hidden></div>
+<div class="hint-panel" hidden>
+<button class="secondary hint">Hint</button>
+<div class="hint-content" hidden></div>
+</div>
+</div>
+</section>
+
+<!-- Section 4: Common mistakes -->
+<section class="card" id="sec4">
+<h3>4. Fix the Mistake</h3>
+<p>Rewrite the sentence with the correct verb form.</p>
+<div class="item" data-id="s4q1" data-type="correction" data-subskill="correction">
+<p>I’m not believing it.</p>
+<input type="text" placeholder="Correct sentence">
+<button class="primary submit">Check</button>
+<div class="feedback" aria-live="polite" hidden></div>
+<div class="hint-panel" hidden>
+<button class="secondary hint">Hint</button>
+<div class="hint-content" hidden></div>
+</div>
+</div>
+<div class="item" data-id="s4q2" data-type="correction" data-subskill="correction">
+<p>She is knowing the answer.</p>
+<input type="text" placeholder="Correct sentence">
+<button class="primary submit">Check</button>
+<div class="feedback" aria-live="polite" hidden></div>
+<div class="hint-panel" hidden>
+<button class="secondary hint">Hint</button>
+<div class="hint-content" hidden></div>
+</div>
+</div>
+</section>
+
+<!-- Section 5: Mixed practice -->
+<section class="card" id="sec5">
+<h3>5. Mixed Practice</h3>
+<p>Try the following items. Missed ones will appear again later.</p>
+<div id="mixed-container"></div>
+</section>
+
+<!-- Section 6: Final quiz -->
+<section class="card" id="sec6">
+<h3>6. Final Quiz (no hints)</h3>
+<div id="quiz-container"></div>
+</section>
+
+<!-- Section 7: Results -->
+<section class="card" id="sec7">
+<h3>7. Your Results</h3>
+<div id="results"></div>
+<button class="primary" id="restart">Restart Lesson</button>
+</section>
+</main>
+
+<script>
+(()=>{
+
+const state={
+items:{
+s1q1:{type:'fill',subskill:'choice',question:'She (watch) TV right now.',answer:'is watching',hints:['Think about the verb “watch” and what is happening now.','You need “is” + verb‑ing.','Answer: is watching']},
+s2q1:{type:'choice',subskill:'decision',question:'It is raining heavily outside.',answer:'continuous',hints:['Is this a temporary situation?','Present continuous is used for actions happening now.','Answer: continuous']},
+s3q1:{type:'mc',subskill:'choice',question:'He ___ (like) pizza.',options:['likes','is liking'],answer:'likes',hints:['Stative verb “like” uses simple present.','Look at the subject “He”.','Answer: likes']},
+s3q2:{type:'mc',subskill:'choice',question:'They ___ (watch) a movie at the moment.',options:['watch','are watching'],answer:'are watching',hints:['Something happening right now.','Use “are” + verb‑ing.','Answer: are watching']},
+s3q3:{type:'mc',subskill:'choice',question:'Water ___ (boil) at 100°C.',options:['boils','is boiling'],answer:'boils',hints:['General fact.','Simple present for facts.','Answer: boils']},
+s4q1:{type:'correction',subskill:'correction',question:'I’m not believing it.',answer:'I don’t believe it.',hints:['“Believe” is a stative verb.','Use simple present negative.','Answer: I don’t believe it.']},
+s4q2:{type:'correction',subskill:'correction',question:'She is knowing the answer.',answer:'She knows the answer.',hints:['“Know” is stative.','Simple present affirmative.','Answer: She knows the answer.']},
+/* Mixed practice pool */
+mix1:{type:'fill',subskill:'choice',question:'Tom ___ (play) football now.',answer:'is playing',hints:['Temporary action.','Use “is” + verb‑ing.','Answer: is playing']},
+mix2:{type:'fill',subskill:'choice',question:'The sun ___ (rise) in the east.',answer:'rises',hints:['General fact.','Simple present.','Answer: rises']},
+mix3:{type:'mc',subskill:'choice',question:'We ___ (eat) dinner at 7pm.',options:['eat','are eating'],answer:'eat',hints:['Scheduled future, use simple present.','Answer: eat']},
+mix4:{type:'mc',subskill:'choice',question:'She ___ (study) for the exam right now.',options:['studies','is studying'],answer:'is studying',hints:['Action happening now.','Answer: is studying']},
+mix5:{type:'correction',subskill:'correction',question:'He is having a car.',answer:'He has a car.',hints:['“Have” is stative.','Simple present.','Answer: He has a car.']},
+mix6:{type:'correction',subskill:'correction',question:'They are knowing the rules.',answer:'They know the rules.',hints:['Stative verb.','Simple present.','Answer: They know the rules.']},
+mix7:{type:'fill',subskill:'choice',question:'I ___ (read) this book at the moment.',answer:'am reading',hints:['Present continuous for now.','Answer: am reading']},
+mix8:{type:'mc',subskill:'choice',question:'Birds ___ (fly) south in winter.',options:['fly','are flying'],answer:'fly',hints:['General truth.','Simple present.','Answer: fly']},
+/* Final quiz pool */
+quiz1:{type:'fill',subskill:'choice',question:'She ___ (work) today.',answer:'is working',hints:[]},
+quiz2:{type:'mc',subskill:'choice',question:'Water ___ (freeze) at 0°C.',options:['freezes','is freezing'],answer:'freezes',hints:[]},
+quiz3:{type:'correction',subskill:'correction',question:'I am liking this movie.',answer:'I like this movie.',hints:[]},
+quiz4:{type:'fill',subskill:'choice',question:'They ___ (travel) to Japan next month.',answer:'are traveling',hints:[]},
+quiz5:{type:'mc',subskill:'choice',question:'He ___ (run) every morning.',options:['runs','is running'],answer:'runs',hints:[]},
+quiz6:{type:'correction',subskill:'correction',question:'She isn’t enjoying the party.',answer:'She doesn’t enjoy the party.',hints:[]}
+},
+progress:{total:0,completed:0},
+subskillStats:{choice:{correct:0,total:0},correction:{correct:0,total:0},decision:{correct:0,total:0}},
+streaks:{},
+reviewQueue:[],
+mixedQueue:[],
+quizQueue:[],
+init(){
+this.setupSection1();
+this.setupSection2();
+this.setupSection3();
+this.setupSection4();
+this.prepareMixed();
+this.prepareQuiz();
+this.updateProgress();
+},
+setupSection1(){
+const el=document.querySelector('#sec1 .item');
+this.attachItem(el);
+},
+setupSection2(){
+const el=document.querySelector('#sec2 .item');
+this.attachItem(el);
+},
+setupSection3(){
+document.querySelectorAll('#sec3 .item').forEach(el=>this.attachItem(el));
+},
+setupSection4(){
+document.querySelectorAll('#sec4 .item').forEach(el=>this.attachItem(el));
+},
+prepareMixed(){
+const ids=['mix1','mix2','mix3','mix4','mix5','mix6','mix7','mix8'];
+this.mixedQueue=ids.map(id=>({id, ...this.state.items[id]}));
+this.renderMixed();
+},
+renderMixed(){
+const container=document.getElementById('mixed-container');
+container.innerHTML='';
+if(this.mixedQueue.length===0){
+container.innerHTML='<p>All mixed items completed.</p>';
+return;
+}
+const item=this.mixedQueue[0];
+const div=document.createElement('div');
+div.className='item';
+div.dataset.id=item.id;
+div.dataset.type=item.type;
+div.dataset.subskill=item.subskill;
+let html=`<p>${item.question}</p>`;
+if(item.type==='fill'){
+html+=`<input type="text" placeholder="Your answer">`;
+}else if(item.type==='mc'){
+html+=`<select><option value="">--Select--</option>`;
+item.options.forEach(opt=>{html+=`<option value="${opt}">${opt}</option>`;});
+html+=`</select>`;
+}else if(item.type==='correction'){
+html+=`<input type="text" placeholder="Correct sentence">`;
+}
+html+=`<button class="primary submit">Check</button>`;
+html+=`<div class="feedback" aria-live="polite" hidden></div>`;
+html+=`<div class="hint-panel" hidden><button class="secondary hint">Hint</button><div class="hint-content" hidden></div></div>`;
+div.innerHTML=html;
+container.appendChild(div);
+this.attachItem(div);
+},
+prepareQuiz(){
+const ids=['quiz1','quiz2','quiz3','quiz4','quiz5','quiz6'];
+this.quizQueue=ids.map(id=>({id, ...this.state.items[id]}));
+this.renderQuiz();
+},
+renderQuiz(){
+const container=document.getElementById('quiz-container');
+container.innerHTML='';
+if(this.quizQueue.length===0){
+container.innerHTML='<p>Quiz completed.</p>';
+this.showResults();
+return;
+}
+const item=this.quizQueue[0];
+const div=document.createElement('div');
+div.className='item';
+div.dataset.id=item.id;
+div.dataset.type=item.type;
+div.dataset.subskill=item.subskill;
+let html=`<p>${item.question}</p>`;
+if(item.type==='fill'){
+html+=`<input type="text" placeholder="Your answer">`;
+}else if(item.type==='mc'){
+html+=`<select><option value="">--Select--</option>`;
+item.options.forEach(opt=>{html+=`<option value="${opt}">${opt}</option>`;});
+html+=`</select>`;
+}else if(item.type==='correction'){
+html+=`<input type="text" placeholder="Correct sentence">`;
+}
+html+=`<button class="primary submit">Check</button>`;
+html+=`<div class="feedback" aria-live="polite" hidden></div>`;
+div.innerHTML=html;
+container.appendChild(div);
+this.attachItem(div,true); // true = no hints
+},
+attachItem(el, noHints=false){
+const type=el.dataset.type;
+const submitBtn=el.querySelector('.submit');
+const feedback=el.querySelector('.feedback');
+const hintPanel=el.querySelector('.hint-panel');
+const hintBtn=hintPanel?hintPanel.querySelector('.hint'):null;
+let hintStage=0;
+if(hintBtn){
+hintBtn.addEventListener('click',()=>{ // hint progression
+hintStage++;
+if(hintStage===1){
+this.showHint(el,'nudge');
+}else if(hintStage===2){
+this.showHint(el,'clue');
+}else if(hintStage===3){
+this.showHint(el,'answer');
+}
+});
+}
+submitBtn.addEventListener('click',()=>{ // evaluate
+let userAns;
+if(type==='fill' || type==='correction'){
+userAns=el.querySelector('input').value.trim();
+}else if(type==='mc'){
+userAns=el.querySelector('select').value;
+}
+if(!userAns){
+alert('Please enter an answer.');
+return;
+}
+const itemData=this.state.items[el.dataset.id];
+const correct=itemData.answer;
+const isCorrect=this.checkAnswer(userAns,correct,type);
+this.recordAttempt(el.dataset.subskill,isCorrect);
+if(isCorrect){
+feedback.className='feedback correct';
+feedback.innerHTML='<span class="icon">✓</span>Correct!';
+feedback.hidden=false;
+} else {
+feedback.className='feedback incorrect';
+feedback.innerHTML='<span class="icon">✗</span>Incorrect. '+this.explainWrong(userAns,correct,type);
+feedback.hidden=false;
+}
+if(hintPanel && hintStage===3){
+hintPanel.querySelector('.hint-content').innerHTML=`<strong>Answer:</strong> ${correct}`;
+}
+if(el.closest('#sec5')){
+// mixed practice flow
+if(isCorrect){
+this.mixedQueue.shift();
+} else {
+this.reviewQueue.push(el.dataset.id);
+this.mixedQueue.shift();
+}
+if(this.mixedQueue.length===0 && this.reviewQueue.length>0){
+setTimeout(()=>{ // reinsert after 2 other items (simulated)
+const nextId=this.reviewQueue.shift();
+this.mixedQueue.push({id:nextId,...this.state.items[nextId]});
+this.renderMixed();
+},500);
+}else{
+this.renderMixed();
+}
+}else if(el.closest('#sec6')){
+if(isCorrect){
+this.quizQueue.shift();
+}else{
+this.quizQueue.shift(); // move on regardless
+}
+this.renderQuiz();
+}
+this.updateProgress();
+});
+},
+checkAnswer(user,correct,type){
+if(type==='fill' || type==='correction'){
+return user.toLowerCase()===correct.toLowerCase();
+}
+return user===correct;
+},
+explainWrong(user,correct,type){
+if(type==='fill'){
+return `The correct form is “${correct}”.`;
+}
+if(type==='mc'){
+return `The correct choice is “${correct}”.`;
+}
+if(type==='correction'){
+return `The correct sentence is: “${correct}”.`;
+}
+return '';
+},
+showHint(el,stage){
+const hintContent=el.querySelector('.hint-content');
+const itemData=this.state.items[el.dataset.id];
+let text='';
+if(stage==='nudge'){
+text=itemData.hints[0]||'Think about the situation.';
+}else if(stage==='clue'){
+text=itemData.hints[1]||'Consider the verb form.';
+}else if(stage==='answer'){
+text=itemData.hints[2]||'Here is the answer.';
+}
+hintContent.innerHTML=text;
+el.querySelector('.hint-panel').hidden=false;
+hintContent.hidden=false;
+},
+recordAttempt(subskill,correct){
+this.subskillStats[subskill].total++;
+if(correct) this.subskillStats[subskill].correct++;
+if(!this.streaks[subskill]) this.streaks[subskill]=0;
+if(correct){
+this.streaks[subskill]++;
+if(this.streaks[subskill]>=2){
+this.streaks[subskill]=0;
+this.handleStreak(subskill,true);
+}
+}else{
+this.streaks[subskill]--;
+if(this.streaks[subskill]<=-2){
+this.streaks[subskill]=0;
+this.handleStreak(subskill,false);
+}
+}
+},
+handleStreak(subskill,positive){
+if(positive){
+ // skip next easy item if exists
+const idx=this.mixedQueue.findIndex(i=>i.subskill===subskill && i.difficulty!=='hard');
+if(idx!==-1){
+this.mixedQueue.splice(idx,1);
+}
+}else{
+ // insert easier version (reuse first easy item of same subskill)
+const easy=this.state.items['mix2']; // simple fallback
+if(easy){
+this.mixedQueue.splice(1,0,{id:'easy-'+Date.now(),...easy});
+}
+}
+},
+updateProgress(){
+const total=this.subskillStats.choice.total+this.subskillStats.correction.total+this.subskillStats.decision.total;
+const completed=this.subskillStats.choice.correct+this.subskillStats.correction.correct+this.subskillStats.decision.correct;
+const percent=total===0?0:(completed/total)*100;
+document.getElementById('progress').style.width=percent+'%';
+},
+showResults(){
+const resDiv=document.getElementById('results');
+let html='<h4>Performance</h4><ul>';
+for(const [skill,stats] of Object.entries(this.subskillStats)){
+const pct=stats.total===0?0:(stats.correct/stats.total*100).toFixed(0);
+html+=`<li>${skill}: ${stats.correct}/${stats.total} (${pct}%)</li>`;
+}
+html+='</ul>';
+let weakest='choice';
+let low=100;
+for(const [skill,stats] of Object.entries(this.subskillStats)){
+const pct=stats.total===0?0:(stats.correct/stats.total*100);
+if(pct<low){low=pct;weakest=skill;}
+}
+html+=`<p>Focus on <strong>${weakest}</strong> for better mastery.</p>`;
+resDiv.innerHTML=html;
+},
+restart(){
+location.reload();
+}
+};
+state.init();
+
+// IntersectionObserver for fade-in
+const observer=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');}});},{threshold:0.1});
+document.querySelectorAll('section').forEach(sec=>observer.observe(sec));
+
+// Restart button
+document.getElementById('restart').addEventListener('click',()=>state.restart());
+
+})();
+</script>
+<noscript>
+<h2>Present Simple vs. Present Continuous</h2>
+<p>Use the present simple for habits, facts, and general truths. Use the present continuous for actions happening right now, temporary situations, or planned future events.</p>
+</noscript>
+</body>
+</html>

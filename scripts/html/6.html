@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Past Continuous vs Past Simple</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+--color-bg:#f6f7f8;
+--color-surface:#ffffff;
+--color-surface-alt:#eaf5f3;
+--color-header-from:#2c7873;
+--color-header-to:#173f3b;
+--color-primary:#2a7a7a;
+--color-primary-dark:#1f5f59;
+--color-accent:#2c7873;
+--color-text:#1f2937;
+--color-text-muted:#6b7280;
+--color-text-faint:#9ca3af;
+--color-border:#e6e8eb;
+--color-success:#16a34a;
+--color-success-bg:#e7f7ec;
+--color-error:#dc2626;
+--color-error-bg:#fdeaea;
+--color-warning:#b45309;
+--color-warning-bg:#fef3e2;
+--shadow-soft:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.05);
+--radius-lg:14px;
+--radius-md:9px;
+--radius-sm:6px;
+}
+html{font-size:16px;background:var(--color-bg);color:var(--color-text);font-family:system-ui,sans-serif;line-height:1.5;}
+body{margin:0;padding:0;display:flex;flex-direction:column;align-items:center;}
+h1,h2{margin:0;font-weight:600;color:var(--color-text);}
+h1{font-size:1.75rem;}
+h2{font-size:1.125rem;color:var(--color-text-muted);}
+button{cursor:pointer;}
+a{color:var(--color-accent);text-decoration:none;}
+.container{max-width:800px;width:100%;padding:1rem;}
+.card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-soft);margin:1rem 0;padding:1rem;display:flex;flex-direction:column;gap:0.75rem;}
+header{position:sticky;top:0;z-index:10;width:100%;background:linear-gradient(135deg,var(--color-header-from),var(--color-header-to));color:#fff;padding:0.75rem 1rem;display:flex;flex-direction:column;gap:0.25rem;}
+.progress{height:4px;background:#e6e8eb;position:relative;border-radius:2px;overflow:hidden;}
+.progress::after{content:"";position:absolute;left:0;top:0;height:100%;width:0;background:var(--color-primary);transition:width .3s;}
+button.primary{background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:600;}
+button.primary:focus{outline:2px solid var(--color-primary);}
+button.hint{background:var(--color-surface-alt);border:1px solid var(--color-accent);border-radius:var(--radius-sm);padding:0.25rem 0.5rem;font-size:0.875rem;}
+.feedback{border-left:4px solid;display:flex;align-items:center;gap:0.5rem;padding:0.5rem;}
+.feedback.correct{border-color:var(--color-success);background:var(--color-success-bg);color:var(--color-success);}
+.feedback.incorrect{border-color:var(--color-error);background:var(--color-error-bg);color:var(--color-error);}
+.feedback .icon{font-weight:700;}
+.hint-panel{background:var(--color-surface-alt);border-left:4px solid var(--color-primary);padding:0.5rem;margin-top:0.5rem;}
+.hidden{display:none;}
+@media (prefers-reduced-motion: reduce){
+*{transition:none!important;}
+}
+</style>
+</head>
+<body>
+<header>
+<h1>Past Continuous vs Past Simple</h1>
+<h2>Practice the difference</h2>
+<div class="progress" aria-label="Progress"><div class="progress-bar"></div></div>
+</header>
+<div class="container" id="content">
+<!-- Sections will be injected by JS -->
+</div>
+<script>
+(()=>{
+
+const sections = [
+{id:"start",title:"Start"},
+{id:"rule",title:"Decision Rule"},
+{id:"contrast",title:"Key Contrasts"},
+{id:"mistakes",title:"Common Mistakes"},
+{id:"mixed",title:"Mixed Practice"},
+{id:"quiz",title:"Final Quiz"},
+{id:"results",title:"Results"}
+];
+
+const itemsData = {
+start:[
+{
+id:"s1",
+type:"mc",
+sub:"ChooseForm",
+prompt:"Yesterday, I ___ TV when the phone rang.",
+options:["watched","was watching"],
+answer:1,
+hints:["Think about an action that was happening when something else occurred." ,"The verb needs “was/were + -ing”.","The correct answer is “was watching”."],
+explanation:"Use past continuous for an ongoing action that was interrupted."
+}
+],
+rule:[
+{
+id:"r1",
+type:"mc",
+sub:"ChooseForm",
+prompt:"I ___ (read) a book when the lights went out.",
+options:["read","was reading"],
+answer:1,
+hints:["Which form shows the action in progress?","Look for “was/were + -ing”.","Answer: was reading."),
+explanation:"Past continuous for the background action."
+},
+{
+id:"r2",
+type:"mc",
+sub:"ChooseForm",
+prompt:"She ___ (finish) her homework before dinner.",
+options:["finished","was finishing"],
+answer:0,
+hints:["The action is completed before another event." ,"Past simple is used for completed actions." ,"Answer: finished."),
+explanation:"Past simple for a completed action."
+}
+],
+contrast:[
+{
+id:"c1",
+type:"mc",
+sub:"ChooseForm",
+prompt:"While the children ___ (play), the teacher arrived.",
+options:["played","were playing"],
+answer:1,
+hints:["Which verb form shows an ongoing action?","Use “were + -ing”.","Answer: were playing."),
+explanation:"Past continuous for the ongoing background."
+},
+{
+id:"c2",
+type:"mc",
+sub:"ChooseForm",
+prompt:"He ___ (break) the vase and ___ (cry) afterwards.",
+options:["broke","was crying","broke","broke"],
+answer:0,
+hints:["First action is a single event." ,"Second is a reaction after the event." ,"Answer: broke."),
+explanation:"Past simple for the single event."
+},
+{
+id:"c3",
+type:"mc",
+sub:"ChooseForm",
+prompt:"When I ___ (arrive) at the station, the train ___ (already / leave).",
+options:["arrived","had already left","arrived","was leaving"],
+answer:0,
+hints:["First verb is a completed action." ,"Second verb shows a prior completed action." ,"Answer: arrived – had already left."),
+explanation:"Past simple for completed actions; past perfect for earlier action."
+}
+],
+mistakes:[
+{
+id:"m1",
+type:"fill",
+sub:"ErrorCorrection",
+prompt:"She was listening music yesterday.",
+answer:"was listening to music",
+hints:["What preposition follows “listen” when talking about something you hear?","Add “to”.","Answer: was listening to music."),
+explanation:"“listen” needs the preposition “to”."
+},
+{
+id:"m2",
+type:"fill",
+sub:"ErrorCorrection",
+prompt:"They was playing football.",
+answer:"were playing football",
+hints:["Subject “They” is plural." ,"Use “were” with plural subjects." ,"Answer: were playing football."),
+explanation:"“was” is singular; use “were” for plural."
+},
+{
+id:"m3",
+type:"fill",
+sub:"ErrorCorrection",
+prompt:"I was watch a movie.",
+answer:"was watching a movie",
+hints:["The verb needs “-ing”.","Add “-ing” to “watch”.","Answer: was watching a movie."),
+explanation:"Past continuous requires “was/were + verb‑ing”."
+}
+],
+mixed:[
+{
+id:"mx1",
+type:"mc",
+sub:"ChooseForm",
+prompt:"While I ___ (cook), the phone rang.",
+options:["cooked","was cooking"],
+answer:1,
+hints:["Ongoing action?","Use “was + -ing”.","Answer: was cooking."),
+explanation:"Past continuous for background."
+},
+{
+id:"mx2",
+type:"mc",
+sub:"ChooseForm",
+prompt:"She ___ (lose) her keys last night.",
+options:["lost","was losing"],
+answer:0,
+hints:["Completed action?","Past simple." ,"Answer: lost."),
+explanation:"Past simple for completed action."
+},
+{
+id:"mx3",
+type:"fill",
+sub:"ErrorCorrection",
+prompt:"We ___ (not / hear) the lecture because it was noisy.",
+answer:"did not hear",
+hints:["Use past simple negative." ,"Add “did not” before the base verb." ,"Answer: did not hear."),
+explanation:"Negative past simple uses “did not + base verb”."
+},
+{
+id:"mx4",
+type:"mc",
+sub:"ChooseForm",
+prompt:"He ___ (run) when it started to rain.",
+options:["ran","was running"],
+answer:1,
+hints:["Ongoing when interrupted?","Past continuous." ,"Answer: was running."),
+explanation:"Past continuous for ongoing action interrupted."
+},
+{
+id:"mx5",
+type:"mc",
+sub:"ChooseForm",
+prompt:"They ___ (watch) a movie yesterday.",
+options:["watched","were watching"],
+answer:0,
+hints:["Simple completed action?","Past simple." ,"Answer: watched."),
+explanation:"Past simple for completed action."
+},
+{
+id:"mx6",
+type:"fill",
+sub:"ErrorCorrection",
+prompt:"I ___ (be) late because the bus broke down.",
+answer:"was",
+hints:["Subject “I” with past simple." ,"Use “was”.","Answer: was."),
+explanation:"“I” takes “was” in past simple."
+},
+{
+id:"mx7",
+type:"mc",
+sub:"ChooseForm",
+prompt:"When the alarm ___ (go) off, we ___ (sleep).",
+options:["went","were sleeping","went","were sleeping"],
+answer:0,
+hints:["First action is the alarm ringing." ,"Second action is ongoing sleep." ,"Answer: went – were sleeping."),
+explanation:"Past simple for the alarm, past continuous for ongoing sleep."
+},
+{
+id:"mx8",
+type:"mc",
+sub:"ChooseForm",
+prompt:"She ___ (study) all night, so she ___ (be) tired.",
+options:["studied","was","studied","were"],
+answer:0,
+hints:["First action completed, second state." ,"Past simple then past simple." ,"Answer: studied – was."),
+explanation:"Both are past simple; “was” for state."
+}
+],
+quiz:[
+{
+id:"q1",
+type:"mc",
+sub:"ChooseForm",
+prompt:"While the rain ___ (fall), we ___ (stay) inside.",
+options:["fell","stayed","was falling","stayed"],
+answer:2,
+explanation:"Past continuous for rain, past simple for staying."
+},
+{
+id:"q2",
+type:"mc",
+sub:"ChooseForm",
+prompt:"She ___ (write) a letter when the power ___ (go) out.",
+options:["wrote","went out","was writing","went out"],
+answer:2,
+explanation:"Background action in past continuous."
+},
+{
+id:"q3",
+type:"fill",
+sub:"ErrorCorrection",
+prompt:"He ____(not / finish) the report yet.",
+answer:"has not finished",
+explanation:"Present perfect for unfinished action."
+},
+{
+id:"q4",
+type:"mc",
+sub:"ChooseForm",
+prompt:"I ___ (see) the movie yesterday.",
+options:["saw","was seeing"],
+answer:0,
+explanation:"Simple past for completed action."
+},
+{
+id:"q5",
+type:"mc",
+sub:"ChooseForm",
+prompt:"They ___ (talk) when the teacher entered.",
+options:["talked","were talking"],
+answer:1,
+explanation:"Past continuous for ongoing action interrupted."
+},
+{
+id:"q6",
+type:"fill",
+sub:"ErrorCorrection",
+prompt:"We ___ (just / arrive).",
+answer:"have just arrived",
+explanation:"Present perfect with “just”."
+}
+]};
+
+let state = {
+totalItems:0,
+completed:0,
+subSkill:{},
+reviewQueue:[],
+currentSection:0,
+hintStages:{},
+streaks:{},
+};
+
+function init(){
+calculateTotal();
+renderHeader();
+renderSections();
+updateProgress();
+}
+function calculateTotal(){
+let count=0;
+for(let sec in itemsData){
+count+=itemsData[sec].length;
+}
+state.totalItems=count;
+}
+function renderHeader(){
+const progressBar=document.querySelector('.progress-bar');
+progressBar.style.width=`${(state.completed/state.totalItems)*100}%`;
+}
+function updateProgress(){
+const bar=document.querySelector('.progress-bar');
+bar.style.width=`${(state.completed/state.totalItems)*100}%`;
+}
+function renderSections(){
+const container=document.getElementById('content');
+sections.forEach(sec=>{ 
+let secDiv=document.createElement('section');
+secDiv.id=sec.id;
+secDiv.className='card';
+let h2=document.createElement('h2');
+h2.textContent=sec.title;
+secDiv.appendChild(h2);
+container.appendChild(secDiv);
+if(itemsData[sec.id]){
+itemsData[sec.id].forEach(item=>renderItem(secDiv,item));
+}
+});
+}
+function renderItem(parent,item){
+let card=document.createElement('div');
+card.className='card';
+card.dataset.itemId=item.id;
+card.dataset.sub=item.sub;
+let prompt=document.createElement('p');
+prompt.textContent=item.prompt;
+card.appendChild(prompt);
+let inputDiv=document.createElement('div');
+if(item.type==="mc"){
+item.options.forEach((opt,i)=>{
+let label=document.createElement('label');
+label.style.display='block';
+let radio=document.createElement('input');
+radio.type='radio';
+radio.name='ans-'+item.id;
+radio.value=i;
+radio.required=true;
+label.appendChild(radio);
+label.appendChild(document.createTextNode(' '+opt));
+inputDiv.appendChild(label);
+});
+}else if(item.type==="fill"){
+let input=document.createElement('input');
+input.type='text';
+input.placeholder='Your answer';
+input.required=true;
+input.style.width='100%';
+inputDiv.appendChild(input);
+}
+card.appendChild(inputDiv);
+let btnDiv=document.createElement('div');
+btnDiv.style.display='flex';
+btnDiv.style.gap='0.5rem';
+let submit=document.createElement('button');
+submit.className='primary';
+submit.textContent='Submit';
+submit.type='button';
+submit.addEventListener('click',()=>handleSubmit(item,card));
+btnDiv.appendChild(submit);
+if(item.hints && item.hints.length && parent.id!=='quiz'){
+let hintBtn=document.createElement('button');
+hintBtn.className='hint';
+hintBtn.textContent='Hint';
+hintBtn.type='button';
+hintBtn.addEventListener('click',()=>handleHint(item,card));
+btnDiv.appendChild(hintBtn);
+}
+card.appendChild(btnDiv);
+let feedback=document.createElement('div');
+feedback.className='feedback hidden';
+feedback.setAttribute('aria-live','polite');
+card.appendChild(feedback);
+parent.appendChild(card);
+}
+function getUserAnswer(item,card){
+if(item.type==="mc"){
+let radios=card.querySelectorAll('input[type=radio]');
+for(let r of radios){if(r.checked)return parseInt(r.value);}
+return null;
+}else{
+let txt=card.querySelector('input[type=text]');
+return txt.value.trim().toLowerCase();
+}
+}
+function handleSubmit(item,card){
+let ans=getUserAnswer(item,card);
+if(ans===null||ans==="")return;
+let isCorrect;
+if(item.type==="mc"){
+isCorrect = ans===item.answer;
+}else{
+isCorrect = ans===item.answer.toLowerCase();
+}
+let fb=card.querySelector('.feedback');
+fb.classList.remove('hidden','correct','incorrect');
+fb.innerHTML='';
+let icon=document.createElement('span');
+icon.className='icon';
+let txt=document.createElement('span');
+if(isCorrect){
+icon.textContent='✓';
+fb.classList.add('correct');
+txt.textContent='Correct! '+item.explanation;
+state.completed++;
+updateProgress();
+trackStreak(item.sub,true);
+}else{
+icon.textContent='✗';
+fb.classList.add('incorrect');
+txt.textContent='Incorrect. '+item.explanation;
+trackStreak(item.sub,false);
+state.reviewQueue.push(item);
+}
+fb.appendChild(icon);
+fb.appendChild(txt);
+fb.style.display='flex';
+}
+function handleHint(item,card){
+let stage=state.hintStages[item.id]||0;
+if(stage>=item.hints.length){
+return;
+}
+let hintPanel=card.querySelector('.hint-panel');
+if(!hintPanel){
+hintPanel=document.createElement('div');
+hintPanel.className='hint-panel';
+card.appendChild(hintPanel);
+}
+hintPanel.textContent=item.hints[stage];
+stage++;
+state.hintStages[item.id]=stage;
+if(stage===item.hints.length){
+let ansDiv=document.createElement('div');
+ansDiv.style.marginTop='0.5rem';
+ansDiv.textContent='Answer: '+ (item.type==="mc"?item.options[item.answer]:item.answer);
+hintPanel.appendChild(ansDiv);
+}
+}
+function trackStreak(subSkill,correct){
+if(!state.streaks[subSkill])state.streaks[subSkill]={correct:0,wrong:0};
+if(correct){
+state.streaks[subSkill].correct++;
+state.streaks[subSkill].wrong=0;
+if(state.streaks[subSkill].correct===2){
+insertAdaptiveItem(subSkill);
+state.streaks[subSkill].correct=0;
+}
+}else{
+state.streaks[subSkill].wrong++;
+state.streaks[subSkill].correct=0;
+if(state.streaks[subSkill].wrong===2){
+insertEasyItem(subSkill);
+state.streaks[subSkill].wrong=0;
+}
+}
+}
+function insertAdaptiveItem(subSkill){
+let easy=itemPool.find(i=>i.sub===subSkill && i.difficulty==="easy");
+if(easy){
+let sec=document.getElementById('mixed');
+renderItem(sec,easy);
+}
+}
+function insertEasyItem(subSkill){
+let easy=itemPool.find(i=>i.sub===subSkill && i.difficulty==="easy");
+if(easy){
+let sec=document.getElementById('mixed');
+let note=document.createElement('p');
+note.style.color='var(--color-warning)';
+note.textContent='Let’s try a simpler version of this.';
+sec.appendChild(note);
+renderItem(sec,easy);
+}
+}
+const itemPool=[
+{
+id:"easy1",
+type:"mc",
+sub:"ChooseForm",
+prompt:"He ___ (play) soccer yesterday.",
+options:["played","was playing"],
+answer:0,
+hints:["Completed action?","Past simple." ,"Answer: played."),
+explanation:"Past simple for completed action.",
+difficulty:"easy"
+},
+{
+id:"easy2",
+type:"mc",
+sub:"ChooseForm",
+prompt:"She ___ (read) when I called.",
+options:["read","was reading"],
+answer:1,
+hints:["Ongoing action?","Past continuous." ,"Answer: was reading."),
+explanation:"Past continuous for ongoing action.",
+difficulty:"easy"
+}
+];
+function renderResults(){
+let sec=document.getElementById('results');
+sec.innerHTML='';
+let h2=document.createElement('h2');
+h2.textContent='Results';
+sec.appendChild(h2);
+let total=state.totalItems;
+let correct=state.completed;
+let perc=Math.round((correct/total)*100);
+let p=document.createElement('p');
+p.textContent=`You answered ${correct} out of ${total} (${perc}%) correctly.`;
+sec.appendChild(p);
+let restart=document.createElement('button');
+restart.className='primary';
+restart.textContent='Restart';
+restart.addEventListener('click',()=>location.reload());
+sec.appendChild(restart);
+}
+window.addEventListener('load',init);
+window.addEventListener('beforeunload',()=>{});
+})();
+</script>
+</body>
+</html>

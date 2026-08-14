@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Present Simple vs Present Continuous</title>
+<style>
+:root{
+--color-bg:#f6f7f8;
+--color-surface:#ffffff;
+--color-surface-alt:#eaf5f3;
+--color-header-from:#2c7873;
+--color-header-to:#173f3b;
+--color-primary:#2a7a7a;
+--color-primary-dark:#1f5f59;
+--color-accent:#2c7873;
+--color-text:#1f2937;
+--color-text-muted:#6b7280;
+--color-text-faint:#9ca3af;
+--color-border:#e6e8eb;
+--color-success:#16a34a;
+--color-success-bg:#e7f7ec;
+--color-error:#dc2626;
+--color-error-bg:#fdeaea;
+--color-warning:#b45309;
+--color-warning-bg:#fef3e2;
+--shadow-soft:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.05);
+--radius-lg:14px;
+--radius-md:9px;
+--radius-sm:6px;
+}
+html{font-family:system-ui,Arial,sans-serif;background:var(--color-bg);color:var(--color-text);font-size:16px;line-height:1.5;}
+body{margin:0;padding:0;}
+h1,h2{margin:0;font-weight:600;color:var(--color-text);}
+h1{font-size:1.75rem;}
+h2{font-size:1.25rem;}
+header{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,var(--color-header-from),var(--color-header-to));color:#fff;padding:12px 24px;display:flex;flex-direction:column;gap:4px;}
+#progress{height:4px;background:#e6e8eb;position:relative;overflow:hidden;border-radius:2px;}
+#progress div{height:100%;background:var(--color-primary);width:0%;transition:width .3s;}
+section{max-width:800px;margin:24px auto;padding:0 16px;}
+.card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-soft);padding:20px;margin-bottom:24px;}
+.interactive{display:flex;flex-direction:column;gap:12px;}
+button{background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));color:#fff;border:none;border-radius:8px;padding:8px 16px;font-weight:600;cursor:pointer;}
+button:focus{outline:2px solid var(--color-primary);outline-offset:2px;}
+button:hover{background:linear-gradient(135deg,var(--color-primary-dark),var(--color-primary));}
+button.secondary{background:none;color:var(--color-accent);border:1px solid var(--color-accent);}
+.feedback{border-left:4px solid;display:flex;align-items:center;gap:8px;padding:8px;margin-top:8px;border-radius:var(--radius-sm);}
+.correct{border-color:var(--color-success);background:var(--color-success-bg);color:var(--color-success);}
+.incorrect{border-color:var(--color-error);background:var(--color-error-bg);color:var(--color-error);}
+.hint{background:var(--color-surface-alt);border-left:4px solid var(--color-accent);padding:8px;margin-top:8px;border-radius:var(--radius-sm);}
+.hidden{display:none;}
+.fade-in{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease;}
+.visible{opacity:1;transform:none;}
+@media (prefers-reduced-motion:reduce){
+.fade-in{transition:none;}
+}
+</style>
+</head>
+<body>
+<header>
+<h1>Present Simple vs Present Continuous</h1>
+<h2>Choose the right tense</h2>
+<div id="progress"><div></div></div>
+</header>
+
+<main>
+<section class="card fade-in" id="sec1">
+<h2>1️⃣ Immediate Start</h2>
+<div class="interactive" data-item-id="0">
+<p>She ___ (watch) TV now.</p>
+<div>
+<label><input type="radio" name="q0" value="watches"> watches</label>
+<label><input type="radio" name="q0" value="is watching"> is watching</label>
+</div>
+<button class="check">Check</button>
+<button class="hintBtn">Hint</button>
+<div class="feedback hidden" aria-live="polite"></div>
+<div class="hint hidden"></div>
+</div>
+</section>
+
+<section class="card fade-in" id="sec2">
+<h2>2️⃣ Core Decision Rule</h2>
+<p>When do you use the Present Continuous?</p>
+<button class="toggleRule">Show Rule</button>
+<div class="hint hidden" id="rulePanel">
+<ul>
+<li>Action happening <strong>now</strong> or around now.</li>
+<li>Temporary situation.</li>
+<li>Future plans with “going to” or scheduled events.</li>
+</ul>
+<p>Use Present Simple for:</p>
+<ul>
+<li>Habits, routines, general truths.</li>
+<li>Permanent situations.</li>
+<li>Scheduled future events (e.g., “The train leaves at 6.”)</li>
+</ul>
+</div>
+</section>
+
+<section class="card fade-in" id="sec3">
+<h2>3️⃣ Key Contrasts</h2>
+<div class="interactive" data-item-id="1">
+<p>I ___ (go) to school every day.</p>
+<div>
+<label><input type="radio" name="q1" value="go"> go</label>
+<label><input type="radio" name="q1" value="goes"> goes</label>
+<label><input type="radio" name="q1" value="am going"> am going</label>
+</div>
+<button class="check">Check</button>
+<button class="hintBtn">Hint</button>
+<div class="feedback hidden" aria-live="polite"></div>
+<div class="hint hidden"></div>
+</div>
+
+<div class="interactive" data-item-id="2">
+<p>Right now, they ___ (play) chess.</p>
+<div>
+<label><input type="radio" name="q2" value="play"> play</label>
+<label><input type="radio" name="q2" value="plays"> plays</label>
+<label><input type="radio" name="q2" value="are playing"> are playing</label>
+</div>
+<button class="check">Check</button>
+<button class="hintBtn">Hint</button>
+<div class="feedback hidden" aria-live="polite"></div>
+<div class="hint hidden"></div>
+</div>
+</section>
+
+<section class="card fade-in" id="sec4">
+<h2>4️⃣ Common Mistakes</h2>
+<div class="interactive" data-item-id="3">
+<p>She <strong>go</strong> to the gym every week. (Fix the verb)</p>
+<input type="text" placeholder="Enter corrected sentence" aria-label="Correction">
+<button class="check">Check</button>
+<button class="hintBtn">Hint</button>
+<div class="feedback hidden" aria-live="polite"></div>
+<div class="hint hidden"></div>
+</div>
+
+<div class="interactive" data-item-id="4">
+<p>They <strong>are</strong> eating breakfast at 8am every day. (Fix the tense)</p>
+<input type="text" placeholder="Enter corrected sentence" aria-label="Correction">
+<button class="check">Check</button>
+<button class="hintBtn">Hint</button>
+<div class="feedback hidden" aria-live="polite"></div>
+<div class="hint hidden"></div>
+</div>
+</section>
+
+<section class="card fade-in" id="sec5">
+<h2>5️⃣ Mixed Practice</h2>
+<div id="mixedContainer"></div>
+</section>
+
+<section class="card fade-in" id="sec6">
+<h2>6️⃣ Final Quiz (no hints)</h2>
+<div id="finalContainer"></div>
+</section>
+
+<section class="card fade-in" id="sec7">
+<h2>7️⃣ Results</h2>
+<div id="results"></div>
+<button id="restartBtn">Restart Lesson</button>
+</section>
+</main>
+
+<script>
+(()=>{
+
+const items = [
+ // id, type, prompt, options, answer, subSkill, hintTexts
+ {id:0,type:'mc',prompt:'She ___ (watch) TV now.',options:['watches','is watching'],answer:'is watching',sub:'choice',hints:['Think about what is happening right now.','Look for “am/is/are + verb‑ing”.','The correct form is “is watching”.']},
+ {id:1,type:'mc',prompt:'I ___ (go) to school every day.',options:['go','goes','am going'],answer:'go',sub:'choice',hints:['It is a habit.','Habitual actions use simple present.','The correct verb is “go”.']},
+ {id:2,type:'mc',prompt:'Right now, they ___ (play) chess.',options:['play','plays','are playing'],answer:'are playing',sub:'choice',hints:['It is happening now.','Look for “are + verb‑ing”.','The correct form is “are playing”.']},
+ {id:3,type:'fix',prompt:'She go to the gym every week.',answer:'She goes to the gym every week.',sub:'fix',hints:['What does the subject need?','Third‑person singular needs –s.','Add “es” to “go”.']},
+ {id:4,type:'fix',prompt:'They are eating breakfast at 8am every day.',answer:'They eat breakfast at 8am every day.',sub:'fix',hints:['Is this a habit?','For habits use simple present.','Replace “are eating” with “eat”.']},
+ // mixed practice items (ids 5-12)
+ {id:5,type:'mc',prompt:'Tom ___ (study) English at the moment.',options:['studies','is studying','studies'],answer:'is studying',sub:'choice',hints:['Now → continuous.','Look for “is + verb‑ing”.','“is studying”.']},
+ {id:6,type:'mc',prompt:'Water ___ (boil) at 100°C.',options:['boils','is boiling','boil'],answer:'boils',sub:'choice',hints:['General truth → simple.','Third‑person singular needs –s.','“boils”.']},
+ {id:7,type:'fix',prompt:'He not like coffee.',answer:'He does not like coffee.',sub:'fix',hints:['Negation needs “do/does”.','Add “does” before “not”.','“does not like”.']},
+ {id:8,type:'mc',prompt:'We ___ (travel) to Japan next summer.',options:['travel','are traveling','will travel'],answer:'travel',sub:'choice',hints:['Future scheduled → simple present.','No “will”.','“travel”.']},
+ {id:9,type:'fix',prompt:'I am work tomorrow.',answer:'I will work tomorrow.',sub:'fix',hints:['Future intention → will.','Replace “am” with “will”.','“will work”.']},
+ {id:10,type:'mc',prompt:'She ___ (read) a book right now.',options:['reads','is reading','read'],answer:'is reading',sub:'choice',hints:['Now → continuous.','Use “is + verb‑ing”.','“is reading”.']},
+ {id:11,type:'mc',prompt:'Birds ___ (fly) south in winter.',options:['fly','flies','are flying'],answer:'fly',sub:'choice',hints:['General truth → simple.','Plural subject → base form.','“fly”.']},
+ // final quiz items (ids 12-17)
+ {id:12,type:'mc',prompt:'My parents ___ (live) in Canada.',options:['live','lives','are living'],answer:'live',sub:'choice',hints:[]},
+ {id:13,type:'mc',prompt:'Look! The cat ___ (run) away.',options:['runs','is running','run'],answer:'is running',sub:'choice',hints:[]},
+ {id:14,type:'fix',prompt:'She always is late.',answer:'She is always late.',sub:'fix',hints:[]},
+ {id:15,type:'mc',prompt:'The sun ___ (rise) in the east.',options:['rises','is rising','rise'],answer:'rises',sub:'choice',hints:[]},
+ {id:16,type:'fix',prompt:'We are usually eat dinner at 7.',answer:'We usually eat dinner at 7.',sub:'fix',hints:[]},
+ {id:17,type:'mc',prompt:'Right now, I ___ (write) a letter.',options:['write','writes','am writing'],answer:'am writing',sub:'choice',hints:[]}
+];
+
+let state = {
+ currentIdx:0,
+ subSkillStats:{choice:{correct:0,total:0},fix:{correct:0,total:0}},
+ streak:{choice:{correct:0,wrong:0},fix:{correct:0,wrong:0}},
+ reviewQueue:[],
+ mixedItems:[],
+ finalItems:[],
+ hintStages:{},
+};
+
+function init(){
+ renderSection1();
+ document.querySelector('.toggleRule').addEventListener('click',()=>{document.getElementById('rulePanel').classList.toggle('hidden');});
+ renderMixed();
+ renderFinal();
+ updateProgress();
+}
+function renderSection1(){
+ const el=document.querySelector('[data-item-id="0"]');
+ renderItem(el,items[0]);
+}
+function renderItem(container,item){
+ const {type,prompt,options,answer,sub,hints}=item;
+ container.dataset.itemId=item.id;
+ const feedback=container.querySelector('.feedback');
+ const hintBox=container.querySelector('.hint');
+ const hintBtn=container.querySelector('.hintBtn');
+ const checkBtn=container.querySelector('.check');
+ let hintStage=0;
+ state.hintStages[item.id]=0;
+ function showHint(){
+   hintStage++;
+   state.hintStages[item.id]=hintStage;
+   if(hintStage===1){
+     hintBox.textContent=hints[0];
+   }else if(hintStage===2){
+     hintBox.textContent=hints[1];
+   }else if(hintStage===3){
+     hintBox.textContent=hints[2]+' Answer: '+answer;
+   }
+   hintBox.classList.remove('hidden');
+   if(hintStage===3) checkBtn.disabled=true;
+ }
+ if(hintBtn) hintBtn.addEventListener('click',showHint);
+ function check(){
+   let userAns;
+   if(type==='mc'){
+     const radios=container.querySelectorAll('input[type=radio]');
+     radios.forEach(r=>{if(r.checked) userAns=r.value;});
+   }else{
+     const inp=container.querySelector('input');
+     userAns=inp.value.trim();
+   }
+   const isCorrect = (type==='mc')? userAns===answer : userAns===answer;
+   state.subSkillStats[sub].total++;
+   if(isCorrect){
+     state.subSkillStats[sub].correct++;
+     feedback.innerHTML='<span>✓ Correct!</span>';
+     feedback.className='feedback correct';
+   }else{
+     feedback.innerHTML='<span>✗ Incorrect.</span> '+generateCorrection(item);
+     feedback.className='feedback incorrect';
+     // add to review queue
+     state.reviewQueue.push(item);
+   }
+   feedback.classList.remove('hidden');
+   updateProgress();
+   // reset hint
+   hintBox.classList.add('hidden');
+   hintStage=0;
+   state.hintStages[item.id]=0;
+   // disable after correct to avoid re‑checking
+   checkBtn.disabled=true;
+ }
+ checkBtn.addEventListener('click',check);
+}
+function generateCorrection(item){
+ if(item.type==='mc'){
+   return `The correct answer is “${item.answer}”.`;
+ }else{
+   return `Correct sentence: “${item.answer}”.`;
+ }
+}
+function renderMixed(){
+ const container=document.getElementById('mixedContainer');
+ const mixed=items.filter(i=>i.id>=5 && i.id<=11);
+ state.mixedItems=mixed.slice();
+ mixed.forEach(item=>{ 
+   const div=document.createElement('div');
+   div.className='interactive';
+   div.dataset.itemId=item.id;
+   const html=item.type==='mc'?
+     `<p>${item.prompt}</p>
+      <div>${item.options.map(o=>`<label><input type="radio" name="q${item.id}" value="${o}"> ${o}</label>`).join(' ')}</div>`:
+     `<p>${item.prompt}</p><input type="text" placeholder="Enter corrected sentence">`;
+   div.innerHTML=html+`<button class="check">Check</button><button class="hintBtn">Hint</button><div class="feedback hidden" aria-live="polite"></div><div class="hint hidden"></div>`;
+   container.appendChild(div);
+   renderItem(div,item);
+ });
+}
+function renderFinal(){
+ const container=document.getElementById('finalContainer');
+ const finals=items.filter(i=>i.id>=12);
+ state.finalItems=finals.slice();
+ finals.forEach(item=>{
+   const div=document.createElement('div');
+   div.className='interactive';
+   div.dataset.itemId=item.id;
+   const html=item.type==='mc'?
+     `<p>${item.prompt}</p>
+      <div>${item.options.map(o=>`<label><input type="radio" name="q${item.id}" value="${o}"> ${o}</label>`).join(' ')}</div>`:
+     `<p>${item.prompt}</p><input type="text" placeholder="Enter corrected sentence">`;
+   div.innerHTML=html+`<button class="check">Check</button><div class="feedback hidden" aria-live="polite"></div>`;
+   container.appendChild(div);
+   renderFinalItem(div,item);
+ });
+}
+function renderFinalItem(container,item){
+ const checkBtn=container.querySelector('.check');
+ const feedback=container.querySelector('.feedback');
+ checkBtn.addEventListener('click',()=>{
+   let userAns;
+   if(item.type==='mc'){
+     const radios=container.querySelectorAll('input[type=radio]');
+     radios.forEach(r=>{if(r.checked) userAns=r.value;});
+   }else{
+     const inp=container.querySelector('input');
+     userAns=inp.value.trim();
+   }
+   const isCorrect = (item.type==='mc')? userAns===item.answer : userAns===item.answer;
+   state.subSkillStats[item.sub].total++;
+   if(isCorrect){
+     state.subSkillStats[item.sub].correct++;
+     feedback.innerHTML='<span>✓ Correct!</span>';
+     feedback.className='feedback correct';
+   }else{
+     feedback.innerHTML='<span>✗ Incorrect.</span> '+generateCorrection(item);
+     feedback.className='feedback incorrect';
+   }
+   feedback.classList.remove('hidden');
+   checkBtn.disabled=true;
+   updateProgress();
+ });
+}
+function updateProgress(){
+ const total=Object.values(state.subSkillStats).reduce((a,s)=>a+s.total,0);
+ const correct=Object.values(state.subSkillStats).reduce((a,s)=>a+s.correct,0);
+ const percent=total===0?0:Math.round((correct/total)*100);
+ document.querySelector('#progress div').style.width=`${percent}%`;
+ if(document.getElementById('sec7').classList.contains('visible')){
+   showResults();
+ }
+}
+function showResults(){
+ const res=document.getElementById('results');
+ res.innerHTML='';
+ for(const [skill,stats] of Object.entries(state.subSkillStats)){
+   const perc=stats.total===0?0:Math.round((stats.correct/stats.total)*100);
+   const div=document.createElement('div');
+   div.textContent=`${skill.toUpperCase()}: ${stats.correct}/${stats.total} (${perc}%)`;
+   res.appendChild(div);
+ }
+ const weakest=Object.entries(state.subSkillStats).reduce((w,[k,s])=> (w===null||s.correct/s.total < w[1].correct/w[1].total) ? [k,s] : w, null);
+ const advice=document.createElement('p');
+ advice.textContent=`Focus on ${weakest[0]} to improve your mastery.`;
+ res.appendChild(advice);
+}
+document.getElementById('restartBtn').addEventListener('click',()=>{location.reload();});
+
+function observeSections(){
+ const observer=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');}});},{threshold:0.1});
+ document.querySelectorAll('.fade-in').forEach(s=>observer.observe(s));
+}
+observeSections();
+init();
+
+})();
+</script>
+</body>
+</html>
