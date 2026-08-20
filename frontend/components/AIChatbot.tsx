@@ -384,11 +384,12 @@ export default function AIChatbot() {
   const [micError, setMicError] = useState('')
 
   // ── TTS state ─────────────────────────────────────────────────────────────
-  const [ttsEnabled, setTtsEnabled] = useState(true)
   const [ttsPlaying, setTtsPlaying] = useState(false)
   const [ttsPlayingIdx, setTtsPlayingIdx] = useState<number | null>(null)
-  const ttsAudioRef = useRef<HTMLAudioElement | null>(null)
-  const ttsBlobUrlRef = useRef<string | null>(null)
+  // AudioContext stays alive for the session — once unlocked by a user gesture
+  // it can play audio at any time without triggering the autoplay policy.
+  const audioCtxRef    = useRef<AudioContext | null>(null)
+  const ttsSourceRef   = useRef<AudioBufferSourceNode | null>(null)
 
   const bottomRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -561,14 +562,17 @@ export default function AIChatbot() {
 
   // ── TTS helpers ───────────────────────────────────────────────────────────
 
-  function stopTTS() {
-    if (ttsAudioRef.current) {
-      ttsAudioRef.current.pause()
-      ttsAudioRef.current = null
+  function getAudioCtx(): AudioContext {
+    if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+      audioCtxRef.current = new AudioContext()
     }
-    if (ttsBlobUrlRef.current) {
-      URL.revokeObjectURL(ttsBlobUrlRef.current)
-      ttsBlobUrlRef.current = null
+    return audioCtxRef.current
+  }
+
+  function stopTTS() {
+    if (ttsSourceRef.current) {
+      try { ttsSourceRef.current.stop() } catch { /* already stopped */ }
+      ttsSourceRef.current = null
     }
     setTtsPlaying(false)
     setTtsPlayingIdx(null)
@@ -579,33 +583,32 @@ export default function AIChatbot() {
     setTtsPlaying(true)
     setTtsPlayingIdx(idx)
     try {
+      const ctx = getAudioCtx()
+      // Resume in case the context was suspended (some browsers require this)
+      if (ctx.state === 'suspended') await ctx.resume()
+
       const res = await fetch('/api/chat/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ text, voice: 'anna' }),
       })
-      if (!res.ok) {
-        // TTS unavailable — fail silently, don't break the chat UX
-        setTtsPlaying(false)
-        setTtsPlayingIdx(null)
-        return
-      }
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      ttsBlobUrlRef.current = url
-      const audio = new Audio(url)
-      ttsAudioRef.current = audio
-      audio.onended = () => { stopTTS() }
-      audio.onerror = () => { stopTTS() }
-      await audio.play().catch(() => stopTTS())
+      if (!res.ok) { stopTTS(); return }
+
+      const arrayBuf = await res.arrayBuffer()
+      const audioBuf = await ctx.decodeAudioData(arrayBuf)
+      const source = ctx.createBufferSource()
+      source.buffer = audioBuf
+      source.connect(ctx.destination)
+      source.onended = () => { stopTTS() }
+      ttsSourceRef.current = source
+      source.start(0)
     } catch {
-      setTtsPlaying(false)
-      setTtsPlayingIdx(null)
+      stopTTS()
     }
   }
 
-  // Stop mic track when chatbot closes or component unmounts
+  // Stop mic + TTS when chatbot closes or component unmounts
   useEffect(() => {
     if (!open) {
       stopMicStream()
@@ -614,7 +617,11 @@ export default function AIChatbot() {
   }, [open])
 
   useEffect(() => {
-    return () => { stopMicStream(); stopTTS() }
+    return () => {
+      stopMicStream()
+      stopTTS()
+      audioCtxRef.current?.close().catch(() => {})
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -638,6 +645,13 @@ export default function AIChatbot() {
     const text = (directText ?? input).trim()
     if (!text || loading) return
 
+    // Unlock / resume AudioContext NOW — this is still inside the user gesture.
+    // Once unlocked it can play audio at any later time (after LLM + TTS fetches).
+    try {
+      const ctx = getAudioCtx()
+      if (ctx.state === 'suspended') await ctx.resume()
+    } catch { /* AudioContext not available in this browser */ }
+
     const context = getPageContext()
     const userMsg: Message = { role: 'user', content: text }
     const next = [...messages, userMsg]
@@ -647,15 +661,20 @@ export default function AIChatbot() {
     setLoading(true)
 
     const history = next.filter(m => !(m.role === 'assistant' && m.content === WELCOME.content))
-    const replyIdx = next.length  // index the assistant reply will land at
+    const replyIdx = next.length
 
     try {
       const res = await api.post<{ reply: string }>('/api/chat', { messages: history, context })
       setMessages(prev => [...prev, { role: 'assistant', content: res.reply }])
-      // Auto-play the reply if TTS is enabled
-      if (ttsEnabled) {
-        speakMessage(res.reply, replyIdx)
-      }
+      // Auto-play: speak only the first 2 sentences for low latency.
+      // Shorter text = much faster TTS on this CPU (~1-2s vs 10s+ for full reply).
+      // The speaker button below the message plays the full text on demand.
+      const firstTwo = res.reply
+        .split(/(?<=[.!?])\s+/)
+        .slice(0, 2)
+        .join(' ')
+        .trim()
+      speakMessage(firstTwo || res.reply, replyIdx)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong.')
     } finally {
@@ -795,16 +814,6 @@ export default function AIChatbot() {
               <TrashIcon />
             </button>
 
-            {/* TTS toggle */}
-            <button
-              onClick={() => { setTtsEnabled((e: boolean) => !e); if (ttsPlaying) stopTTS() }}
-              title={ttsEnabled ? 'Mute voice replies' : 'Enable voice replies'}
-              aria-label={ttsEnabled ? 'Mute voice replies' : 'Enable voice replies'}
-              style={{ ...hdrBtn, opacity: ttsEnabled ? 1 : 0.45 }}
-            >
-              <SpeakerIcon on={ttsEnabled} />
-            </button>
-
             {/* Close */}
             <button
               onClick={() => { setOpen(false); setExpanded(false) }}
@@ -832,33 +841,38 @@ export default function AIChatbot() {
                 }}>
                   {m.role === 'user' ? m.content : <MarkdownRenderer content={m.content} />}
                 </div>
-                {/* Replay button — assistant messages only */}
-                {m.role === 'assistant' && m.content !== WELCOME.content && (
-                  <button
-                    onClick={() => ttsPlayingIdx === i ? stopTTS() : speakMessage(m.content, i)}
-                    title={ttsPlayingIdx === i ? 'Stop' : 'Play reply aloud'}
-                    aria-label={ttsPlayingIdx === i ? 'Stop speaking' : 'Play reply aloud'}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      color: ttsPlayingIdx === i ? '#c0392b' : '#9ca3af',
-                      padding: '1px 4px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 3,
-                      fontSize: '0.65rem',
-                      borderRadius: 4,
-                      transition: 'color 0.15s',
-                    }}
-                  >
-                    {ttsPlayingIdx === i
-                      ? <span style={{ fontSize: 10 }}>■</span>
-                      : <SpeakerSmallIcon />
-                    }
-                    {ttsPlayingIdx === i ? 'stop' : ''}
-                  </button>
-                )}
+                {/* Speaker button — assistant messages only */}
+                {m.role === 'assistant' && m.content !== WELCOME.content && (() => {
+                  const lastAssistantIdx = messages.reduce((acc: number, msg: Message, idx: number) => msg.role === 'assistant' ? idx : acc, -1)
+                  const isNewest = i === lastAssistantIdx
+                  const isActive = ttsPlayingIdx === i
+                  return (
+                    <button
+                      onClick={() => isActive ? stopTTS() : speakMessage(m.content, i)}
+                      title={isActive ? 'Stop speaking' : 'Play reply aloud'}
+                      aria-label={isActive ? 'Stop speaking' : 'Play reply aloud'}
+                      style={{
+                        background: isActive ? '#fef2f2' : isNewest ? '#f0faf8' : 'none',
+                        border: isActive ? '1px solid #fecaca' : isNewest ? '1px solid #c5dedd' : 'none',
+                        cursor: 'pointer',
+                        color: isActive ? '#c0392b' : isNewest ? '#2a7a7a' : '#9ca3af',
+                        padding: '2px 7px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        fontSize: '0.68rem',
+                        borderRadius: 6,
+                        transition: 'all 0.15s',
+                        fontFamily: 'inherit',
+                      }}
+                    >
+                      {isActive
+                        ? <><span style={{ fontSize: 9 }}>■</span> stop</>
+                        : <><SpeakerSmallIcon /> {isNewest ? 'play' : ''}</>
+                      }
+                    </button>
+                  )
+                })()}
               </div>
             ))}
 
