@@ -12,6 +12,7 @@ services:
       - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY}
       - FRONTEND_ORIGIN=https://toeflindo.site
       - EMBEDDING_SERVICE_URL=http://embedding-service:8100
+      - TTS_URL=http://toefl-tts:8000
     volumes:
       - ./toefl.db:/data/toefl.db:rw
       - ./grammar_content.db:/data/grammar_content.db:rw
@@ -67,9 +68,34 @@ services:
       - toefl-frontend
     restart: always
 
+  # ── Pocket TTS sidecar ────────────────────────────────────────────────────
+  # Isolated container so numpy 2 + torch don't conflict with the backend.
+  # Model cache in named volume — only downloaded once, survives rebuilds.
+  # Only reachable from toefl-v2-internal; not exposed on any host port.
+  toefl-tts:
+    build:
+      context: ./tts-service
+    container_name: toefl-v2-tts
+    environment:
+      - HF_HOME=/model-cache
+    volumes:
+      - pocket-tts-models:/model-cache
+    networks:
+      - toefl-v2-internal
+    restart: always
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 600s
+
 networks:
   toefl-v2-internal:
     driver: bridge
   litellm-shared:
     external: true
     name: litellm-shared
+
+volumes:
+  pocket-tts-models:

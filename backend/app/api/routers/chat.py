@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 import asyncio
+import os
 
+import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, field_validator
 
 from app.api.dependencies import get_current_user
@@ -18,6 +20,8 @@ logger = get_logger(__name__)
 # Keep context and history bounded so we don't blow the token budget
 MAX_CONTEXT_CHARS = 3000
 MAX_HISTORY_TURNS = 10  # last N messages (user + assistant pairs)
+
+TTS_URL = os.environ.get("TTS_URL", "http://toefl-tts:8000")
 
 
 class ChatMessage(BaseModel):
@@ -86,6 +90,52 @@ async def chat(
         raise HTTPException(status_code=503, detail="AI assistant temporarily unavailable.")
 
     return ChatResponse(reply=reply)
+
+
+@router.post("/tts")
+async def chat_tts(
+    request: Request,
+    _user: str = Depends(get_current_user),
+):
+    """Convert an assistant reply to speech via the Pocket TTS sidecar.
+
+    POST /api/chat/tts  { text: str, voice?: str }
+    Returns audio/wav.  The sidecar strips markdown before synthesis.
+    """
+    body = await request.json()
+    text = (body.get("text") or "").strip()
+    voice = (body.get("voice") or "anna").strip()
+
+    if not text:
+        return JSONResponse({"error": "text is required"}, status_code=400)
+
+    tts_endpoint = TTS_URL.rstrip("/") + "/tts"
+    # TTS on a 4-core ARM CPU: 200 words ≈ ~15s; give 90s before giving up
+    try:
+        async with httpx.AsyncClient(timeout=90.0) as client:
+            resp = await client.post(tts_endpoint, json={"text": text, "voice": voice})
+    except httpx.ConnectError:
+        logger.warning("chat tts: TTS service unreachable at %s", tts_endpoint)
+        return JSONResponse({"error": "TTS service unavailable"}, status_code=503)
+    except httpx.TimeoutException:
+        logger.warning("chat tts: TTS service timed out")
+        return JSONResponse({"error": "TTS timed out — text may be too long"}, status_code=504)
+    except Exception as exc:
+        logger.error("chat tts: unexpected error — %s", exc)
+        return JSONResponse({"error": "TTS failed"}, status_code=500)
+
+    if resp.status_code == 503:
+        return JSONResponse({"error": "TTS model not ready yet — retry in a moment"}, status_code=503)
+    if resp.status_code != 200:
+        logger.warning("chat tts: sidecar returned %d", resp.status_code)
+        return JSONResponse({"error": "TTS synthesis failed"}, status_code=502)
+
+    logger.info("chat tts: ok bytes=%d voice=%s", len(resp.content), voice)
+    return Response(
+        content=resp.content,
+        media_type="audio/wav",
+        headers={"Content-Disposition": "inline; filename=reply.wav"},
+    )
 
 
 @router.post("/transcribe")

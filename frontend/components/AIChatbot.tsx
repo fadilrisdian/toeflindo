@@ -79,6 +79,36 @@ function MicIcon({ active }: { active: boolean }) {
   )
 }
 
+function SpeakerIcon({ on }: { on: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+      strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }} aria-hidden="true">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+      {on ? (
+        <>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+        </>
+      ) : (
+        <>
+          <line x1="23" y1="9" x2="17" y2="15" />
+          <line x1="17" y1="9" x2="23" y2="15" />
+        </>
+      )}
+    </svg>
+  )
+}
+
+function SpeakerSmallIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+      strokeLinecap="round" strokeLinejoin="round" style={{ width: 11, height: 11 }} aria-hidden="true">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+    </svg>
+  )
+}
+
 function ExpandIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
@@ -353,6 +383,13 @@ export default function AIChatbot() {
   const [micState, setMicState] = useState<MicState>('idle')
   const [micError, setMicError] = useState('')
 
+  // ── TTS state ─────────────────────────────────────────────────────────────
+  const [ttsEnabled, setTtsEnabled] = useState(true)
+  const [ttsPlaying, setTtsPlaying] = useState(false)
+  const [ttsPlayingIdx, setTtsPlayingIdx] = useState<number | null>(null)
+  const ttsAudioRef = useRef<HTMLAudioElement | null>(null)
+  const ttsBlobUrlRef = useRef<string | null>(null)
+
   const bottomRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -522,15 +559,62 @@ export default function AIChatbot() {
   // Keep ref in sync so Ctrl+B handler always has the latest function
   micToggleFnRef.current = handleMicToggle
 
+  // ── TTS helpers ───────────────────────────────────────────────────────────
+
+  function stopTTS() {
+    if (ttsAudioRef.current) {
+      ttsAudioRef.current.pause()
+      ttsAudioRef.current = null
+    }
+    if (ttsBlobUrlRef.current) {
+      URL.revokeObjectURL(ttsBlobUrlRef.current)
+      ttsBlobUrlRef.current = null
+    }
+    setTtsPlaying(false)
+    setTtsPlayingIdx(null)
+  }
+
+  async function speakMessage(text: string, idx: number | null = null) {
+    stopTTS()
+    setTtsPlaying(true)
+    setTtsPlayingIdx(idx)
+    try {
+      const res = await fetch('/api/chat/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ text, voice: 'anna' }),
+      })
+      if (!res.ok) {
+        // TTS unavailable — fail silently, don't break the chat UX
+        setTtsPlaying(false)
+        setTtsPlayingIdx(null)
+        return
+      }
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      ttsBlobUrlRef.current = url
+      const audio = new Audio(url)
+      ttsAudioRef.current = audio
+      audio.onended = () => { stopTTS() }
+      audio.onerror = () => { stopTTS() }
+      await audio.play().catch(() => stopTTS())
+    } catch {
+      setTtsPlaying(false)
+      setTtsPlayingIdx(null)
+    }
+  }
+
   // Stop mic track when chatbot closes or component unmounts
   useEffect(() => {
     if (!open) {
       stopMicStream()
+      stopTTS()
     }
   }, [open])
 
   useEffect(() => {
-    return () => { stopMicStream() }
+    return () => { stopMicStream(); stopTTS() }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -563,10 +647,15 @@ export default function AIChatbot() {
     setLoading(true)
 
     const history = next.filter(m => !(m.role === 'assistant' && m.content === WELCOME.content))
+    const replyIdx = next.length  // index the assistant reply will land at
 
     try {
       const res = await api.post<{ reply: string }>('/api/chat', { messages: history, context })
       setMessages(prev => [...prev, { role: 'assistant', content: res.reply }])
+      // Auto-play the reply if TTS is enabled
+      if (ttsEnabled) {
+        speakMessage(res.reply, replyIdx)
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong.')
     } finally {
@@ -706,6 +795,16 @@ export default function AIChatbot() {
               <TrashIcon />
             </button>
 
+            {/* TTS toggle */}
+            <button
+              onClick={() => { setTtsEnabled((e: boolean) => !e); if (ttsPlaying) stopTTS() }}
+              title={ttsEnabled ? 'Mute voice replies' : 'Enable voice replies'}
+              aria-label={ttsEnabled ? 'Mute voice replies' : 'Enable voice replies'}
+              style={{ ...hdrBtn, opacity: ttsEnabled ? 1 : 0.45 }}
+            >
+              <SpeakerIcon on={ttsEnabled} />
+            </button>
+
             {/* Close */}
             <button
               onClick={() => { setOpen(false); setExpanded(false) }}
@@ -719,7 +818,7 @@ export default function AIChatbot() {
           {/* Messages */}
           <div style={messagesAreaStyle}>
             {messages.map((m, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
+              <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', flexDirection: 'column', alignItems: m.role === 'user' ? 'flex-end' : 'flex-start', gap: 2 }}>
                 <div style={{
                   maxWidth: expanded ? '90%' : '82%',
                   padding: '8px 12px',
@@ -733,6 +832,33 @@ export default function AIChatbot() {
                 }}>
                   {m.role === 'user' ? m.content : <MarkdownRenderer content={m.content} />}
                 </div>
+                {/* Replay button — assistant messages only */}
+                {m.role === 'assistant' && m.content !== WELCOME.content && (
+                  <button
+                    onClick={() => ttsPlayingIdx === i ? stopTTS() : speakMessage(m.content, i)}
+                    title={ttsPlayingIdx === i ? 'Stop' : 'Play reply aloud'}
+                    aria-label={ttsPlayingIdx === i ? 'Stop speaking' : 'Play reply aloud'}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: ttsPlayingIdx === i ? '#c0392b' : '#9ca3af',
+                      padding: '1px 4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 3,
+                      fontSize: '0.65rem',
+                      borderRadius: 4,
+                      transition: 'color 0.15s',
+                    }}
+                  >
+                    {ttsPlayingIdx === i
+                      ? <span style={{ fontSize: 10 }}>■</span>
+                      : <SpeakerSmallIcon />
+                    }
+                    {ttsPlayingIdx === i ? 'stop' : ''}
+                  </button>
+                )}
               </div>
             ))}
 
