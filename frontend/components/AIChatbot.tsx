@@ -388,8 +388,10 @@ export default function AIChatbot() {
   const [ttsPlayingIdx, setTtsPlayingIdx] = useState<number | null>(null)
   // AudioContext stays alive for the session — once unlocked by a user gesture
   // it can play audio at any time without triggering the autoplay policy.
-  const audioCtxRef    = useRef<AudioContext | null>(null)
-  const ttsSourceRef   = useRef<AudioBufferSourceNode | null>(null)
+  const audioCtxRef             = useRef<AudioContext | null>(null)
+  const ttsSourceRef            = useRef<AudioBufferSourceNode | null>(null)   // full-WAV path
+  const streamAbortRef          = useRef<AbortController | null>(null)          // streaming path
+  const streamNodesRef          = useRef<AudioBufferSourceNode[]>([])           // streaming scheduled nodes
 
   const bottomRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -570,13 +572,126 @@ export default function AIChatbot() {
   }
 
   function stopTTS() {
+    // Stop full-WAV playback
     if (ttsSourceRef.current) {
       try { ttsSourceRef.current.stop() } catch { /* already stopped */ }
       ttsSourceRef.current = null
     }
+    // Abort streaming fetch + stop all scheduled stream nodes
+    streamAbortRef.current?.abort()
+    streamAbortRef.current = null
+    streamNodesRef.current.forEach((n: AudioBufferSourceNode) => { try { n.stop() } catch { /* ok */ } })
+    streamNodesRef.current = []
     setTtsPlaying(false)
     setTtsPlayingIdx(null)
   }
+
+  // ── Streaming TTS (auto-play) ───────────────────────────────────────────
+  // Parses the framed float32 protocol and schedules chunks into AudioContext
+  // as they arrive, so playback starts in ~300ms and continues gaplessly.
+
+  async function speakMessageStream(text: string, idx: number | null = null) {
+    stopTTS()
+    setTtsPlaying(true)
+    setTtsPlayingIdx(idx)
+
+    const abort = new AbortController()
+    streamAbortRef.current = abort
+
+    try {
+      const ctx = getAudioCtx()
+      if (ctx.state === 'suspended') await ctx.resume()
+
+      const res = await fetch('/api/chat/tts/stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ text, voice: 'anna' }),
+        signal: abort.signal,
+      })
+      if (!res.ok || !res.body) { stopTTS(); return }
+
+      const reader = res.body.getReader()
+      let buf = new Uint8Array(0)
+      let sampleRate = 0
+      let nextStartTime = 0  // AudioContext time to schedule next chunk
+
+      const appendBuf = (chunk: Uint8Array) => {
+        const merged = new Uint8Array(buf.length + chunk.length)
+        merged.set(buf); merged.set(chunk, buf.length)
+        buf = merged
+      }
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (abort.signal.aborted) break
+        if (value) appendBuf(value)
+        if (done && buf.length === 0) break
+
+        // Parse as many complete frames as possible from the buffer
+        let offset = 0
+        while (true) {
+          // Need at least 4 bytes for header
+          if (buf.length - offset < 4) break
+          const view = new DataView(buf.buffer, buf.byteOffset + offset)
+
+          if (sampleRate === 0) {
+            // First 4 bytes = sample rate
+            sampleRate = view.getUint32(0, true)
+            offset += 4
+            continue
+          }
+
+          // Next 4 bytes = chunk length in samples
+          if (buf.length - offset < 4) break
+          const nSamples = view.getUint32(0, true)
+          if (nSamples === 0) { offset += 4; break }
+
+          // Then nSamples × 4 bytes of float32
+          const byteLen = nSamples * 4
+          if (buf.length - offset < 4 + byteLen) break
+
+          const floatView = new Float32Array(
+            buf.buffer, buf.byteOffset + offset + 4, nSamples
+          )
+          const floatCopy = new Float32Array(floatView)  // copy — detach from original
+          offset += 4 + byteLen
+
+          // Schedule this chunk for gapless playback
+          const audioBuf = ctx.createBuffer(1, nSamples, sampleRate)
+          audioBuf.copyToChannel(floatCopy, 0)
+          const node = ctx.createBufferSource()
+          node.buffer = audioBuf
+          node.connect(ctx.destination)
+          const now = ctx.currentTime
+          const when = Math.max(now, nextStartTime)
+          nextStartTime = when + audioBuf.duration
+          node.start(when)
+          streamNodesRef.current.push(node)
+
+          // Last scheduled node marks the end
+          node.onended = () => {
+            if (streamNodesRef.current.length > 0 &&
+                node === streamNodesRef.current[streamNodesRef.current.length - 1]) {
+              setTtsPlaying(false)
+              setTtsPlayingIdx(null)
+              streamNodesRef.current = []
+            }
+          }
+        }
+
+        // Keep only unconsumed bytes
+        if (offset > 0) {
+          buf = buf.slice(offset)
+        }
+        if (done) break
+      }
+    } catch (e: unknown) {
+      if (e instanceof Error && e.name !== 'AbortError') stopTTS()
+    }
+  }
+
+  // ── Full-WAV TTS (manual replay button) ─────────────────────────────────
 
   async function speakMessage(text: string, idx: number | null = null) {
     stopTTS()
@@ -584,7 +699,6 @@ export default function AIChatbot() {
     setTtsPlayingIdx(idx)
     try {
       const ctx = getAudioCtx()
-      // Resume in case the context was suspended (some browsers require this)
       if (ctx.state === 'suspended') await ctx.resume()
 
       const res = await fetch('/api/chat/tts', {
@@ -674,7 +788,7 @@ export default function AIChatbot() {
         .slice(0, 2)
         .join(' ')
         .trim()
-      speakMessage(firstTwo || res.reply, replyIdx)
+      speakMessageStream(firstTwo || res.reply, replyIdx)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong.')
     } finally {

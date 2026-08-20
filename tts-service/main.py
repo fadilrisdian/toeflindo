@@ -3,23 +3,30 @@
 Keeps the model in memory between requests.
 Binds 0.0.0.0 inside the container but only reachable via toefl-v2-internal Docker network.
 
-POST /tts       { text, voice }  -> audio/wav
+POST /tts         { text, voice }  -> audio/wav          (full, for manual replay)
+POST /tts/stream  { text, voice }  -> application/octet-stream  (raw float32 PCM chunks)
 GET  /health    -> { status: ok }
 GET  /ready     -> { status: ready } | 503
+
+Streaming format:
+  4-byte little-endian uint32 sample_rate
+  N × 4-byte little-endian float32 samples (1920 samples = 80ms per chunk)
 """
 from __future__ import annotations
 
 import asyncio
 import io
 import logging
+import queue
 import re
+import struct
 import threading
 from contextlib import asynccontextmanager
 
 import numpy as np
 import scipy.io.wavfile
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import Response
+from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
 
 logging.basicConfig(
@@ -42,23 +49,15 @@ DEFAULT_VOICE = "anna"
 
 def _strip_markdown(text: str) -> str:
     """Remove markdown so TTS reads clean prose, not punctuation."""
-    # Fenced code blocks → skip entirely (code should not be read aloud)
     text = re.sub(r"```.*?```", ".", text, flags=re.DOTALL)
-    # Inline code
     text = re.sub(r"`[^`]+`", "", text)
-    # ATX headers — keep the text, drop the # marks
     text = re.sub(r"^#{1,6}\s+", "", text, flags=re.MULTILINE)
-    # Bold / italic
     text = re.sub(r"\*{1,3}([^*\n]+)\*{1,3}", r"\1", text)
     text = re.sub(r"_{1,3}([^_\n]+)_{1,3}", r"\1", text)
-    # Markdown links [label](url) → label
     text = re.sub(r"\[([^\]]+)\]\([^\)]*\)", r"\1", text)
-    # Bullet / numbered list markers
     text = re.sub(r"^[\s]*[-*+]\s+", "", text, flags=re.MULTILINE)
     text = re.sub(r"^[\s]*\d+\.\s+", "", text, flags=re.MULTILINE)
-    # Horizontal rules
     text = re.sub(r"^[-*_]{3,}\s*$", "", text, flags=re.MULTILINE)
-    # Collapse excess blank lines
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip()
 
@@ -73,14 +72,12 @@ def _load_model() -> None:
             return
         _model = TTSModel.load_model()
         _SAMPLE_RATE = _model.sample_rate
-        # Pre-warm default voice so the first real request is fast
         _voice_cache[DEFAULT_VOICE] = _model.get_state_for_audio_prompt(DEFAULT_VOICE)
         _ready = True
     logger.info("pocket-tts: model ready — sample_rate=%d", _SAMPLE_RATE)
 
 
 def _get_voice_state(voice: str):
-    """Return cached voice state; create if missing (model lock not needed — semaphore ensures serial access)."""
     if voice not in _voice_cache:
         logger.info("pocket-tts: loading voice state '%s'", voice)
         _voice_cache[voice] = _model.get_state_for_audio_prompt(voice)
@@ -88,15 +85,38 @@ def _get_voice_state(voice: str):
 
 
 def _synthesize_wav(text: str, voice: str) -> bytes:
-    """Run synthesis and return WAV bytes. Called from a thread executor."""
+    """Full synthesis → WAV bytes (for manual replay button)."""
     voice_state = _get_voice_state(voice)
     audio_tensor = _model.generate_audio(voice_state, text)
     audio_np = audio_tensor.numpy()
-    # Convert float32 → int16 for broad player compatibility
     audio_int16 = (np.clip(audio_np, -1.0, 1.0) * 32767).astype(np.int16)
     buf = io.BytesIO()
     scipy.io.wavfile.write(buf, _SAMPLE_RATE, audio_int16)
     return buf.getvalue()
+
+
+def _stream_pcm(text: str, voice: str, q: "queue.Queue[bytes | None]") -> None:
+    """Run generate_audio_stream in a thread; push float32 chunks to queue.
+
+    Protocol:
+      First message: 4-byte LE uint32 = sample_rate
+      Subsequent:    4-byte LE uint32 = chunk length in samples,
+                     then N × 4-byte LE float32 samples
+      Sentinel:      None  (signals end of stream)
+    """
+    try:
+        voice_state = _get_voice_state(voice)
+        # Header: sample rate
+        q.put(struct.pack("<I", _SAMPLE_RATE))
+        for chunk in _model.generate_audio_stream(voice_state, text):
+            arr = chunk.numpy().astype(np.float32)
+            # Prefix each chunk with its length so the client can frame it
+            n = len(arr)
+            q.put(struct.pack("<I", n) + arr.tobytes())
+    except Exception as exc:
+        logger.error("pocket-tts: stream failed — %s: %s", type(exc).__name__, exc)
+    finally:
+        q.put(None)  # sentinel
 
 # ── App lifecycle ────────────────────────────────────────────────────────────
 
@@ -109,8 +129,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Pocket TTS", lifespan=lifespan)
 
-# One synthesis at a time — pocket-tts already uses 2 cores; serialise to
-# avoid memory spikes on a 4-core ARM box.
+# Serialise synthesis — model is not thread-safe during generation
 _sem = asyncio.Semaphore(1)
 
 # ── Schemas ──────────────────────────────────────────────────────────────────
@@ -135,24 +154,20 @@ def ready():
 
 @app.post("/tts")
 async def synthesize(req: TTSRequest):
+    """Full synthesis → WAV. Used by the manual replay button."""
     if not _ready:
-        raise HTTPException(status_code=503, detail="Model not ready yet — retry in a moment")
+        raise HTTPException(status_code=503, detail="Model not ready yet")
 
     text = _strip_markdown(req.text)
     if not text:
         raise HTTPException(status_code=400, detail="Text is empty after cleaning")
-    if len(text) > 4000:
-        # Truncate gracefully rather than error — chat replies should be short
-        text = text[:4000]
-
+    text = text[:4000]
     voice = req.voice or DEFAULT_VOICE
 
     async with _sem:
         loop = asyncio.get_running_loop()
         try:
-            wav_bytes = await loop.run_in_executor(
-                None, lambda: _synthesize_wav(text, voice)
-            )
+            wav_bytes = await loop.run_in_executor(None, lambda: _synthesize_wav(text, voice))
         except Exception as exc:
             logger.error("pocket-tts: synthesis failed — %s: %s", type(exc).__name__, exc)
             raise HTTPException(status_code=500, detail="Synthesis failed")
@@ -161,4 +176,48 @@ async def synthesize(req: TTSRequest):
         content=wav_bytes,
         media_type="audio/wav",
         headers={"Content-Disposition": "inline; filename=reply.wav"},
+    )
+
+
+@app.post("/tts/stream")
+async def synthesize_stream(req: TTSRequest):
+    """Streaming synthesis → raw float32 PCM.
+
+    Yields framed chunks as the model generates them.
+    First chunk arrives in ~300ms, enabling near-realtime playback.
+    """
+    if not _ready:
+        raise HTTPException(status_code=503, detail="Model not ready yet")
+
+    text = _strip_markdown(req.text)
+    if not text:
+        raise HTTPException(status_code=400, detail="Text is empty after cleaning")
+    text = text[:4000]
+    voice = req.voice or DEFAULT_VOICE
+
+    async def generate():
+        # Run blocking generation in a thread, communicate via queue
+        q: queue.Queue[bytes | None] = queue.Queue(maxsize=32)
+        loop = asyncio.get_running_loop()
+
+        async with _sem:
+            thread = threading.Thread(
+                target=_stream_pcm, args=(text, voice, q), daemon=True
+            )
+            thread.start()
+
+            while True:
+                # Poll queue without blocking the event loop
+                try:
+                    chunk = await loop.run_in_executor(None, lambda: q.get(timeout=30))
+                except Exception:
+                    break
+                if chunk is None:
+                    break
+                yield chunk
+
+    return StreamingResponse(
+        generate(),
+        media_type="application/octet-stream",
+        headers={"X-Sample-Rate": str(_SAMPLE_RATE)},
     )

@@ -6,7 +6,7 @@ import os
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse, Response, StreamingResponse
 from pydantic import BaseModel, field_validator
 
 from app.api.dependencies import get_current_user
@@ -135,6 +135,48 @@ async def chat_tts(
         content=resp.content,
         media_type="audio/wav",
         headers={"Content-Disposition": "inline; filename=reply.wav"},
+    )
+
+
+@router.post("/tts/stream")
+async def chat_tts_stream(
+    request: Request,
+    _user: str = Depends(get_current_user),
+):
+    """Stream TTS audio as raw float32 PCM chunks.
+
+    POST /api/chat/tts/stream  { text: str, voice?: str }
+
+    Returns application/octet-stream with framed float32 PCM:
+      First 4 bytes:  LE uint32 sample_rate
+      Per chunk:      LE uint32 n_samples, then n_samples × LE float32
+    First chunk arrives in ~300ms enabling near-realtime playback.
+    """
+    body = await request.json()
+    text = (body.get("text") or "").strip()
+    voice = (body.get("voice") or "anna").strip()
+
+    if not text:
+        return JSONResponse({"error": "text is required"}, status_code=400)
+
+    stream_endpoint = TTS_URL.rstrip("/") + "/tts/stream"
+
+    async def proxy_stream():
+        try:
+            async with httpx.AsyncClient(timeout=httpx.Timeout(5.0, read=90.0)) as client:
+                async with client.stream("POST", stream_endpoint,
+                                         json={"text": text, "voice": voice}) as resp:
+                    if resp.status_code != 200:
+                        return
+                    async for chunk in resp.aiter_bytes(chunk_size=None):
+                        yield chunk
+        except Exception as exc:
+            logger.error("chat tts/stream: proxy error — %s", exc)
+
+    return StreamingResponse(
+        proxy_stream(),
+        media_type="application/octet-stream",
+        headers={"X-TTS-Stream": "1"},
     )
 
 
