@@ -778,17 +778,10 @@ export default function AIChatbot() {
     const replyIdx = next.length
 
     try {
-      const res = await api.post<{ reply: string }>('/api/chat', { messages: history, context })
+      const res = await api.post<{ reply: string }>('/api/chat', { messages: history, context, tts_mode: true })
       setMessages(prev => [...prev, { role: 'assistant', content: res.reply }])
-      // Auto-play: speak only the first 2 sentences for low latency.
-      // Shorter text = much faster TTS on this CPU (~1-2s vs 10s+ for full reply).
-      // The speaker button below the message plays the full text on demand.
-      const firstTwo = res.reply
-        .split(/(?<=[.!?])\s+/)
-        .slice(0, 2)
-        .join(' ')
-        .trim()
-      speakMessageStream(firstTwo || res.reply, replyIdx)
+      // Auto-play the full reply via streaming — latency is ~450ms regardless of length
+      speakMessageStream(res.reply, replyIdx)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong.')
     } finally {

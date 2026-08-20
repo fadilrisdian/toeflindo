@@ -39,6 +39,7 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     messages: list[ChatMessage]
     context: str = ""
+    tts_mode: bool = False  # True when the reply will be read aloud via TTS
 
 
 class ChatResponse(BaseModel):
@@ -59,6 +60,22 @@ async def chat(
         "grammar rules, vocabulary, reading/listening/speaking/writing strategies.",
         "Be concise and clear. Use plain English. Avoid overly long responses unless asked.",
     ]
+
+    if body.tts_mode:
+        system_lines += [
+            "",
+            "IMPORTANT: Your response will be read aloud by a text-to-speech engine.",
+            "You MUST follow these rules strictly:",
+            "- Write in plain spoken sentences only. No markdown whatsoever.",
+            "- No tables, bullet points, numbered lists, or dashes.",
+            "- No bold (**text**), italic (*text*), or backtick code formatting.",
+            "- No headers or section titles (no # marks).",
+            "- No URLs or links.",
+            "- Do not use special characters like asterisks, pipes, or underscores for formatting.",
+            "- If you need to enumerate things, use natural speech: 'First... Second... Third...' or 'For example...'.",
+            "- Keep the response conversational and natural to listen to.",
+        ]
+
     if ctx:
         system_lines += [
             "",
