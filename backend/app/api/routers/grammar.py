@@ -321,12 +321,14 @@ async def grammar_analyze_text(
                     sub_type = (m.get("sub_type") or "").strip()
                     explanation = (m.get("explanation") or "").strip()
                     if wrong and correct:
-                        repo.upsert_mistake_weakspot(
+                        repo.upsert_mistake(
+                            section="Grammar",
+                            task_type="Free Text Analysis",
+                            grammar_type=grammar_type,
+                            sub_type=sub_type,
                             wrong=wrong,
                             correct=correct,
-                            category=grammar_type,
-                            hint=explanation,
-                            sub_type=sub_type,
+                            explanation=explanation,
                         )
                 conn.commit()
 

@@ -13,6 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.middleware import AccessLogMiddleware
 from app.api.routers.admin import router as admin_router
 from app.api.routers.auth import router as auth_router
+from app.api.routers.chat import router as chat_router
 from app.api.routers.dashboard import router as dashboard_router
 from app.api.routers.focus_drills import router as focus_drills_router
 from app.api.routers.grammar import router as grammar_router
@@ -49,6 +50,7 @@ app.add_middleware(AccessLogMiddleware)
 
 app.include_router(admin_router)
 app.include_router(auth_router)
+app.include_router(chat_router)
 app.include_router(dashboard_router)
 app.include_router(focus_drills_router)
 app.include_router(grammar_router)

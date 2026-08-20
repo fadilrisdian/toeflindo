@@ -48,6 +48,11 @@ interface RemediationQueue {
   first_id: number | null
 }
 
+interface MistakesResp {
+  rows: unknown[]
+  total: number
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const STAGE_LABEL = ['New', '1 day', '3 days', '7 days', '14 days', '30 days']
@@ -241,6 +246,7 @@ function GrammarHubContent() {
   const [srsDue, setSrsDue]         = useState(0)
   const [transfers, setTransfers]   = useState<TransferTest[]>([])
   const [remQueue, setRemQueue]     = useState<RemediationQueue | null>(null)
+  const [unreviewedCount, setUnreviewedCount] = useState<number | null>(null)
 
   useEffect(() => {
     function fetchAll() {
@@ -254,6 +260,8 @@ function GrammarHubContent() {
         .then(r => setTransfers(r.pending)).catch(() => {})
       api.get<RemediationQueue>('/api/grammar/remediation-queue')
         .then(setRemQueue).catch(() => {})
+      api.get<MistakesResp>('/api/grammar/mistakes', { page: 1, page_size: 1, reviewed: 0 })
+        .then(r => setUnreviewedCount(r.total)).catch(() => {})
     }
     fetchAll()
     const handlePageShow = (e: PageTransitionEvent) => { if (e.persisted) fetchAll() }
@@ -382,7 +390,27 @@ function GrammarHubContent() {
         <Link href="/practice/grammar/flashcards"
           className="card p-5 mb-4 hover:border-[#2a7a7a] hover:bg-[#eaf5f3] transition-all flex items-center justify-between gap-3">
           <div>
-            <div className="font-bold text-sm text-[#1f2937]">Flashcards</div>
+            <div className="font-bold text-sm text-[#1f2937] flex items-center gap-2">
+              Flashcards
+              {unreviewedCount !== null && unreviewedCount > 0 && (
+                <span style={{
+                  fontSize: '0.65rem', fontWeight: 700,
+                  padding: '1px 7px', borderRadius: 8,
+                  background: '#fee2e2', color: '#dc2626',
+                }}>
+                  {unreviewedCount} unreviewed
+                </span>
+              )}
+              {unreviewedCount === 0 && (
+                <span style={{
+                  fontSize: '0.65rem', fontWeight: 700,
+                  padding: '1px 7px', borderRadius: 8,
+                  background: '#dcfce7', color: '#15803d',
+                }}>
+                  All reviewed
+                </span>
+              )}
+            </div>
             <div className="text-xs text-[#6b7280] mt-0.5">Flip-card review — tap to reveal the correction</div>
           </div>
           <span className="text-[#9ca3af] text-sm">→</span>

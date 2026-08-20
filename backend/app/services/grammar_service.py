@@ -67,7 +67,7 @@ def fix_weakspot_card(
         raw = call_llm(
             messages=[{"role": "user", "content": prompt}],
             temperature=0.2,
-            max_tokens=300,
+            max_tokens=2000,
             json_mode=True,
             label="fix_weakspot/" + category,
         )
@@ -304,23 +304,41 @@ def build_remediation_feedback(
             f'Student wrote: "{wrong}"',
             f'Correct version: "{correct}"',
             "",
-            "Write ONE clear rule sentence explaining the grammar principle that was violated.",
-            "Be specific — name the rule, not just the fix.",
-            "Example format: 'Use the present perfect (have/has + past participle) when the action has a result in the present.'",
-            "Reply with only that one rule sentence, no extra text.",
+            "Produce two things:",
+            "1. rule — one sentence stating the general grammar principle behind this error.",
+            "   The rule must be broad enough to cover related correct examples, not just this one sentence.",
+            "   Do NOT write a rule that only fits the specific words in the example above.",
+            "   Do NOT frame the rule as 'use X word' or 'use X form' — frame it as the structural pattern.",
+            "   Good example (broad): 'Use make + object + adjective to describe the state the object is put into.'",
+            "   Bad example (narrow): 'Use a past participle after make + object.'",
+            "2. contrast — a short phrase-level pair showing wrong vs correct structure.",
+            "   Extract only the relevant weak spot — not the full sentence.",
+            "   contrast_wrong: the incorrect fragment from the student's sentence.",
+            "   contrast_correct: the corrected fragment.",
+            "",
+            'Reply with only this JSON: {"rule": "...", "contrast_wrong": "...", "contrast_correct": "..."}',
         ])
         raw = call_llm(
             messages=[{"role": "user", "content": prompt}],
             temperature=0.2,
-            max_tokens=500,
-            json_mode=False,
+            max_tokens=2000,
+            json_mode=True,
             label="remediate/rule/" + grammar_type,
         )
         raw = re.sub(r"<think>.*?</think>", "", raw, flags=re.DOTALL)
-        raw = re.sub(r"<think>.*$", "", raw, flags=re.DOTALL).strip().strip('"')
+        raw = re.sub(r"<think>.*$", "", raw, flags=re.DOTALL).strip()
         ms = (time.perf_counter() - t0) * 1000
+        try:
+            data = json.loads(raw)
+            rule = data.get("rule", "").strip().strip('"')
+            contrast_wrong = data.get("contrast_wrong", "").strip()
+            contrast_correct = data.get("contrast_correct", "").strip()
+        except Exception:
+            rule = raw.strip().strip('"')
+            contrast_wrong = ""
+            contrast_correct = ""
         logger.info("remediate rule ok grammar_type=%s latency=%.0fms", grammar_type, ms)
-        return {"rule": raw, "model_sentences": []}
+        return {"rule": rule, "model_sentences": [], "contrast_wrong": contrast_wrong, "contrast_correct": contrast_correct}
     else:
         # untreatable: generate 2 native model phrasings
         prompt = "\n".join([
@@ -339,7 +357,7 @@ def build_remediation_feedback(
         raw = call_llm(
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
-            max_tokens=300,
+            max_tokens=2000,
             json_mode=True,
             label="remediate/model/" + grammar_type,
         )
@@ -350,7 +368,7 @@ def build_remediation_feedback(
         except Exception:
             sentences = []
         logger.info("remediate model_sentences ok grammar_type=%s latency=%.0fms", grammar_type, ms)
-        return {"rule": "", "model_sentences": sentences}
+        return {"rule": "", "model_sentences": sentences, "contrast_wrong": "", "contrast_correct": ""}
 
 
 def generate_remediation_prompts(
@@ -358,41 +376,73 @@ def generate_remediation_prompts(
     grammar_type: str,
     sub_type: str,
     correct: str,
+    wrong: str,
+    explanation: str,
     treatability: str,
 ) -> list[str]:
     """Generate 2-3 writing prompts for Step 3 (generation practice).
 
     Each prompt asks the student to write a NEW sentence applying the same rule/pattern,
     using their own content — not edit the original.
+    Prompts are grounded in TOEFL 2026 topic domains and tied to the specific mistake.
     """
     t0 = time.perf_counter()
     pattern_label = grammar_type + (f" — {sub_type}" if sub_type else "")
 
+    TOEFL_TOPICS = (
+        "Academics, Science (Life/Physical), Humanities, Social Science, Business, "
+        "Technology, Environment, Health, Arts, Campus Life, University Services, "
+        "Student Activities"
+    )
+
+    mistake_context = (
+        f"The student's specific mistake:\n"
+        f"  Wrong:   \"{wrong}\"\n"
+        f"  Correct: \"{correct}\"\n"
+    )
+    if explanation:
+        mistake_context += f"  Why it's wrong: {explanation}\n"
+
     if treatability == "treatable":
         instruction = (
-            f"Generate 3 short writing prompts that ask the student to write a NEW sentence "
-            f"correctly using the '{pattern_label}' grammar pattern. "
-            "Each prompt should give a different real-world scenario/topic so the student "
-            "must apply the rule in fresh context. "
-            "Prompts must NOT ask the student to fix or rewrite the original sentence. "
-            "Keep each prompt under 20 words. "
+            f"You are a TOEFL grammar practice designer.\n"
+            f"Grammar pattern to practice: '{pattern_label}'\n\n"
+            f"{mistake_context}\n"
+            f"Generate exactly 3 writing prompts. Each prompt must:\n"
+            f"1. Be in a DIFFERENT TOEFL 2026 topic domain. Choose 3 from: {TOEFL_TOPICS}\n"
+            f"2. Directly ask the student to write a NEW sentence applying the '{pattern_label}' pattern correctly\n"
+            f"3. Be specific enough that the student's sentence will naturally require using this grammar pattern\n"
+            f"4. Be under 20 words\n\n"
+            f"Each prompt must be worded differently — vary the phrasing across all 3 prompts.\n"
+            f"Keep each prompt open-ended — the student can write about ANY topic or content they choose.\n"
+            f"Do NOT lock the student into a specific scenario, person, or subject matter.\n"
+            f"IMPORTANT: Do NOT reproduce, quote, or echo the wrong or correct example sentences (or any part of them) in your prompts. Invent entirely new contexts.\n"
+            f"Do NOT ask them to fix or rewrite the original mistake sentence.\n\n"
             'Reply with only this JSON: {"prompts": ["prompt1", "prompt2", "prompt3"]}'
         )
     else:
         instruction = (
-            f"Generate 3 short writing prompts that ask the student to write a NEW sentence "
-            f"using the natural '{pattern_label}' pattern correctly. "
-            "Each prompt should suggest a different everyday topic/scenario. "
-            "Do NOT ask the student to fix or rewrite the original sentence. "
-            "Keep each prompt under 20 words. "
+            f"You are a TOEFL grammar practice designer.\n"
+            f"Natural usage pattern to practice: '{pattern_label}'\n\n"
+            f"{mistake_context}\n"
+            f"Generate exactly 3 writing prompts. Each prompt must:\n"
+            f"1. Be in a DIFFERENT TOEFL 2026 topic domain. Choose 3 from: {TOEFL_TOPICS}\n"
+            f"2. Directly ask the student to write a NEW sentence using the '{pattern_label}' pattern naturally\n"
+            f"3. Be specific enough that the student's sentence will naturally require this exact collocation/usage\n"
+            f"4. Be under 20 words\n\n"
+            f"Each prompt must be worded differently — vary the phrasing across all 3 prompts.\n"
+            f"Keep each prompt open-ended — the student can write about ANY topic or content they choose.\n"
+            f"Do NOT lock the student into a specific scenario, person, or subject matter.\n"
+            f"IMPORTANT: Do NOT reproduce, quote, or echo the wrong or correct example sentences (or any part of them) in your prompts. Invent entirely new contexts.\n"
+            f"Do NOT ask them to fix or rewrite the original mistake sentence.\n\n"
             'Reply with only this JSON: {"prompts": ["prompt1", "prompt2", "prompt3"]}'
         )
 
     raw = call_llm(
         messages=[{"role": "user", "content": instruction}],
         temperature=0.8,
-        max_tokens=400,
-        json_mode=False,
+        max_tokens=2000,
+        json_mode=True,
         label="remediate/prompts/" + grammar_type,
     )
     ms = (time.perf_counter() - t0) * 1000
@@ -404,8 +454,8 @@ def generate_remediation_prompts(
     if not prompts:
         # Hard fallback so the UI never gets stuck
         prompts = [
-            f"Write a sentence about your daily routine using the correct {grammar_type} pattern.",
-            f"Write a sentence about your job or studies using the correct {grammar_type} pattern.",
+            f"Write a sentence of your own choice that correctly applies the {grammar_type} pattern.",
+            f"Write another sentence of your own choice that correctly applies the {grammar_type} pattern.",
         ]
     logger.info("remediate prompts ok grammar_type=%s latency=%.0fms", grammar_type, ms)
     return prompts
@@ -431,11 +481,18 @@ def check_student_sentence(
             f"The student was asked to write a new sentence correctly using the '{pattern_label}' grammar pattern.\n"
             f"Prompt given: \"{prompt}\"\n"
             f"Student sentence: \"{student_sentence}\"\n\n"
-            f"Does the student sentence:\n"
-            f"1. Correctly apply the '{pattern_label}' pattern? (no {grammar_type} errors)\n"
-            f"2. Make reasonable sense as a response to the prompt?\n\n"
-            "verdict: 'correct' if both are true, 'wrong' otherwise.\n"
-            "feedback: one sentence explaining what is right or what specific error remains.\n"
+            f"Judge ONLY on grammar — ignore topic, subject matter, or whether it fits the prompt scenario.\n"
+            f"Any grammatically correct sentence that applies the '{pattern_label}' pattern is acceptable.\n\n"
+            "verdict:\n"
+            "  'correct' — grammar pattern applied correctly and naturally\n"
+            "  'awkward' — grammar is technically correct but wording is unnatural; include a more natural suggestion in feedback\n"
+            "  'wrong'   — grammar error is still present\n\n"
+            "feedback: one sentence about the grammar only — what is correct or what specific grammar error remains.\n"
+            "When correct: confirm compactly and name what the student did right. "
+            "Example: 'Correct — you applied the pattern accurately.' "
+            "Do NOT use vague praise like 'Great job!', 'Well done!', or 'Excellent!'.\n"
+            "When wrong: state exactly what grammar error remains and what specific form is needed. "
+            "Example: 'After make + object, use an adjective, not a base verb. Try disappointed instead of disappoint.'\n"
             'Reply with only this JSON: {"verdict": "correct", "feedback": "..."}'
         )
     else:
@@ -443,16 +500,24 @@ def check_student_sentence(
             f"The student was asked to write a new sentence using the natural '{pattern_label}' pattern.\n"
             f"Prompt given: \"{prompt}\"\n"
             f"Student sentence: \"{student_sentence}\"\n\n"
-            f"Does the student sentence use the '{pattern_label}' naturally and correctly?\n"
-            "verdict: 'correct' if the usage is natural, 'wrong' if the same error type is still present.\n"
-            "feedback: one sentence explaining what is right or what sounds unnatural.\n"
+            f"Judge ONLY on whether the '{pattern_label}' pattern is used naturally — ignore topic, subject matter, or whether it fits the prompt scenario.\n"
+            f"Any sentence that uses the pattern naturally is acceptable regardless of content.\n\n"
+            "verdict:\n"
+            "  'correct' — pattern used correctly and naturally\n"
+            "  'awkward' — pattern present but phrasing is unnatural; include a more natural suggestion in feedback\n"
+            "  'wrong'   — same error type is still present\n\n"
+            "feedback: one sentence about the pattern usage only — what is natural or what specific usage error remains.\n"
+            "When correct: confirm compactly and name what the student did right. "
+            "Example: 'Correct — the collocation is used naturally here.' "
+            "Do NOT use vague praise like 'Great job!', 'Well done!', or 'Excellent!'.\n"
+            "When wrong: state exactly what unnatural usage remains and what a better phrasing would be.\n"
             'Reply with only this JSON: {"verdict": "correct", "feedback": "..."}'
         )
 
     raw = call_llm(
         messages=[{"role": "user", "content": check_instruction}],
         temperature=0.0,
-        max_tokens=400,
+        max_tokens=2000,
         json_mode=False,
         label="remediate/check/" + grammar_type,
     )
@@ -463,7 +528,7 @@ def check_student_sentence(
             data = json.loads(matches[-1].group(0))
             verdict  = data.get("verdict", "wrong")
             feedback = data.get("feedback", "")
-            if verdict not in ("correct", "wrong"):
+            if verdict not in ("correct", "awkward", "wrong"):
                 verdict = "wrong"
         except Exception:
             verdict, feedback = "wrong", ""
@@ -508,8 +573,8 @@ def analyze_free_text(*, text: str) -> dict:
     raw = call_llm(
         messages=[{"role": "user", "content": prompt}],
         temperature=0.2,
-        max_tokens=1500,
-        json_mode=False,
+        max_tokens=4000,
+        json_mode=True,
         label="free_text_analyze",
     )
     ms = (time.perf_counter() - t0) * 1000

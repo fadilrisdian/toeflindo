@@ -105,6 +105,8 @@ async def remediate_self_correct(
         "verdict": verdict,
         "feedback": feedback,
         "rule": fb.get("rule", ""),
+        "contrast_wrong": fb.get("contrast_wrong", ""),
+        "contrast_correct": fb.get("contrast_correct", ""),
         "model_sentences": fb.get("model_sentences", []),
         "correct": data["correct"],
     })
@@ -130,6 +132,8 @@ async def remediate_prompts(
             grammar_type=data["grammar_type"],
             sub_type=data.get("sub_type") or "",
             correct=data["correct"],
+            wrong=data["wrong"],
+            explanation=data.get("explanation") or "",
             treatability=data["treatability"],
         ),
     )
@@ -167,7 +171,7 @@ async def remediate_check_sentence(
             grammar_mistake_id=mistake_id,
             attempt_type="new_sentence",
             attempt_text=body.student_sentence,
-            is_correct=(result["verdict"] == "correct"),
+            is_correct=(result["verdict"] in ("correct", "awkward")),
             feedback=result.get("feedback", ""),
         )
         conn.commit()

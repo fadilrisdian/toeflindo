@@ -37,6 +37,8 @@ interface SelfCorrectResult {
   verdict: 'correct' | 'partial' | 'wrong'
   feedback: string
   rule: string
+  contrast_wrong: string
+  contrast_correct: string
   model_sentences: string[]
   correct: string
 }
@@ -47,7 +49,7 @@ interface PromptsResult {
 
 interface CheckResult {
   attempt_id: number
-  verdict: 'correct' | 'wrong'
+  verdict: 'correct' | 'awkward' | 'wrong'
   feedback: string
 }
 
@@ -74,12 +76,14 @@ const DIMENSION_COLOR: Record<string, string> = {
 const VERDICT_COLOR: Record<string, string> = {
   correct: '#15803d',
   partial: '#b45309',
+  awkward: '#b45309',
   wrong: '#dc2626',
 }
 
 const VERDICT_ICON: Record<string, string> = {
   correct: '✓',
   partial: '~',
+  awkward: '≈',
   wrong: '✗',
 }
 
@@ -262,6 +266,7 @@ function RemediateContent() {
   const [checkResults, setCheckResults] = useState<(CheckResult | null)[]>([null, null, null])
   const [checking, setChecking] = useState<boolean[]>([false, false, false])
   const [completingIdx, setCompletingIdx] = useState<number | null>(null)
+  const [retryHints, setRetryHints] = useState<(string | null)[]>([null, null, null])
 
   // Done
   const [completing, setCompleting] = useState(false)
@@ -348,7 +353,7 @@ function RemediateContent() {
     }
   }
 
-  const hasAtLeastOneChecked = checkResults.some(r => r !== null)
+  const hasAtLeastOneChecked = checkResults.some((r: CheckResult | null) => r !== null && (r.verdict === 'correct' || r.verdict === 'awkward'))
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -366,7 +371,7 @@ function RemediateContent() {
   if (!data) return null
 
   const dimColor = DIMENSION_COLOR[data.rubric_dimension] || '#374151'
-  const isWriting = (data.section || '').toLowerCase() === 'writing'
+  const isWriting = (data.section || '').toLowerCase() !== 'speaking'
 
   return (
     <div style={{ maxWidth: 680, margin: '0 auto', padding: '1.5rem 1rem 4rem' }}>
@@ -585,7 +590,9 @@ function RemediateContent() {
                 {VERDICT_ICON[step1Result.verdict]}
               </span>
               <span style={{ fontSize: '0.88rem', color: '#374151' }}>
-                {step1Result.feedback || (step1Result.verdict === 'correct' ? 'Correct!' : 'Not quite right.')}
+                {step1Result.feedback || (step1Result.verdict === 'correct'
+                ? 'Correct — grammar applied accurately.'
+                : 'Not correct — check the grammar pattern.')}
               </span>
             </div>
           ) : null}
@@ -604,14 +611,47 @@ function RemediateContent() {
 
           {/* Rule (treatable) */}
           {step1Result.rule && (
-            <div style={{ marginBottom: data.treatability === 'treatable' ? 0 : 12 }}>
-              <SectionLabel text="The rule" color="#1d4ed8" />
+            <div style={{ marginBottom: 12 }}>
+              <SectionLabel text="Rule" color="#1d4ed8" />
               <div style={{
                 background: '#eff6ff', border: '1px solid #bfdbfe',
                 borderRadius: 8, padding: '10px 14px',
                 fontSize: '0.88rem', color: '#1e3a8a', lineHeight: 1.65,
               }}>
                 {step1Result.rule}
+              </div>
+            </div>
+          )}
+
+          {/* Compare — wrong vs correct contrast */}
+          {step1Result.contrast_wrong && step1Result.contrast_correct && (
+            <div style={{ marginBottom: 12 }}>
+              <SectionLabel text="Compare" color="#374151" />
+              <div style={{
+                background: '#f9fafb', border: '1px solid #e5e7eb',
+                borderRadius: 8, padding: '10px 14px',
+                fontSize: '0.88rem', lineHeight: 1.8,
+              }}>
+                <div>
+                  <span style={{ color: '#6b7280', fontWeight: 600, marginRight: 6 }}>Wrong:</span>
+                  <span style={{
+                    background: '#fef2f2', color: '#dc2626',
+                    borderRadius: 4, padding: '1px 6px',
+                    fontStyle: 'italic',
+                  }}>
+                    {step1Result.contrast_wrong}
+                  </span>
+                </div>
+                <div style={{ marginTop: 4 }}>
+                  <span style={{ color: '#6b7280', fontWeight: 600, marginRight: 6 }}>Correct:</span>
+                  <span style={{
+                    background: '#f0fdf4', color: '#15803d',
+                    borderRadius: 4, padding: '1px 6px',
+                    fontStyle: 'italic',
+                  }}>
+                    {step1Result.contrast_correct}
+                  </span>
+                </div>
               </div>
             </div>
           )}
@@ -688,12 +728,20 @@ function RemediateContent() {
                             {VERDICT_ICON[checkResults[i]!.verdict]}
                           </span>
                           <span style={{ fontSize: '0.82rem', color: '#374151', lineHeight: 1.5 }}>
-                            {checkResults[i]!.feedback || (checkResults[i]!.verdict === 'correct' ? 'Looks good!' : 'Try again.')}
+                            {checkResults[i]!.feedback || (checkResults[i]!.verdict === 'correct'
+                              ? 'Correct — pattern applied accurately.'
+                              : checkResults[i]!.verdict === 'awkward'
+                              ? 'Grammar correct — see the natural phrasing note above.'
+                              : 'Incorrect — check the target pattern and try again.')}
                           </span>
                         </div>
                         {phase === 'step3' && (
                           <button
                             onClick={() => {
+                              // carry wrong feedback as a retry hint before clearing
+                              if (checkResults[i]?.verdict === 'wrong' && checkResults[i]?.feedback) {
+                                const nh = [...retryHints]; nh[i] = checkResults[i]!.feedback; setRetryHints(nh)
+                              }
                               const ns = [...sentences]; ns[i] = ''; setSentences(ns)
                               const nd = [...drafts]; nd[i] = ''; setDrafts(nd)
                               const nr = [...checkResults]; nr[i] = null; setCheckResults(nr)
@@ -730,6 +778,15 @@ function RemediateContent() {
                   </div>
                 ) : isWriting ? (
                   <div>
+                    {retryHints[i] && (
+                      <div style={{
+                        background: '#fffbeb', border: '1px solid #fcd34d',
+                        borderRadius: 6, padding: '7px 12px', marginBottom: 8,
+                        fontSize: '0.8rem', color: '#92400e', lineHeight: 1.5,
+                      }}>
+                        <span style={{ fontWeight: 600 }}>Hint: </span>{retryHints[i]}
+                      </div>
+                    )}
                     <textarea
                       value={drafts[i]}
                       onChange={e => {
@@ -755,6 +812,8 @@ function RemediateContent() {
                           if (!text) return
                           const ns = [...sentences]; ns[i] = text; setSentences(ns)
                           const nr = [...checkResults]; nr[i] = null; setCheckResults(nr)
+                          // clear hint on new attempt
+                          const nh = [...retryHints]; nh[i] = null; setRetryHints(nh)
                         }}
                         disabled={!drafts[i].trim() || phase === 'done'}
                         style={{
@@ -773,6 +832,8 @@ function RemediateContent() {
                     onTranscribed={text => {
                       const ns = [...sentences]; ns[i] = text; setSentences(ns)
                       const nr = [...checkResults]; nr[i] = null; setCheckResults(nr)
+                      // clear hint on new attempt
+                      const nh = [...retryHints]; nh[i] = null; setRetryHints(nh)
                     }}
                   />
                 )}
