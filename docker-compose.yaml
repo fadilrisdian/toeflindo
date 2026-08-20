@@ -67,8 +67,6 @@ services:
     depends_on:
       - toefl-frontend
     restart: always
-
-  # ── Pocket TTS sidecar ────────────────────────────────────────────────────
   # Isolated container so numpy 2 + torch don't conflict with the backend.
   # Model cache in named volume — only downloaded once, survives rebuilds.
   # Only reachable from toefl-v2-internal; not exposed on any host port.
