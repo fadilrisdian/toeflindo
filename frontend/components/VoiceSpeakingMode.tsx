@@ -177,7 +177,7 @@ export default function VoiceSpeakingMode() {
     micChunksRef.current = []
   }
 
-  // ── TTS per sentence — mirrors AIChatbot speakSentenceQueued exactly ───────
+  // ── TTS per sentence — simple WAV, guaranteed to work ────────────────────
   async function speakSentenceVSM(
     sentence: string,
     onProgress: (partial: string) => void,
@@ -190,82 +190,47 @@ export default function VoiceSpeakingMode() {
       const ctx = getAudioCtx()
       if (ctx.state === 'suspended') await ctx.resume()
 
-      const res = await fetch('/api/chat/tts/stream', {
+      const res = await fetch('/api/chat/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ text: sentence, voice: 'anna' }),
         signal: abort?.signal,
       })
-      if (!res.ok || !res.body) { onProgress(sentence); return }
+      if (!res.ok) { onProgress(sentence); return }
       if (abort?.signal.aborted) return
 
-      const reader   = res.body.getReader()
-      let buf        = new Uint8Array(0)
-      let sampleRate = 0
-      const frames: Float32Array<ArrayBuffer>[] = []
+      const arrayBuf = await res.arrayBuffer()
+      if (abort?.signal.aborted) return
 
-      const appendBuf = (chunk: Uint8Array) => {
-        const merged = new Uint8Array(buf.length + chunk.length)
-        merged.set(buf); merged.set(chunk, buf.length)
-        buf = merged
-      }
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (abort?.signal.aborted) break
-        if (value) appendBuf(value)
-        let offset = 0
-        while (true) {
-          if (buf.length - offset < 4) break
-          const view = new DataView(buf.buffer, buf.byteOffset + offset)
-          if (sampleRate === 0) { sampleRate = view.getUint32(0, true); offset += 4; continue }
-          if (buf.length - offset < 4) break
-          const nSamples = view.getUint32(0, true)
-          if (nSamples === 0) { offset += 4; break }
-          const byteLen = nSamples * 4
-          if (buf.length - offset < 4 + byteLen) break
-          const raw = new Float32Array(buf.buffer, buf.byteOffset + offset + 4, nSamples)
-          const copy = new Float32Array(nSamples); copy.set(raw)
-          frames.push(copy)
-          offset += 4 + byteLen
-        }
-        if (offset > 0) buf = buf.slice(offset)
-        if (done) break
-      }
-
-      if (abort?.signal.aborted || frames.length === 0 || sampleRate === 0) {
-        onProgress(sentence); return
-      }
+      const audioBuf = await ctx.decodeAudioData(arrayBuf)
+      if (abort?.signal.aborted) return
 
       const now       = ctx.currentTime
       const startWhen = Math.max(now, ttsNextTimeRef.current)
-      let cursor      = startWhen
+      const node      = ctx.createBufferSource()
+      node.buffer     = audioBuf
+      node.connect(ctx.destination)
+      node.start(startWhen)
+      ttsNextTimeRef.current = startWhen + audioBuf.duration
+      streamNodesRef.current.push(node)
 
-      for (const frame of frames) {
-        const ab = ctx.createBuffer(1, frame.length, sampleRate)
-        ab.copyToChannel(frame, 0)
-        const node = ctx.createBufferSource()
-        node.buffer = ab; node.connect(ctx.destination); node.start(cursor)
-        cursor += ab.duration
-        streamNodesRef.current.push(node)
-        node.onended = () => {
-          const nodes = streamNodesRef.current
-          if (nodes.length > 0 && node === nodes[nodes.length - 1]) streamNodesRef.current = []
-        }
+      node.onended = () => {
+        const nodes = streamNodesRef.current
+        if (nodes.length > 0 && node === nodes[nodes.length - 1]) streamNodesRef.current = []
       }
-      ttsNextTimeRef.current = cursor
 
-      const totalMs = (cursor - startWhen) * 1000
+      const totalMs = audioBuf.duration * 1000
       const delayMs = Math.max(0, (startWhen - now) * 1000)
 
-      // Clear subtitle at sentence start, then reveal word by word
+      // Clear subtitle at sentence start
       wordTimersRef.current.push(setTimeout(() => {
         if (modeRef.current === 'speaking') setSubtitle('')
       }, delayMs))
 
+      // Reveal word by word proportionally across the sentence duration
       words.forEach((_, i) => {
-        const t = delayMs + ((i + 1) / words.length) * totalMs
+        const t       = delayMs + ((i + 1) / words.length) * totalMs
         const partial = words.slice(0, i + 1).join(' ')
         wordTimersRef.current.push(setTimeout(() => {
           if (modeRef.current === 'speaking') onProgress(partial)
@@ -275,26 +240,22 @@ export default function VoiceSpeakingMode() {
     } catch (e: unknown) {
       if (e instanceof Error && e.name !== 'AbortError') onProgress(sentence)
     }
-    // Resolves after scheduling — not after playback (matches AIChatbot pattern)
+    // Returns after scheduling — not after playback
   }
 
-  // ── processReply — LLM + TTS, called with clean transcript ────────────────
-  // Mirrors AIChatbot's handleSend: top-level function, reads messagesRef
-  // for current state, never has a stale closure problem.
+  // ── processReply — LLM + TTS ───────────────────────────────────────────────
   async function processReply(transcript: string) {
     const userMsg: Msg = { role: 'user', content: transcript }
-
-    // Use messagesRef for current messages — avoids stale closure
     const history = [
       ...messagesRef.current.filter(m => !(m.role === 'assistant' && m.content === WELCOME_MSG.content)),
       userMsg,
     ]
     setMessages(prev => [...prev, userMsg])
 
-    // LLM
     const abort = new AbortController()
     streamAbortRef.current = abort
 
+    // 1. LLM
     let reply = ''
     try {
       const res  = await fetch('/api/chat', {
@@ -316,27 +277,55 @@ export default function VoiceSpeakingMode() {
 
     setMessages(prev => [...prev, { role: 'assistant', content: reply }])
     setMode('speaking')
-    modeRef.current = 'speaking'  // update ref immediately — setMode is async, ref must be sync
+    modeRef.current = 'speaking'
     stopIdleAnim()
 
-    // TTS — speak each sentence, pipelining fetches
-    const sentences = splitSentences(reply)
-    for (let i = 0; i < sentences.length; i++) {
-      if (modeRef.current !== 'speaking') break
-      await speakSentenceVSM(sentences[i], (partial) => setSubtitle(partial))
-    }
+    // 2. Show full reply text in subtitle immediately
+    setSubtitle(reply)
 
-    // Wait for last audio to finish, then return to listening
-    if (modeRef.current === 'speaking') {
-      const ctx = audioCtxRef.current
-      const remaining = ctx ? Math.max(0, (ttsNextTimeRef.current - ctx.currentTime) * 1000) : 0
-      wordTimersRef.current.push(setTimeout(async () => {
+    // 3. TTS — fetch the whole reply as one WAV (simplest path, same as chatbot replay)
+    try {
+      const ctx = getAudioCtx()
+      if (ctx.state === 'suspended') await ctx.resume()
+
+      const res = await fetch('/api/chat/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ text: reply, voice: 'anna' }),
+        signal: abort.signal,
+      })
+      if (abort.signal.aborted) return
+      if (!res.ok) throw new Error('TTS failed')
+
+      const arrayBuf = await res.arrayBuffer()
+      if (abort.signal.aborted) return
+
+      const audioBuf = await ctx.decodeAudioData(arrayBuf)
+      if (abort.signal.aborted) return
+
+      const node = ctx.createBufferSource()
+      node.buffer = audioBuf
+      node.connect(ctx.destination)
+      node.start(0)
+      streamNodesRef.current = [node]
+
+      // Return to listening when audio ends
+      node.onended = () => {
+        streamNodesRef.current = []
         if (modeRef.current !== 'speaking') return
         setSubtitle('')
         setMode('listening')
         modeRef.current = 'listening'
-        await startListening()
-      }, remaining + 150))
+        startListening()
+      }
+    } catch (e) {
+      if (e instanceof Error && e.name === 'AbortError') return
+      // TTS failed — still return to listening
+      setSubtitle('')
+      setMode('listening')
+      modeRef.current = 'listening'
+      startListening()
     }
   }
 
