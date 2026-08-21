@@ -280,20 +280,63 @@ export default function VoiceSpeakingMode() {
     stopIdleAnim()
     setSubtitle('')
 
-    // Start word-by-word reveal immediately at estimated ~2.5 words/sec
-    // Keep max 2 lines (~12 words) visible at a time — older words roll off the top
-    const words       = reply.split(/\s+/).filter(Boolean)
-    const estimatedMs = (words.length / 2.5) * 1000
-    const WORDS_PER_LINE = 6  // ~6 words per subtitle line
-    const MAX_WORDS_SHOWN = WORDS_PER_LINE * 2  // 2 lines max
+    // ── Character-by-character subtitle streaming ─────────────────────────────
+    // ~13 chars/sec ≈ 2.5 words/sec. All timeouts share the same sentenceBuf via
+    // closure — safe because JS is single-threaded so they execute in order.
 
-    words.forEach((_, i) => {
-      const t = ((i + 1) / words.length) * estimatedMs
-      // Show a rolling window of the last MAX_WORDS_SHOWN words
-      const start   = Math.max(0, i + 1 - MAX_WORDS_SHOWN)
-      const partial = words.slice(start, i + 1).join(' ')
+    const chars    = reply.split('')
+    const totalMs  = (chars.length / 13) * 1000  // estimated total duration
+
+    // Sentence-end detector using lookahead into the chars array.
+    // Returns true only when the period/!/? at index i is a genuine sentence end.
+    function isSentenceEnd(idx: number): boolean {
+      const ch = chars[idx]
+      if (!/[.!?]/.test(ch)) return false
+
+      if (ch === '!' || ch === '?') {
+        const next = chars.slice(idx + 1).find(c => c.trim() !== '')
+        return next === undefined || /[A-Z"'(]/.test(next)
+      }
+
+      // Dot rules:
+      // Decimal number — digit immediately before dot
+      if (idx > 0 && /\d/.test(chars[idx - 1])) return false
+      // Ellipsis — dot preceded by another dot
+      if (idx > 0 && chars[idx - 1] === '.') return false
+      if (idx > 1 && chars[idx - 2] === '.') return false
+      // Abbreviation — word immediately before dot is short (≤3 letters, e.g. Mr Dr vs etc)
+      let wi = idx - 1
+      while (wi >= 0 && /[A-Za-z]/.test(chars[wi])) wi--
+      const wordBefore = chars.slice(wi + 1, idx).join('')
+      if (wordBefore.length >= 1 && wordBefore.length <= 3) return false
+      // List item — word before dot is all digits (e.g. "1.")
+      if (/^\d+$/.test(wordBefore)) return false
+      // Dot must be followed by space or end-of-string
+      const after = chars[idx + 1]
+      if (after !== undefined && after !== ' ' && after !== '\n') return false
+
+      return true
+    }
+
+    let sentenceBuf = ''  // accumulates current sentence; reset immediately on sentence end
+
+    chars.forEach((char, i) => {
+      const t = Math.round(((i + 1) / chars.length) * totalMs)
       wordTimersRef.current.push(setTimeout(() => {
-        if (modeRef.current === 'speaking') setSubtitle(partial)
+        if (modeRef.current !== 'speaking') return
+        sentenceBuf += char
+        setSubtitle(sentenceBuf)
+
+        if (isSentenceEnd(i)) {
+          const snapshot = sentenceBuf
+          sentenceBuf = ''  // immediately ready for next sentence's chars
+          // Hold completed sentence on screen for 500ms so user can read it
+          wordTimersRef.current.push(setTimeout(() => {
+            if (modeRef.current !== 'speaking') return
+            // Only clear if no new chars have arrived yet
+            if (sentenceBuf === '') setSubtitle('')
+          }, 500))
+        }
       }, Math.max(0, t)))
     })
 
@@ -314,7 +357,7 @@ export default function VoiceSpeakingMode() {
       })
       if (!res.ok || !res.body) {
         // TTS failed — just wait for word timers to finish then return to listening
-        const waitMs = estimatedMs + 500
+        const waitMs = totalMs + 500
         wordTimersRef.current.push(setTimeout(() => {
           if (modeRef.current !== 'speaking') return
           setSubtitle(''); setMode('listening'); modeRef.current = 'listening'; startListening()
@@ -382,7 +425,7 @@ export default function VoiceSpeakingMode() {
     } catch (e: unknown) {
       if (e instanceof Error && e.name === 'AbortError') return
       // TTS error — wait for subtitle to finish then go back to listening
-      const waitMs = estimatedMs + 500
+      const waitMs = totalMs + 500
       wordTimersRef.current.push(setTimeout(() => {
         if (modeRef.current !== 'speaking') return
         setSubtitle(''); setMode('listening'); modeRef.current = 'listening'; startListening()
