@@ -353,8 +353,10 @@ export default function VoiceSpeakingMode() {
       micRecorderRef.current = mr
       startVA(stream)
       setMode('listening')
+      modeRef.current = 'listening'
     } catch {
       setMode('idle')
+      modeRef.current = 'idle'
     }
   }
 
@@ -392,10 +394,10 @@ export default function VoiceSpeakingMode() {
       try {
         const tr = await fetch('/api/chat/transcribe', { method: 'POST', body: fd, credentials: 'include' })
         const td = await tr.json()
-        if (!tr.ok || td.error) { setMode('listening'); startListening(); return }
+        if (!tr.ok || td.error) { setMode('listening'); modeRef.current = 'listening'; startListening(); return }
         transcript = (td.text || '').trim()
       } catch {
-        setMode('listening'); startListening(); return
+        setMode('listening'); modeRef.current = 'listening'; startListening(); return
       }
 
       if (!transcript) { setMode('listening'); modeRef.current = 'listening'; startListening(); return }
@@ -412,6 +414,7 @@ export default function VoiceSpeakingMode() {
     stopMicStream()
     stopTTS()
     setMode('idle')
+    modeRef.current = 'idle'
     setSubtitle('')
     setVaBars(new Array(MIC_BARS).fill(0))
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -424,8 +427,11 @@ export default function VoiceSpeakingMode() {
       if (!((e.ctrlKey || e.metaKey) && e.key === 'b')) return
       if (chatbotOpen) return
       e.preventDefault()
-      if (modeRef.current === 'idle') { setMode('listening'); startListening() }
-      else exitMode()
+      if (modeRef.current === 'idle') {
+        setMode('listening')
+        modeRef.current = 'listening'
+        startListening()
+      } else exitMode()
     }
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
