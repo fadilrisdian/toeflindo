@@ -203,7 +203,7 @@ export default function VoiceSpeakingMode() {
         signal: abort?.signal,
       })
       if (!res.ok || !res.body) { onProgress(sentence); onSentenceDone(); return }
-      if (abort?.signal.aborted) return
+      if (abort?.signal.aborted) { onSentenceDone(); return }
 
       const reader   = res.body.getReader()
       let buf        = new Uint8Array(0)
@@ -284,10 +284,11 @@ export default function VoiceSpeakingMode() {
       wordTimersRef.current.push(sentenceEndTimer)
 
     } catch (e: unknown) {
-      if (e instanceof Error && e.name !== 'AbortError') {
+      // Always call onSentenceDone — AbortError or real error, the Promise must resolve
+      if (!(e instanceof Error && e.name === 'AbortError')) {
         onProgress(sentence)
-        onSentenceDone()
       }
+      onSentenceDone()
     }
   }
 
@@ -314,6 +315,14 @@ export default function VoiceSpeakingMode() {
   // ── Submit: stop mic → transcribe → LLM → TTS ────────────────────────────
   async function submitVoice() {
     if (modeRef.current !== 'listening') return
+
+    // Unlock AudioContext NOW — we are still inside the user gesture (button click).
+    // Once unlocked here, TTS can play later inside mr.onstop without being blocked.
+    try {
+      const ctx = getAudioCtx()
+      if (ctx.state === 'suspended') await ctx.resume()
+    } catch { /* unavailable */ }
+
     setMode('thinking')
     stopVA()
     startIdleAnim()
