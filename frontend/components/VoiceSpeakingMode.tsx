@@ -278,9 +278,21 @@ export default function VoiceSpeakingMode() {
     setMode('speaking')
     modeRef.current = 'speaking'
     stopIdleAnim()
-    setSubtitle('')  // start blank — words revealed below
+    setSubtitle('')
 
-    // 3. TTS — fetch the whole reply as one WAV
+    // Start word-by-word reveal immediately (don't wait for TTS to download)
+    // Estimated ~2.5 words/second natural speaking pace
+    const words      = reply.split(/\s+/).filter(Boolean)
+    const estimatedMs = (words.length / 2.5) * 1000
+    words.forEach((_, i) => {
+      const t       = ((i + 1) / words.length) * estimatedMs
+      const partial = words.slice(0, i + 1).join(' ')
+      wordTimersRef.current.push(setTimeout(() => {
+        if (modeRef.current === 'speaking') setSubtitle(partial)
+      }, Math.max(0, t)))
+    })
+
+    // TTS — fetch and play; node.onended returns to listening
     try {
       const ctx = getAudioCtx()
       if (ctx.state === 'suspended') await ctx.resume()
@@ -307,18 +319,6 @@ export default function VoiceSpeakingMode() {
       node.start(ctx.currentTime)
       streamNodesRef.current = [node]
 
-      // Word-by-word reveal proportional to audio duration
-      const words     = reply.split(/\s+/).filter(Boolean)
-      const totalMs   = audioBuf.duration * 1000
-      words.forEach((_, i) => {
-        const t       = ((i + 1) / words.length) * totalMs
-        const partial = words.slice(0, i + 1).join(' ')
-        wordTimersRef.current.push(setTimeout(() => {
-          if (modeRef.current === 'speaking') setSubtitle(partial)
-        }, Math.max(0, t)))
-      })
-
-      // Return to listening when audio ends
       node.onended = () => {
         streamNodesRef.current = []
         if (modeRef.current !== 'speaking') return
