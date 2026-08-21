@@ -363,12 +363,6 @@ export default function VoiceSpeakingMode() {
   async function submitVoice() {
     if (modeRef.current !== 'listening') return
 
-    // Unlock AudioContext inside the user gesture — critical for autoplay policy
-    try {
-      const ctx = getAudioCtx()
-      if (ctx.state === 'suspended') await ctx.resume()
-    } catch { /* unavailable */ }
-
     const mr = micRecorderRef.current
     if (!mr) return
 
@@ -509,9 +503,21 @@ export default function VoiceSpeakingMode() {
         animation: 'vsm-fade-in 0.3s ease',
       }}>
         <button
-          onClick={async () => {
-            if (mode === 'listening') await submitVoice()
-            else if (mode === 'speaking') exitMode()
+          onClick={() => {
+            if (mode === 'speaking') { exitMode(); return }
+            if (mode !== 'listening') return
+            // Unlock AudioContext SYNCHRONOUSLY inside the click handler.
+            // This must happen before any await — it's the only moment the
+            // browser will honour it. submitVoice is fire-and-forget after this.
+            try {
+              if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+                audioCtxRef.current = new AudioContext()
+              }
+              if (audioCtxRef.current.state === 'suspended') {
+                audioCtxRef.current.resume()   // intentionally no await
+              }
+            } catch { /* unavailable */ }
+            submitVoice()
           }}
           title={mode === 'listening' ? 'Tap to send' : mode === 'speaking' ? 'Stop' : ''}
           aria-label={mode === 'listening' ? 'Submit voice input' : 'Stop speaking'}
