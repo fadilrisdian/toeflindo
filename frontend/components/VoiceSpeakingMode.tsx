@@ -280,9 +280,8 @@ export default function VoiceSpeakingMode() {
     stopIdleAnim()
     setSubtitle('')
 
-    // Start word-by-word reveal immediately (don't wait for TTS to download)
-    // Estimated ~2.5 words/second natural speaking pace
-    const words      = reply.split(/\s+/).filter(Boolean)
+    // Start word-by-word reveal immediately at estimated ~2.5 words/sec
+    const words       = reply.split(/\s+/).filter(Boolean)
     const estimatedMs = (words.length / 2.5) * 1000
     words.forEach((_, i) => {
       const t       = ((i + 1) / words.length) * estimatedMs
@@ -292,47 +291,96 @@ export default function VoiceSpeakingMode() {
       }, Math.max(0, t)))
     })
 
-    // TTS — fetch and play; node.onended returns to listening
+    // TTS — use streaming endpoint (same as chatbot sidebar, starts playing in ~300ms)
+    const abort2 = new AbortController()
+    streamAbortRef.current = abort2
+
     try {
       const ctx = getAudioCtx()
       if (ctx.state === 'suspended') await ctx.resume()
 
-      const res = await fetch('/api/chat/tts', {
+      const res = await fetch('/api/chat/tts/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ text: reply, voice: 'anna' }),
-        signal: abort.signal,
+        signal: abort2.signal,
       })
-      if (abort.signal.aborted) return
-      if (!res.ok) throw new Error('TTS failed')
-
-      const arrayBuf = await res.arrayBuffer()
-      if (abort.signal.aborted) return
-
-      const audioBuf = await ctx.decodeAudioData(arrayBuf)
-      if (abort.signal.aborted) return
-
-      const node = ctx.createBufferSource()
-      node.buffer = audioBuf
-      node.connect(ctx.destination)
-      node.start(ctx.currentTime)
-      streamNodesRef.current = [node]
-
-      node.onended = () => {
-        streamNodesRef.current = []
-        if (modeRef.current !== 'speaking') return
-        setSubtitle('')
-        setMode('listening')
-        modeRef.current = 'listening'
-        startListening()
+      if (!res.ok || !res.body) {
+        // TTS failed — just wait for word timers to finish then return to listening
+        const waitMs = estimatedMs + 500
+        wordTimersRef.current.push(setTimeout(() => {
+          if (modeRef.current !== 'speaking') return
+          setSubtitle(''); setMode('listening'); modeRef.current = 'listening'; startListening()
+        }, waitMs))
+        return
       }
-    } catch (e) {
+
+      const reader = res.body.getReader()
+      let buf = new Uint8Array(0)
+      let sampleRate = 0
+      let nextStart  = 0
+
+      const appendBuf = (chunk: Uint8Array) => {
+        const merged = new Uint8Array(buf.length + chunk.length)
+        merged.set(buf); merged.set(chunk, buf.length)
+        buf = merged
+      }
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (abort2.signal.aborted) break
+        if (value) appendBuf(value)
+        if (done && buf.length === 0) break
+
+        let offset = 0
+        while (true) {
+          if (buf.length - offset < 4) break
+          const view = new DataView(buf.buffer, buf.byteOffset + offset)
+          if (sampleRate === 0) { sampleRate = view.getUint32(0, true); offset += 4; continue }
+          if (buf.length - offset < 4) break
+          const nSamples = view.getUint32(0, true)
+          if (nSamples === 0) { offset += 4; break }
+          const byteLen = nSamples * 4
+          if (buf.length - offset < 4 + byteLen) break
+
+          const floatView = new Float32Array(buf.buffer, buf.byteOffset + offset + 4, nSamples)
+          const floatCopy = new Float32Array(floatView)
+          offset += 4 + byteLen
+
+          const audioBuf = ctx.createBuffer(1, nSamples, sampleRate)
+          audioBuf.copyToChannel(floatCopy, 0)
+          const node = ctx.createBufferSource()
+          node.buffer = audioBuf
+          node.connect(ctx.destination)
+          const now  = ctx.currentTime
+          const when = Math.max(now, nextStart)
+          nextStart  = when + audioBuf.duration
+          node.start(when)
+          streamNodesRef.current.push(node)
+
+          // Last node triggers return to listening
+          node.onended = () => {
+            const nodes = streamNodesRef.current
+            if (nodes.length > 0 && node === nodes[nodes.length - 1]) {
+              streamNodesRef.current = []
+              if (modeRef.current !== 'speaking') return
+              setSubtitle(''); setMode('listening'); modeRef.current = 'listening'; startListening()
+            }
+          }
+        }
+
+        if (offset > 0) buf = buf.slice(offset)
+        if (done) break
+      }
+    } catch (e: unknown) {
       if (e instanceof Error && e.name === 'AbortError') return
-      setSubtitle('')
-      setMode('listening')
-      modeRef.current = 'listening'
-      startListening()
+      // TTS error — wait for subtitle to finish then go back to listening
+      const waitMs = estimatedMs + 500
+      wordTimersRef.current.push(setTimeout(() => {
+        if (modeRef.current !== 'speaking') return
+        setSubtitle(''); setMode('listening'); modeRef.current = 'listening'; startListening()
+      }, waitMs))
     }
   }
 
