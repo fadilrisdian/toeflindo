@@ -369,7 +369,7 @@ export default function VoiceSpeakingMode() {
       let buf = new Uint8Array(0)
       let sampleRate = 0
       let nextStart  = 0
-      let totalAudioMs = 0  // accumulates real audio duration as frames arrive
+      let audioCtxStart = 0  // AudioContext time when first frame is scheduled
 
       const appendBuf = (chunk: Uint8Array) => {
         const merged = new Uint8Array(buf.length + chunk.length)
@@ -405,24 +405,13 @@ export default function VoiceSpeakingMode() {
           node.connect(ctx.destination)
           const now  = ctx.currentTime
           const when = Math.max(now, nextStart)
-          nextStart  = when + audioBuf.duration
-          totalAudioMs += audioBuf.duration * 1000
+
+          // Record AudioContext time of first frame
+          if (nextStart === 0) audioCtxStart = when
+
+          nextStart = when + audioBuf.duration
           node.start(when)
           streamNodesRef.current.push(node)
-
-          // First frame: record wall-clock start time, update estimated duration,
-          // and schedule all character timers from that anchor point
-          if (!charsScheduled) {
-            charsScheduled = true
-            audioStartRef.ms = Date.now()
-            // Use real audio duration estimate: chars proportional to audio length
-            // We only have first chunk but TTS is ~1.6x realtime so estimate is close
-            realDurationRef.ms = (chars.length / reply.length) * (totalAudioMs / (when - ctx.currentTime + 0.001 || 1))
-            // Simpler: just use real total audio time scaled — approximate at first chunk,
-            // will be close enough since TTS speed is consistent
-            realDurationRef.ms = Math.max(totalAudioMs, (chars.length / 13) * 1000)
-            scheduleChars()
-          }
 
           // Last node triggers return to listening
           node.onended = () => {
@@ -437,6 +426,18 @@ export default function VoiceSpeakingMode() {
 
         if (offset > 0) buf = buf.slice(offset)
         if (done) break
+      }
+
+      // Full stream received — schedule chars using exact total audio duration.
+      // TTS streams at ~1.6x realtime so all frames arrive quickly after first chunk.
+      // audioCtxStart is the AudioContext time when audio began playing.
+      if (!charsScheduled && audioCtxStart > 0) {
+        charsScheduled = true
+        const totalAudioMs = (nextStart - audioCtxStart) * 1000
+        // Map AudioContext start time to wall-clock time
+        audioStartRef.ms = Date.now() - (ctx.currentTime - audioCtxStart) * 1000
+        realDurationRef.ms = totalAudioMs
+        scheduleChars()
       }
     } catch (e: unknown) {
       if (e instanceof Error && e.name === 'AbortError') return
