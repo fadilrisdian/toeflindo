@@ -309,14 +309,14 @@ export default function VoiceSpeakingMode() {
       reply = (data.reply || '').trim()
     } catch (e) {
       if (e instanceof Error && e.name === 'AbortError') return
-      // LLM failed — go back to listening
-      setMode('listening'); startListening(); return
+      setMode('listening'); modeRef.current = 'listening'; startListening(); return
     }
 
-    if (!reply) { setMode('listening'); startListening(); return }
+    if (!reply) { setMode('listening'); modeRef.current = 'listening'; startListening(); return }
 
     setMessages(prev => [...prev, { role: 'assistant', content: reply }])
     setMode('speaking')
+    modeRef.current = 'speaking'  // update ref immediately — setMode is async, ref must be sync
     stopIdleAnim()
 
     // TTS — speak each sentence, pipelining fetches
@@ -334,6 +334,7 @@ export default function VoiceSpeakingMode() {
         if (modeRef.current !== 'speaking') return
         setSubtitle('')
         setMode('listening')
+        modeRef.current = 'listening'
         await startListening()
       }, remaining + 150))
     }
@@ -367,6 +368,7 @@ export default function VoiceSpeakingMode() {
     if (!mr) return
 
     setMode('thinking')
+    modeRef.current = 'thinking'
     stopVA()
     startIdleAnim()
 
@@ -380,7 +382,7 @@ export default function VoiceSpeakingMode() {
       micChunksRef.current = []
 
       if (blob.size < 100) {
-        setMode('listening'); startListening(); return
+        setMode('listening'); modeRef.current = 'listening'; startListening(); return
       }
 
       // Transcribe
@@ -396,7 +398,7 @@ export default function VoiceSpeakingMode() {
         setMode('listening'); startListening(); return
       }
 
-      if (!transcript) { setMode('listening'); startListening(); return }
+      if (!transcript) { setMode('listening'); modeRef.current = 'listening'; startListening(); return }
 
       // Hand off to processReply — top-level function with clean state access
       await processReply(transcript)
