@@ -281,11 +281,17 @@ export default function VoiceSpeakingMode() {
     setSubtitle('')
 
     // Start word-by-word reveal immediately at estimated ~2.5 words/sec
+    // Keep max 2 lines (~12 words) visible at a time — older words roll off the top
     const words       = reply.split(/\s+/).filter(Boolean)
     const estimatedMs = (words.length / 2.5) * 1000
+    const WORDS_PER_LINE = 6  // ~6 words per subtitle line
+    const MAX_WORDS_SHOWN = WORDS_PER_LINE * 2  // 2 lines max
+
     words.forEach((_, i) => {
-      const t       = ((i + 1) / words.length) * estimatedMs
-      const partial = words.slice(0, i + 1).join(' ')
+      const t = ((i + 1) / words.length) * estimatedMs
+      // Show a rolling window of the last MAX_WORDS_SHOWN words
+      const start   = Math.max(0, i + 1 - MAX_WORDS_SHOWN)
+      const partial = words.slice(start, i + 1).join(' ')
       wordTimersRef.current.push(setTimeout(() => {
         if (modeRef.current === 'speaking') setSubtitle(partial)
       }, Math.max(0, t)))
