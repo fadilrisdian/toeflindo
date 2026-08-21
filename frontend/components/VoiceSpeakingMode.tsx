@@ -479,12 +479,12 @@ export default function VoiceSpeakingMode() {
       if (chatbotOpen) return
       e.preventDefault()
       if (modeRef.current === 'idle') {
-        // First Ctrl+B — enter listening mode
+        // Ctrl+B — enter listening mode
         setMode('listening')
         modeRef.current = 'listening'
         startListening()
       } else if (modeRef.current === 'listening') {
-        // Second Ctrl+B — submit the recording
+        // Ctrl+B while listening — submit the recording
         try {
           if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
             audioCtxRef.current = new AudioContext()
@@ -494,10 +494,15 @@ export default function VoiceSpeakingMode() {
           }
         } catch { /* unavailable */ }
         submitVoice()
-      } else {
-        // Ctrl+B while thinking or speaking — exit
-        exitMode()
+      } else if (modeRef.current === 'speaking') {
+        // Ctrl+B while speaking — interrupt, stop audio, go back to listening
+        stopTTS()
+        setSubtitle('')
+        setMode('listening')
+        modeRef.current = 'listening'
+        startListening()
       }
+      // Ctrl+B while thinking — do nothing (wait for LLM to respond)
     }
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
