@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { api } from '@/lib/api'
 import { useAuth } from '@/lib/auth-context'
@@ -373,6 +373,7 @@ export default function AIChatbot() {
 
   const [open, setOpen] = useState(false)
   const [expanded, setExpanded] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const [messages, setMessages] = useState<Message[]>([WELCOME])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -392,6 +393,10 @@ export default function AIChatbot() {
   const ttsSourceRef            = useRef<AudioBufferSourceNode | null>(null)   // full-WAV path
   const streamAbortRef          = useRef<AbortController | null>(null)          // streaming path
   const streamNodesRef          = useRef<AudioBufferSourceNode[]>([])           // streaming scheduled nodes
+  // Shared AudioContext timeline cursor — shared across all sentence TTS calls so they play gaplessly
+  const ttsNextTimeRef          = useRef(0)
+  // Word-reveal timers — cleared on stopTTS so they don't fire after user stops playback
+  const wordTimersRef           = useRef<ReturnType<typeof setTimeout>[]>([])
 
   const bottomRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -423,12 +428,23 @@ export default function AIChatbot() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
-  // Push page content left when sidebar is expanded
+  // Detect mobile viewport
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
+  // Push page content left when desktop sidebar is open
   useEffect(() => {
     const body = document.body
     body.style.transition = 'padding-right 0.25s cubic-bezier(0.4,0,0.2,1)'
-    if (open && expanded) {
-      // sidebar width (400) + right inset (12) + gap (12) = 424px
+    if (open && expanded && !isMobile) {
+      // desktop transparent sidebar — flush to right edge
+      body.style.paddingRight = 'min(380px, calc(100vw - 24px))'
+    } else if (open && expanded) {
+      // mobile expanded fallback
       body.style.paddingRight = 'calc(min(400px, calc(100vw - 24px)) + 16px)'
     } else {
       body.style.paddingRight = ''
@@ -436,7 +452,7 @@ export default function AIChatbot() {
     return () => {
       body.style.paddingRight = ''
     }
-  }, [open, expanded])
+  }, [open, expanded, isMobile])
 
   // ── Mic helpers ──────────────────────────────────────────────────────────
 
@@ -572,16 +588,18 @@ export default function AIChatbot() {
   }
 
   function stopTTS() {
-    // Stop full-WAV playback
     if (ttsSourceRef.current) {
       try { ttsSourceRef.current.stop() } catch { /* already stopped */ }
       ttsSourceRef.current = null
     }
-    // Abort streaming fetch + stop all scheduled stream nodes
     streamAbortRef.current?.abort()
     streamAbortRef.current = null
     streamNodesRef.current.forEach((n: AudioBufferSourceNode) => { try { n.stop() } catch { /* ok */ } })
     streamNodesRef.current = []
+    ttsNextTimeRef.current = 0
+    // Cancel any pending word-reveal timers
+    wordTimersRef.current.forEach(clearTimeout)
+    wordTimersRef.current = []
     setTtsPlaying(false)
     setTtsPlayingIdx(null)
   }
@@ -755,16 +773,141 @@ export default function AIChatbot() {
 
   if (!user || pathname === '/login') return null
 
+  // ── Per-sentence TTS — word-by-word reveal synced to audio ──────────────────
+  // Streams TTS audio, collects all chunks, schedules them on the shared
+  // AudioContext timeline, then distributes per-word setTimeouts proportionally
+  // across the sentence's real audio duration so text appears in sync with speech.
+
+  async function speakSentenceQueued(
+    sentence: string,
+    idx: number,
+    onProgress: (partial: string) => void,
+  ): Promise<void> {
+    const abort = streamAbortRef.current
+    const words = sentence.split(/\s+/).filter(Boolean)
+    if (words.length === 0) { onProgress(sentence); return }
+
+    try {
+      const ctx = getAudioCtx()
+      if (ctx.state === 'suspended') await ctx.resume()
+
+      const res = await fetch('/api/chat/tts/stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ text: sentence, voice: 'anna' }),
+        signal: abort?.signal,
+      })
+      if (!res.ok || !res.body) { onProgress(sentence); return }
+      if (abort?.signal.aborted) return
+
+      // ── Collect all PCM frames ──────────────────────────────────────────────
+      const reader = res.body.getReader()
+      let buf = new Uint8Array(0)
+      let sampleRate = 0
+      const frames: Float32Array<ArrayBuffer>[] = []
+
+      const appendBuf = (chunk: Uint8Array) => {
+        const merged = new Uint8Array(buf.length + chunk.length)
+        merged.set(buf); merged.set(chunk, buf.length)
+        buf = merged
+      }
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (abort?.signal.aborted) break
+        if (value) appendBuf(value)
+
+        let offset = 0
+        while (true) {
+          if (buf.length - offset < 4) break
+          const view = new DataView(buf.buffer, buf.byteOffset + offset)
+          if (sampleRate === 0) {
+            sampleRate = view.getUint32(0, true)
+            offset += 4
+            continue
+          }
+          if (buf.length - offset < 4) break
+          const nSamples = view.getUint32(0, true)
+          if (nSamples === 0) { offset += 4; break }
+          const byteLen = nSamples * 4
+          if (buf.length - offset < 4 + byteLen) break
+          const raw = new Float32Array(buf.buffer, buf.byteOffset + offset + 4, nSamples)
+          const floatCopy = new Float32Array(nSamples)
+          floatCopy.set(raw)
+          frames.push(floatCopy)
+          offset += 4 + byteLen
+        }
+        if (offset > 0) buf = buf.slice(offset)
+        if (done) break
+      }
+
+      if (abort?.signal.aborted || frames.length === 0 || sampleRate === 0) {
+        onProgress(sentence); return
+      }
+
+      // ── Schedule all frames on shared AudioContext timeline ─────────────────
+      const now = ctx.currentTime
+      const startWhen = Math.max(now, ttsNextTimeRef.current)
+      let cursor = startWhen
+
+      for (const frame of frames) {
+        const audioBuf = ctx.createBuffer(1, frame.length, sampleRate)
+        audioBuf.copyToChannel(frame, 0)
+        const node = ctx.createBufferSource()
+        node.buffer = audioBuf
+        node.connect(ctx.destination)
+        node.start(cursor)
+        cursor += audioBuf.duration
+        streamNodesRef.current.push(node)
+
+        node.onended = () => {
+          const nodes = streamNodesRef.current
+          if (nodes.length > 0 && node === nodes[nodes.length - 1]) {
+            setTtsPlaying(false)
+            setTtsPlayingIdx(null)
+            streamNodesRef.current = []
+          }
+        }
+      }
+      ttsNextTimeRef.current = cursor
+
+      const totalDurationMs = (cursor - startWhen) * 1000
+      const msFromNow = (startWhen - now) * 1000
+
+      setTtsPlaying(true)
+      setTtsPlayingIdx(idx)
+
+      // ── Schedule word-by-word reveals across the sentence duration ──────────
+      // Each word appears proportionally through the sentence's audio duration.
+      // Word i reveals at: sentenceStart + (i / words.length) * totalDuration
+      words.forEach((_, i) => {
+        const wordMs = msFromNow + (i / words.length) * totalDurationMs
+        const partial = words.slice(0, i + 1).join(' ')
+        const timer = setTimeout(() => {
+          onProgress(partial)
+        }, Math.max(0, wordMs))
+        wordTimersRef.current.push(timer)
+      })
+
+    } catch (e: unknown) {
+      if (e instanceof Error && e.name !== 'AbortError') {
+        onProgress(sentence) // fallback: reveal full sentence immediately
+      }
+    }
+  }
+
   async function handleSend(directText?: string) {
     const text = (directText ?? input).trim()
     if (!text || loading) return
 
-    // Unlock / resume AudioContext NOW — this is still inside the user gesture.
-    // Once unlocked it can play audio at any later time (after LLM + TTS fetches).
+    // Unlock AudioContext inside user gesture
     try {
       const ctx = getAudioCtx()
       if (ctx.state === 'suspended') await ctx.resume()
-    } catch { /* AudioContext not available in this browser */ }
+    } catch { /* unavailable */ }
+
+    stopTTS()
 
     const context = getPageContext()
     const userMsg: Message = { role: 'user', content: text }
@@ -777,13 +920,80 @@ export default function AIChatbot() {
     const history = next.filter(m => !(m.role === 'assistant' && m.content === WELCOME.content))
     const replyIdx = next.length
 
+    const abort = new AbortController()
+    streamAbortRef.current = abort
+
     try {
-      const res = await api.post<{ reply: string }>('/api/chat', { messages: history, context, tts_mode: true })
-      setMessages(prev => [...prev, { role: 'assistant', content: res.reply }])
-      // Auto-play the full reply via streaming — latency is ~450ms regardless of length
-      speakMessageStream(res.reply, replyIdx)
+      // 1. Get full reply (fast ~1-2s, models are reasoning so can't true-stream)
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ messages: history, context, tts_mode: true }),
+        signal: abort.signal,
+      })
+      if (!res.ok) throw new Error('Chat request failed')
+      const data = await res.json()
+      const reply: string = data.reply || ''
+
+      setLoading(false)
+
+      // 2. Split into sentences
+      const sentences = reply
+        .split(/(?<=[.!?])\s+/)
+        .map((s: string) => s.trim())
+        .filter((s: string) => s.length > 0)
+
+      if (sentences.length === 0) {
+        setMessages(prev => [...prev, { role: 'assistant', content: reply }])
+        return
+      }
+
+      // 3. Add a hidden placeholder — text appears sentence by sentence via onReveal
+      setMessages(prev => [...prev, { role: 'assistant', content: '' }])
+
+      // 4. Process each sentence — TTS fetches sequentially (shared timeline),
+      //    word-by-word text reveal synced to audio via proportional setTimeout
+      let revealedText = ''
+      for (let i = 0; i < sentences.length; i++) {
+        if (abort.signal.aborted) break
+        const sentence = sentences[i]
+        const sentencePrefix = revealedText ? revealedText + ' ' : ''
+
+        await speakSentenceQueued(sentence, replyIdx, (partial: string) => {
+          // partial = words of this sentence revealed so far
+          setMessages(prev => {
+            const updated = [...prev]
+            updated[updated.length - 1] = {
+              role: 'assistant',
+              content: sentencePrefix + partial,
+            }
+            return updated
+          })
+        })
+
+        // Sentence fully spoken — lock in full sentence text before moving to next
+        revealedText = sentencePrefix + sentence
+        setMessages(prev => {
+          const updated = [...prev]
+          updated[updated.length - 1] = { role: 'assistant', content: revealedText }
+          return updated
+        })
+      }
+
+      // Safety net: if TTS failed for all sentences, show the full text
+      setMessages(prev => {
+        const updated = [...prev]
+        if (updated[updated.length - 1]?.content === '') {
+          updated[updated.length - 1] = { role: 'assistant', content: reply }
+        }
+        return updated
+      })
+
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Something went wrong.')
+      if (!(e instanceof Error && e.name === 'AbortError')) {
+        setError(e instanceof Error ? e.message : 'Something went wrong.')
+      }
     } finally {
       setLoading(false)
     }
@@ -806,10 +1016,34 @@ export default function AIChatbot() {
     setExpanded(e => !e)
   }
 
-  // ── Panel styles — normal popup vs expanded sidebar ──────────────────────────
+  // ── Panel styles — desktop transparent sidebar / mobile popup ───────────────
 
-  const panelStyle: React.CSSProperties = expanded
+  // On desktop the chat opens directly as an expanded transparent sidebar.
+  // On mobile it stays as a regular solid popup.
+  const isDesktopSidebar = expanded && !isMobile
+
+  const panelStyle: React.CSSProperties = isDesktopSidebar
     ? {
+        // Desktop: seamless full-height sidebar — no background, no border, no shadow
+        position: 'fixed',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        width: 'min(380px, calc(100vw - 24px))',
+        height: '100%',
+        background: 'transparent',
+        borderLeft: 'none',
+        borderRadius: 0,
+        boxShadow: 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        zIndex: 9999,
+        transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+      }
+    : expanded
+    ? {
+        // Mobile expanded popup (fallback)
         position: 'fixed',
         top: 12,
         bottom: 12,
@@ -827,6 +1061,7 @@ export default function AIChatbot() {
         transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
       }
     : {
+        // Normal popup (mobile default)
         position: 'fixed',
         bottom: 88,
         right: 24,
@@ -854,7 +1089,7 @@ export default function AIChatbot() {
     color: '#fff',
     border: 'none',
     cursor: 'pointer',
-    display: expanded ? 'none' : 'flex', // hide toggle when sidebar is open
+    display: (open && !isMobile) ? 'none' : 'flex', // hide on desktop when open
     alignItems: 'center',
     justifyContent: 'center',
     boxShadow: '0 4px 16px rgba(0,0,0,0.22)',
@@ -863,33 +1098,48 @@ export default function AIChatbot() {
   }
 
   const headerStyle: React.CSSProperties = {
-    background: 'linear-gradient(135deg, #2c7873, #173f3b)',
-    color: '#fff',
-    padding: '12px 16px',
+    background: isDesktopSidebar ? 'transparent' : 'linear-gradient(135deg, #2c7873, #173f3b)',
+    color: isDesktopSidebar ? 'var(--text)' : '#fff',
+    padding: isDesktopSidebar ? '20px 16px 10px' : '12px 16px',
     display: 'flex',
     alignItems: 'center',
     gap: 8,
     flexShrink: 0,
+    borderBottom: isDesktopSidebar ? '1px solid var(--border)' : 'none',
+  }
+
+  // Desktop sidebar: icon buttons sit on page background, so use dark ink color
+  const sidebarBtn: React.CSSProperties = {
+    background: 'none',
+    border: 'none',
+    color: 'var(--muted)',
+    borderRadius: 6,
+    padding: '5px 7px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    marginLeft: 2,
   }
 
   const messagesAreaStyle: React.CSSProperties = {
     flex: 1,
     overflowY: 'auto',
-    padding: '12px 14px',
+    padding: isDesktopSidebar ? '16px 16px' : '12px 14px',
     display: 'flex',
     flexDirection: 'column',
-    gap: 10,
+    gap: isDesktopSidebar ? 14 : 10,
+    background: 'transparent',
   }
 
   const inputRowStyle: React.CSSProperties = {
     position: 'relative',
-    padding: '8px 10px',
-    borderTop: '1px solid #e5e7eb',
+    padding: isDesktopSidebar ? '10px 16px 14px' : '8px 10px',
+    borderTop: '1px solid var(--border)',
     display: 'flex',
     gap: 6,
     alignItems: 'flex-end',
     flexShrink: 0,
-    background: '#f9fafb',
+    background: 'transparent',
   }
 
   return (
@@ -902,8 +1152,8 @@ export default function AIChatbot() {
           <div style={headerStyle}>
             <SparkleIcon />
             <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700, fontSize: '0.88rem' }}>AI Study Assistant</div>
-              <div style={{ fontSize: '0.7rem', opacity: 0.75 }}>Ask about anything on this page</div>
+              <div style={{ fontWeight: 700, fontSize: '0.88rem', color: isDesktopSidebar ? 'var(--text)' : '#fff' }}>AI Study Assistant</div>
+              {!isDesktopSidebar && <div style={{ fontSize: '0.7rem', opacity: 0.75 }}>Ask about anything on this page</div>}
             </div>
 
             {/* Expand / collapse sidebar button */}
@@ -911,21 +1161,25 @@ export default function AIChatbot() {
               onClick={handleExpand}
               title={expanded ? 'Collapse to popup' : 'Expand to sidebar'}
               aria-label={expanded ? 'Collapse to popup' : 'Expand to sidebar'}
-              style={hdrBtn}
+              style={isDesktopSidebar ? sidebarBtn : hdrBtn}
             >
               {expanded ? <CollapseIcon /> : <ExpandIcon />}
             </button>
 
             {/* Clear */}
-            <button onClick={handleClear} title="Clear chat" aria-label="Clear chat history" style={hdrBtn}>
+            <button onClick={handleClear} title="Clear chat" aria-label="Clear chat history" style={isDesktopSidebar ? sidebarBtn : hdrBtn}>
               <TrashIcon />
             </button>
 
             {/* Close */}
             <button
-              onClick={() => { setOpen(false); setExpanded(false) }}
+              onClick={() => {
+                setOpen(false)
+                setExpanded(false)
+                window.dispatchEvent(new Event('chatbot-close'))
+              }}
               aria-label="Close chat"
-              style={hdrBtn}
+              style={isDesktopSidebar ? sidebarBtn : hdrBtn}
             >
               <CloseIcon />
             </button>
@@ -934,18 +1188,39 @@ export default function AIChatbot() {
           {/* Messages */}
           <div style={messagesAreaStyle}>
             {messages.map((m, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', flexDirection: 'column', alignItems: m.role === 'user' ? 'flex-end' : 'flex-start', gap: 2 }}>
-                <div style={{
-                  maxWidth: expanded ? '90%' : '82%',
-                  padding: '8px 12px',
-                  borderRadius: m.role === 'user' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
-                  background: m.role === 'user' ? '#2a7a7a' : '#f3f4f6',
-                  color: m.role === 'user' ? '#fff' : '#1f2937',
-                  fontSize: '0.84rem',
-                  lineHeight: 1.55,
-                  whiteSpace: m.role === 'user' ? 'pre-wrap' : undefined,
-                  wordBreak: 'break-word',
-                }}>
+              <div key={i} style={{
+                display: 'flex',
+                justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start',
+                flexDirection: 'column',
+                alignItems: m.role === 'user' ? 'flex-end' : 'flex-start',
+                gap: 2,
+              }}>
+                <div style={
+                  // Desktop sidebar assistant: no bubble — native page copy look
+                  isDesktopSidebar && m.role === 'assistant'
+                    ? {
+                        maxWidth: '100%',
+                        padding: 0,
+                        background: 'none',
+                        border: 'none',
+                        borderRadius: 0,
+                        color: 'var(--text)',
+                        fontSize: '0.875rem',
+                        lineHeight: 1.65,
+                        wordBreak: 'break-word',
+                      }
+                    : {
+                        maxWidth: expanded ? '90%' : '82%',
+                        padding: '8px 12px',
+                        borderRadius: m.role === 'user' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
+                        background: m.role === 'user' ? '#2a7a7a' : '#f3f4f6',
+                        color: m.role === 'user' ? '#fff' : '#1f2937',
+                        fontSize: '0.84rem',
+                        lineHeight: 1.55,
+                        whiteSpace: m.role === 'user' ? 'pre-wrap' : undefined,
+                        wordBreak: 'break-word',
+                      }
+                }>
                   {m.role === 'user' ? m.content : <MarkdownRenderer content={m.content} />}
                 </div>
                 {/* Speaker button — assistant messages only */}
@@ -985,9 +1260,10 @@ export default function AIChatbot() {
 
             {loading && (
               <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                <div style={{ padding: '8px 14px', borderRadius: '14px 14px 14px 4px', background: '#f3f4f6' }}>
-                  <TypingDots />
-                </div>
+                {isDesktopSidebar
+                  ? <TypingDots />
+                  : <div style={{ padding: '8px 14px', borderRadius: '14px 14px 14px 4px', background: '#f3f4f6' }}><TypingDots /></div>
+                }
               </div>
             )}
 
@@ -1042,7 +1318,22 @@ export default function AIChatbot() {
               rows={1}
               disabled={loading || micState === 'transcribing'}
               aria-label="Chat message input"
-              style={{
+              style={isDesktopSidebar ? {
+                flex: 1,
+                resize: 'none',
+                border: 'none',
+                borderBottom: `1px solid ${micState === 'recording' ? '#c0392b' : 'var(--border)'}`,
+                borderRadius: 0,
+                padding: '4px 2px',
+                fontSize: '0.875rem',
+                lineHeight: 1.5,
+                outline: 'none',
+                fontFamily: 'inherit',
+                background: 'transparent',
+                color: 'var(--text)',
+                maxHeight: 80,
+                overflowY: 'auto',
+              } : {
                 flex: 1,
                 resize: 'none',
                 border: '1px solid #d1d5db',
@@ -1058,8 +1349,20 @@ export default function AIChatbot() {
                 maxHeight: 80,
                 overflowY: 'auto',
               }}
-              onFocus={e => { e.currentTarget.style.borderColor = '#2a7a7a' }}
-              onBlur={e => { e.currentTarget.style.borderColor = '#d1d5db' }}
+              onFocus={e => {
+                if (isDesktopSidebar) {
+                  e.currentTarget.style.borderBottomColor = '#2a7a7a'
+                } else {
+                  e.currentTarget.style.borderColor = '#2a7a7a'
+                }
+              }}
+              onBlur={e => {
+                if (isDesktopSidebar) {
+                  e.currentTarget.style.borderBottomColor = 'var(--border)'
+                } else {
+                  e.currentTarget.style.borderColor = '#d1d5db'
+                }
+              }}
             />
             {/* Mic button */}
             <button
@@ -1125,9 +1428,22 @@ export default function AIChatbot() {
         </div>
       )}
 
-      {/* ── Toggle button (hidden when sidebar is open) ── */}
+      {/* ── Toggle button (hidden when desktop sidebar is open) ── */}
       <button
-        onClick={() => setOpen(o => !o)}
+        onClick={() => {
+          if (!open) {
+            setOpen(true)
+            // Read viewport width directly — avoids isMobile state lag on first click
+            if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+              setExpanded(true)
+              window.dispatchEvent(new Event('chatbot-open'))
+            }
+          } else {
+            setOpen(false)
+            setExpanded(false)
+            window.dispatchEvent(new Event('chatbot-close'))
+          }
+        }}
         style={toggleBtnStyle}
         aria-label={open ? 'Close AI assistant' : 'Open AI assistant'}
         aria-expanded={open}

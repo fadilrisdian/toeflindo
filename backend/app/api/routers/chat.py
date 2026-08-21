@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import json as _json
 import os
 
 import httpx
@@ -10,7 +11,7 @@ from fastapi.responses import JSONResponse, Response, StreamingResponse
 from pydantic import BaseModel, field_validator
 
 from app.api.dependencies import get_current_user
-from app.clients.llm import call_llm
+from app.clients.llm import FALLBACK_MODELS, call_llm, completion
 from app.core.exceptions import LLMError
 from app.core.logging import get_logger
 
@@ -46,12 +47,8 @@ class ChatResponse(BaseModel):
     reply: str
 
 
-@router.post("", response_model=ChatResponse)
-async def chat(
-    body: ChatRequest,
-    _user: str = Depends(get_current_user),
-):
-    # Trim context to avoid token bloat
+def _build_messages(body: ChatRequest) -> list[dict]:
+    """Build the full messages list (system prompt + history) from a ChatRequest."""
     ctx = body.context.strip()[:MAX_CONTEXT_CHARS]
 
     system_lines = [
@@ -87,12 +84,18 @@ async def chat(
         ]
 
     system_prompt = "\n".join(system_lines)
-
-    # Build message list: system + bounded history
     history = body.messages[-MAX_HISTORY_TURNS:]
-    messages = [{"role": "system", "content": system_prompt}] + [
+    return [{"role": "system", "content": system_prompt}] + [
         {"role": m.role, "content": m.content} for m in history
     ]
+
+
+@router.post("", response_model=ChatResponse)
+async def chat(
+    body: ChatRequest,
+    _user: str = Depends(get_current_user),
+):
+    messages = _build_messages(body)
 
     try:
         reply = call_llm(
@@ -107,6 +110,66 @@ async def chat(
         raise HTTPException(status_code=503, detail="AI assistant temporarily unavailable.")
 
     return ChatResponse(reply=reply)
+
+
+@router.post("/stream")
+async def chat_stream(
+    body: ChatRequest,
+    _user: str = Depends(get_current_user),
+):
+    """Get full LLM reply then stream it sentence-by-sentence as SSE.
+
+    Each event: data: {"sentence": "...", "index": N}
+    Final event: data: {"done": true, "full": "<complete reply>"}
+    Error event: data: {"error": "..."}
+
+    This gives the frontend each sentence the moment it's ready so text and
+    TTS can fire together — the LLM models here are reasoning models that
+    batch all content tokens so true token streaming isn't possible anyway.
+    """
+    import re as _re
+
+    messages = _build_messages(body)
+
+    async def generate():
+        # 1. Get full reply (fast — typically <2s for short chat responses)
+        try:
+            loop = asyncio.get_event_loop()
+            reply = await loop.run_in_executor(
+                None,
+                lambda: call_llm(
+                    messages=messages,
+                    temperature=0.5,
+                    max_tokens=1000,
+                    json_mode=False,
+                    label="chat/stream",
+                ),
+            )
+        except LLMError as exc:
+            logger.error("chat/stream: LLM failed — %s", exc)
+            yield f"data: {_json.dumps({'error': 'AI assistant temporarily unavailable.'})}\n\n"
+            return
+
+        # 2. Split into sentences — split on . ! ? keeping the punctuation
+        raw_sentences = _re.split(r'(?<=[.!?])\s+', reply.strip())
+        sentences = [s.strip() for s in raw_sentences if s.strip()]
+
+        # 3. Stream each sentence — small delay between them feels natural
+        for i, sentence in enumerate(sentences):
+            yield f"data: {_json.dumps({'sentence': sentence, 'index': i})}\n\n"
+            # Give the browser ~80ms head-start before the next sentence
+            # so TTS fetch for sentence N is in-flight before N+1 arrives
+            await asyncio.sleep(0.08)
+
+        yield f"data: {_json.dumps({'done': True, 'full': reply})}\n\n"
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
 
 
 @router.post("/tts")
