@@ -280,64 +280,21 @@ export default function VoiceSpeakingMode() {
     stopIdleAnim()
     setSubtitle('')
 
-    // ── Character-by-character subtitle streaming ─────────────────────────────
-    // Timers start when audio actually begins playing (not immediately).
-    // audioStartRef tracks the wall-clock ms when the first TTS chunk is scheduled,
-    // and realDurationRef is updated as frames arrive so timing stays accurate.
+    // Word-by-word reveal — rolling window of last 12 words (~2 lines)
+    const words        = reply.split(/\s+/).filter(Boolean)
+    const estimatedMs  = (words.length / 2.5) * 1000
+    const MAX_WORDS    = 12
 
-    const chars = reply.split('')
-    const audioStartRef  = { ms: -1 }   // wall clock when audio starts (-1 = not yet)
-    const realDurationRef = { ms: (chars.length / 13) * 1000 }  // updated as frames arrive
+    words.forEach((_, i) => {
+      const t       = ((i + 1) / words.length) * estimatedMs
+      const start   = Math.max(0, i + 1 - MAX_WORDS)
+      const partial = words.slice(start, i + 1).join(' ')
+      wordTimersRef.current.push(setTimeout(() => {
+        if (modeRef.current === 'speaking') setSubtitle(partial)
+      }, Math.max(0, t)))
+    })
 
-    function scheduleChars() {
-      const start = audioStartRef.ms
-      const dur   = realDurationRef.ms
-
-      chars.forEach((char, i) => {
-        const t = Math.round(((i + 1) / chars.length) * dur)
-        const fireAt = start + t
-        const delay  = Math.max(0, fireAt - Date.now())
-        wordTimersRef.current.push(setTimeout(() => {
-          if (modeRef.current !== 'speaking') return
-          sentenceBuf += char
-          setSubtitle(sentenceBuf)
-
-          if (isSentenceEnd(i)) {
-            sentenceBuf = ''
-            wordTimersRef.current.push(setTimeout(() => {
-              if (modeRef.current !== 'speaking') return
-              if (sentenceBuf === '') setSubtitle('')
-            }, 500))
-          }
-        }, delay))
-      })
-    }
-
-    // Sentence-end detector — false-positive guards (same as before)
-    function isSentenceEnd(idx: number): boolean {
-      const ch = chars[idx]
-      if (!/[.!?]/.test(ch)) return false
-      if (ch === '!' || ch === '?') {
-        const next = chars.slice(idx + 1).find(c => c.trim() !== '')
-        return next === undefined || /[A-Z"'(]/.test(next)
-      }
-      if (idx > 0 && /\d/.test(chars[idx - 1])) return false
-      if (idx > 0 && chars[idx - 1] === '.') return false
-      if (idx > 1 && chars[idx - 2] === '.') return false
-      let wi = idx - 1
-      while (wi >= 0 && /[A-Za-z]/.test(chars[wi])) wi--
-      const wordBefore = chars.slice(wi + 1, idx).join('')
-      if (wordBefore.length >= 1 && wordBefore.length <= 3) return false
-      if (/^\d+$/.test(wordBefore)) return false
-      const after = chars[idx + 1]
-      if (after !== undefined && after !== ' ' && after !== '\n') return false
-      return true
-    }
-
-    let sentenceBuf = ''
-    let charsScheduled = false
-
-    // TTS — use streaming endpoint (same as chatbot sidebar, starts playing in ~300ms)
+    // TTS — use streaming endpoint (starts playing in ~300ms)
     const abort2 = new AbortController()
     streamAbortRef.current = abort2
 
@@ -353,11 +310,7 @@ export default function VoiceSpeakingMode() {
         signal: abort2.signal,
       })
       if (!res.ok || !res.body) {
-        // TTS failed — schedule chars with estimate and return to listening after
-        audioStartRef.ms = Date.now()
-        scheduleChars()
-        charsScheduled = true
-        const waitMs = realDurationRef.ms + 500
+        const waitMs = estimatedMs + 500
         wordTimersRef.current.push(setTimeout(() => {
           if (modeRef.current !== 'speaking') return
           setSubtitle(''); setMode('listening'); modeRef.current = 'listening'; startListening()
@@ -369,7 +322,6 @@ export default function VoiceSpeakingMode() {
       let buf = new Uint8Array(0)
       let sampleRate = 0
       let nextStart  = 0
-      let audioCtxStart = 0  // AudioContext time when first frame is scheduled
 
       const appendBuf = (chunk: Uint8Array) => {
         const merged = new Uint8Array(buf.length + chunk.length)
@@ -405,15 +357,10 @@ export default function VoiceSpeakingMode() {
           node.connect(ctx.destination)
           const now  = ctx.currentTime
           const when = Math.max(now, nextStart)
-
-          // Record AudioContext time of first frame
-          if (nextStart === 0) audioCtxStart = when
-
-          nextStart = when + audioBuf.duration
+          nextStart  = when + audioBuf.duration
           node.start(when)
           streamNodesRef.current.push(node)
 
-          // Last node triggers return to listening
           node.onended = () => {
             const nodes = streamNodesRef.current
             if (nodes.length > 0 && node === nodes[nodes.length - 1]) {
@@ -427,27 +374,9 @@ export default function VoiceSpeakingMode() {
         if (offset > 0) buf = buf.slice(offset)
         if (done) break
       }
-
-      // Full stream received — schedule chars using exact total audio duration.
-      // TTS streams at ~1.6x realtime so all frames arrive quickly after first chunk.
-      // audioCtxStart is the AudioContext time when audio began playing.
-      if (!charsScheduled && audioCtxStart > 0) {
-        charsScheduled = true
-        const totalAudioMs = (nextStart - audioCtxStart) * 1000
-        // Map AudioContext start time to wall-clock time
-        audioStartRef.ms = Date.now() - (ctx.currentTime - audioCtxStart) * 1000
-        realDurationRef.ms = totalAudioMs
-        scheduleChars()
-      }
     } catch (e: unknown) {
       if (e instanceof Error && e.name === 'AbortError') return
-      // TTS error — schedule chars with estimate and return to listening after
-      if (!charsScheduled) {
-        audioStartRef.ms = Date.now()
-        scheduleChars()
-        charsScheduled = true
-      }
-      const waitMs = realDurationRef.ms + 500
+      const waitMs = estimatedMs + 500
       wordTimersRef.current.push(setTimeout(() => {
         if (modeRef.current !== 'speaking') return
         setSubtitle(''); setMode('listening'); modeRef.current = 'listening'; startListening()
