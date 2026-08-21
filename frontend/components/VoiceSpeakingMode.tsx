@@ -278,11 +278,9 @@ export default function VoiceSpeakingMode() {
     setMode('speaking')
     modeRef.current = 'speaking'
     stopIdleAnim()
+    setSubtitle('')  // start blank — words revealed below
 
-    // 2. Show full reply text in subtitle immediately
-    setSubtitle(reply)
-
-    // 3. TTS — fetch the whole reply as one WAV (simplest path, same as chatbot replay)
+    // 3. TTS — fetch the whole reply as one WAV
     try {
       const ctx = getAudioCtx()
       if (ctx.state === 'suspended') await ctx.resume()
@@ -306,8 +304,19 @@ export default function VoiceSpeakingMode() {
       const node = ctx.createBufferSource()
       node.buffer = audioBuf
       node.connect(ctx.destination)
-      node.start(ctx.currentTime)  // use currentTime, not 0
+      node.start(ctx.currentTime)
       streamNodesRef.current = [node]
+
+      // Word-by-word reveal proportional to audio duration
+      const words     = reply.split(/\s+/).filter(Boolean)
+      const totalMs   = audioBuf.duration * 1000
+      words.forEach((_, i) => {
+        const t       = ((i + 1) / words.length) * totalMs
+        const partial = words.slice(0, i + 1).join(' ')
+        wordTimersRef.current.push(setTimeout(() => {
+          if (modeRef.current === 'speaking') setSubtitle(partial)
+        }, Math.max(0, t)))
+      })
 
       // Return to listening when audio ends
       node.onended = () => {
@@ -320,7 +329,6 @@ export default function VoiceSpeakingMode() {
       }
     } catch (e) {
       if (e instanceof Error && e.name === 'AbortError') return
-      // TTS failed — still return to listening
       setSubtitle('')
       setMode('listening')
       modeRef.current = 'listening'
