@@ -7,7 +7,6 @@ import { useAuth } from '@/lib/auth-context'
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type VSMode = 'idle' | 'listening' | 'thinking' | 'speaking'
-
 interface Msg { role: 'user' | 'assistant'; content: string }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -39,7 +38,7 @@ function getSupportedMime(): string {
   return ''
 }
 
-// ── SparkleIcon ───────────────────────────────────────────────────────────────
+// ── Icon ─────────────────────────────────────────────────────────────────────
 
 function SparkleIcon({ size = 22 }: { size?: number }) {
   return (
@@ -57,15 +56,15 @@ export default function VoiceSpeakingMode() {
   const { user } = useAuth()
   const pathname = usePathname()
 
-  const [mode, setMode] = useState<VSMode>('idle')
-  const [subtitle, setSubtitle] = useState('')
-  const [cursorOn, setCursorOn] = useState(true)
-  const [vaBars, setVaBars] = useState<number[]>(new Array(MIC_BARS).fill(0))
+  const [mode, setMode]           = useState<VSMode>('idle')
+  const [subtitle, setSubtitle]   = useState('')
+  const [cursorOn, setCursorOn]   = useState(true)
+  const [vaBars, setVaBars]       = useState<number[]>(new Array(MIC_BARS).fill(0))
   const [chatbotOpen, setChatbotOpen] = useState(false)
-  const [micError, setMicError] = useState('')
-  const [messages, setMessages] = useState<Msg[]>([WELCOME_MSG])
+  const [micError, setMicError]   = useState('')
+  const [messages, setMessages]   = useState<Msg[]>([WELCOME_MSG])
 
-  // ── Audio refs ────────────────────────────────────────────────────────────
+  // ── Audio refs ─────────────────────────────────────────────────────────────
   const audioCtxRef    = useRef<AudioContext | null>(null)
   const micRecorderRef = useRef<MediaRecorder | null>(null)
   const micChunksRef   = useRef<Blob[]>([])
@@ -80,12 +79,10 @@ export default function VoiceSpeakingMode() {
   const idleRafRef     = useRef<number | null>(null)
   const idlePhaseRef   = useRef(0)
 
-  // Stable ref so keyboard handlers always see latest mode without stale closures
   const modeRef = useRef<VSMode>('idle')
   modeRef.current = mode
-  const submitFnRef = useRef<() => Promise<void>>(async () => {})
 
-  // ── Track chatbot sidebar state ───────────────────────────────────────────
+  // ── Chatbot open/close tracking ────────────────────────────────────────────
   useEffect(() => {
     const onOpen  = () => setChatbotOpen(true)
     const onClose = () => setChatbotOpen(false)
@@ -97,14 +94,14 @@ export default function VoiceSpeakingMode() {
     }
   }, [])
 
-  // ── Blinking cursor ───────────────────────────────────────────────────────
+  // ── Blinking cursor ────────────────────────────────────────────────────────
   useEffect(() => {
     if (mode === 'idle') return
     const id = setInterval(() => setCursorOn(v => !v), 530)
     return () => clearInterval(id)
   }, [mode])
 
-  // ── VA helpers ────────────────────────────────────────────────────────────
+  // ── VA ─────────────────────────────────────────────────────────────────────
   function stopVA() {
     if (vaRafRef.current) { cancelAnimationFrame(vaRafRef.current); vaRafRef.current = null }
     analyserRef.current = null
@@ -132,7 +129,6 @@ export default function VoiceSpeakingMode() {
     } catch { /* no AudioContext */ }
   }
 
-  // Idle sine-wave animation when thinking/speaking (no real audio data)
   function startIdleAnim() {
     stopIdleAnim()
     const tick = () => {
@@ -151,7 +147,7 @@ export default function VoiceSpeakingMode() {
     if (idleRafRef.current) { cancelAnimationFrame(idleRafRef.current); idleRafRef.current = null }
   }
 
-  // ── Audio context ─────────────────────────────────────────────────────────
+  // ── AudioContext ───────────────────────────────────────────────────────────
   function getAudioCtx(): AudioContext {
     if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
       audioCtxRef.current = new AudioContext()
@@ -159,7 +155,7 @@ export default function VoiceSpeakingMode() {
     return audioCtxRef.current
   }
 
-  // ── Stop TTS ──────────────────────────────────────────────────────────────
+  // ── Stop TTS ───────────────────────────────────────────────────────────────
   function stopTTS() {
     streamAbortRef.current?.abort()
     streamAbortRef.current = null
@@ -171,7 +167,7 @@ export default function VoiceSpeakingMode() {
     stopIdleAnim()
   }
 
-  // ── Stop mic ──────────────────────────────────────────────────────────────
+  // ── Stop mic ───────────────────────────────────────────────────────────────
   function stopMicStream() {
     stopVA()
     if (micRecorderRef.current?.state === 'recording') micRecorderRef.current.stop()
@@ -181,15 +177,16 @@ export default function VoiceSpeakingMode() {
     micChunksRef.current = []
   }
 
-  // ── TTS: speak a sentence, return when scheduled, reveal words in sync ────
+  // ── TTS per sentence — EXACTLY mirrors AIChatbot speakSentenceQueued ───────
+  // Resolves after scheduling audio (not after playback finishes).
+  // Word reveals and subtitle-clear are handled via proportional setTimeouts.
   async function speakSentenceVSM(
     sentence: string,
     onProgress: (partial: string) => void,
-    onSentenceDone: () => void,
   ): Promise<void> {
     const abort = streamAbortRef.current
     const words = sentence.split(/\s+/).filter(Boolean)
-    if (words.length === 0) { onProgress(sentence); onSentenceDone(); return }
+    if (words.length === 0) { onProgress(sentence); return }
 
     try {
       const ctx = getAudioCtx()
@@ -202,9 +199,10 @@ export default function VoiceSpeakingMode() {
         body: JSON.stringify({ text: sentence, voice: 'anna' }),
         signal: abort?.signal,
       })
-      if (!res.ok || !res.body) { onProgress(sentence); onSentenceDone(); return }
-      if (abort?.signal.aborted) { onSentenceDone(); return }
+      if (!res.ok || !res.body) { onProgress(sentence); return }
+      if (abort?.signal.aborted) return
 
+      // Collect all PCM frames
       const reader   = res.body.getReader()
       let buf        = new Uint8Array(0)
       let sampleRate = 0
@@ -231,7 +229,7 @@ export default function VoiceSpeakingMode() {
           if (nSamples === 0) { offset += 4; break }
           const byteLen = nSamples * 4
           if (buf.length - offset < 4 + byteLen) break
-          const raw = new Float32Array(buf.buffer, buf.byteOffset + offset + 4, nSamples)
+          const raw  = new Float32Array(buf.buffer, buf.byteOffset + offset + 4, nSamples)
           const copy = new Float32Array(nSamples)
           copy.set(raw)
           frames.push(copy)
@@ -242,7 +240,7 @@ export default function VoiceSpeakingMode() {
       }
 
       if (abort?.signal.aborted || frames.length === 0 || sampleRate === 0) {
-        onProgress(sentence); onSentenceDone(); return
+        onProgress(sentence); return
       }
 
       // Schedule all frames gaplessly on shared timeline
@@ -268,31 +266,33 @@ export default function VoiceSpeakingMode() {
       }
       ttsNextTimeRef.current = cursor
 
-      const totalMs  = (cursor - startWhen) * 1000
-      const delayMs  = Math.max(0, (startWhen - now) * 1000)
+      const totalMs = (cursor - startWhen) * 1000
+      const delayMs = Math.max(0, (startWhen - now) * 1000)
 
-      // Word-by-word reveal proportionally across sentence duration
+      // Clear subtitle at sentence start, then reveal word-by-word
+      const clearTimer = setTimeout(() => {
+        if (modeRef.current === 'speaking') setSubtitle('')
+      }, delayMs)
+      wordTimersRef.current.push(clearTimer)
+
       words.forEach((_, i) => {
-        const t = delayMs + (i / words.length) * totalMs
+        const t       = delayMs + ((i + 1) / words.length) * totalMs
         const partial = words.slice(0, i + 1).join(' ')
-        const timer = setTimeout(() => onProgress(partial), Math.max(0, t))
+        const timer   = setTimeout(() => {
+          if (modeRef.current === 'speaking') onProgress(partial)
+        }, Math.max(0, t))
         wordTimersRef.current.push(timer)
       })
 
-      // When last word is scheduled to finish playing, call onSentenceDone
-      const sentenceEndTimer = setTimeout(onSentenceDone, Math.max(0, delayMs + totalMs))
-      wordTimersRef.current.push(sentenceEndTimer)
-
     } catch (e: unknown) {
-      // Always call onSentenceDone — AbortError or real error, the Promise must resolve
-      if (!(e instanceof Error && e.name === 'AbortError')) {
+      if (e instanceof Error && e.name !== 'AbortError') {
         onProgress(sentence)
       }
-      onSentenceDone()
     }
+    // Resolves here — after scheduling, not after playback
   }
 
-  // ── Start mic recording ───────────────────────────────────────────────────
+  // ── Start mic ──────────────────────────────────────────────────────────────
   async function startListening() {
     setMicError('')
     try {
@@ -312,12 +312,11 @@ export default function VoiceSpeakingMode() {
     }
   }
 
-  // ── Submit: stop mic → transcribe → LLM → TTS ────────────────────────────
+  // ── Submit ─────────────────────────────────────────────────────────────────
   async function submitVoice() {
     if (modeRef.current !== 'listening') return
 
-    // Unlock AudioContext NOW — we are still inside the user gesture (button click).
-    // Once unlocked here, TTS can play later inside mr.onstop without being blocked.
+    // Unlock AudioContext inside the user gesture so TTS can play later
     try {
       const ctx = getAudioCtx()
       if (ctx.state === 'suspended') await ctx.resume()
@@ -333,11 +332,12 @@ export default function VoiceSpeakingMode() {
     mr.onstop = async () => {
       const blob = new Blob(micChunksRef.current, { type: mr.mimeType || 'audio/webm' })
       stopMicStream()
+
       if (blob.size < 100) {
         setMode('listening'); await startListening(); return
       }
 
-      // Transcribe
+      // 1. Transcribe
       const fd = new FormData()
       fd.append('audio', blob, 'vs_voice.webm')
       let transcript = ''
@@ -353,21 +353,24 @@ export default function VoiceSpeakingMode() {
         setSubtitle(''); setMode('listening'); await startListening(); return
       }
 
-      // LLM
+      // 2. LLM
       const userMsg: Msg = { role: 'user', content: transcript }
-      const history = [...messages.filter(m => !(m.role === 'assistant' && m.content === WELCOME_MSG.content)), userMsg]
+      const history = [
+        ...messages.filter(m => !(m.role === 'assistant' && m.content === WELCOME_MSG.content)),
+        userMsg,
+      ]
       setMessages(prev => [...prev, userMsg])
 
-      const context = getPageContext()
+      const abort = new AbortController()
+      streamAbortRef.current = abort
+
       let reply = ''
       try {
-        const abort = new AbortController()
-        streamAbortRef.current = abort
-        const res = await fetch('/api/chat', {
+        const res  = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ messages: history, context, tts_mode: true }),
+          body: JSON.stringify({ messages: history, context: getPageContext(), tts_mode: true }),
           signal: abort.signal,
         })
         const data = await res.json()
@@ -383,38 +386,37 @@ export default function VoiceSpeakingMode() {
       setMode('speaking')
       stopIdleAnim()
 
+      // 3. Speak each sentence — await scheduling (not playback) of each one
+      //    so TTS fetches pipeline while previous sentence is still playing.
       const sentences = splitSentences(reply)
       for (let i = 0; i < sentences.length; i++) {
         if (modeRef.current !== 'speaking') break
-        const sentence = sentences[i]
-
-        await new Promise<void>(resolve => {
-          setSubtitle('')   // clear previous sentence
-          speakSentenceVSM(
-            sentence,
-            (partial) => {
-              if (modeRef.current === 'speaking') setSubtitle(partial)
-            },
-            resolve,
-          )
+        await speakSentenceVSM(sentences[i], (partial) => {
+          setSubtitle(partial)
         })
       }
 
-      // Done speaking — ready for next input
+      // 4. After all sentences are scheduled, wait for last audio to end then
+      //    return to listening. ttsNextTimeRef.current holds the end time.
       if (modeRef.current === 'speaking') {
-        setSubtitle('')
-        stopIdleAnim()
-        setMode('listening')
-        await startListening()
+        const ctx = audioCtxRef.current
+        const remaining = ctx
+          ? Math.max(0, (ttsNextTimeRef.current - ctx.currentTime) * 1000)
+          : 0
+        wordTimersRef.current.push(setTimeout(async () => {
+          if (modeRef.current !== 'speaking') return
+          setSubtitle('')
+          stopIdleAnim()
+          setMode('listening')
+          await startListening()
+        }, remaining + 100))
       }
     }
 
     if (mr.state === 'recording') mr.stop()
   }
 
-  submitFnRef.current = submitVoice
-
-  // ── Exit Speaking Mode ────────────────────────────────────────────────────
+  // ── Exit ───────────────────────────────────────────────────────────────────
   const exitMode = useCallback(() => {
     stopMicStream()
     stopTTS()
@@ -425,40 +427,28 @@ export default function VoiceSpeakingMode() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // ── Global keyboard handler ───────────────────────────────────────────────
+  // ── Global keyboard handler ────────────────────────────────────────────────
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      // Esc: always exits
       if (e.key === 'Escape' && modeRef.current !== 'idle') {
-        e.preventDefault()
-        exitMode()
-        return
+        e.preventDefault(); exitMode(); return
       }
-
       if (!((e.ctrlKey || e.metaKey) && e.key === 'b')) return
-
-      // If chatbot sidebar is open, don't intercept — let AIChatbot handle it
-      // (AIChatbot's own handler only fires when its panel is open)
       if (chatbotOpen) return
-
       e.preventDefault()
-
       if (modeRef.current === 'idle') {
-        // Enter speaking mode
         setMode('listening')
         startListening()
       } else {
-        // Exit speaking mode
         exitMode()
       }
     }
-
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatbotOpen, exitMode])
 
-  // ── Cleanup on unmount ────────────────────────────────────────────────────
+  // ── Cleanup ────────────────────────────────────────────────────────────────
   useEffect(() => {
     return () => {
       stopMicStream()
@@ -468,107 +458,80 @@ export default function VoiceSpeakingMode() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Don't render on login page or when not authenticated
   if (!user || pathname === '/login' || mode === 'idle') return null
 
-  // ── Derived values ────────────────────────────────────────────────────────
+  // ── Derived ────────────────────────────────────────────────────────────────
   const statusLabel =
-    mode === 'listening' ? 'Listening' :
-    mode === 'thinking'  ? 'Thinking…' :
-    mode === 'speaking'  ? 'Speaking'  : ''
-
-  const logoColor =
-    mode === 'listening' ? '#2a7a7a' :
-    mode === 'thinking'  ? '#6b7280' :
-    '#2a7a7a'
+    mode === 'listening' ? 'Listening'  :
+    mode === 'thinking'  ? 'Thinking…'  :
+    mode === 'speaking'  ? 'Speaking'   : ''
 
   const pulseColor =
-    mode === 'listening' ? 'rgba(42,122,122,0.35)' :
-    mode === 'speaking'  ? 'rgba(42,122,122,0.25)' :
+    mode === 'listening' ? 'rgba(42,122,122,0.4)' :
+    mode === 'speaking'  ? 'rgba(42,122,122,0.3)' :
     'rgba(107,114,128,0.2)'
 
   const barColor =
     mode === 'listening' ? '#2a7a7a' :
-    mode === 'thinking'  ? '#9ca3af' :
-    '#2a7a7a'
+    mode === 'thinking'  ? '#9ca3af' : '#2a7a7a'
 
-  const displayedSubtitle = mode === 'speaking' && subtitle
-    ? subtitle + (cursorOn ? '▌' : ' ')
-    : mode === 'thinking'
-    ? ''
-    : mode === 'listening' && micError
-    ? micError
-    : ''
+  const displayedSubtitle =
+    mode === 'speaking' && subtitle
+      ? subtitle + (cursorOn ? '▌' : '\u00a0')
+      : mode === 'listening' && micError
+      ? micError : ''
 
   return (
     <>
-      {/* ── Global styles ── */}
       <style>{`
-        @keyframes vsm-pulse {
-          0%   { transform: scale(1);    opacity: 0.9; }
-          50%  { transform: scale(1.18); opacity: 0.4; }
-          100% { transform: scale(1);    opacity: 0.9; }
-        }
         @keyframes vsm-pulse-ring {
-          0%   { transform: scale(1);    opacity: 0.6; }
-          100% { transform: scale(1.7);  opacity: 0;   }
+          0%   { transform: scale(1);   opacity: 0.7; }
+          100% { transform: scale(1.8); opacity: 0;   }
         }
         @keyframes vsm-fade-in {
-          from { opacity: 0; transform: translateY(6px); }
+          from { opacity: 0; transform: translateY(5px); }
           to   { opacity: 1; transform: translateY(0);   }
         }
       `}</style>
 
-      {/* ── Exit hint — top right ── */}
+      {/* Exit hint */}
       <div style={{
-        position: 'fixed', top: 20, right: 24,
-        zIndex: 10010,
+        position: 'fixed', top: 20, right: 24, zIndex: 10010,
         fontSize: '0.72rem', color: 'var(--muted)',
-        background: 'rgba(246,247,248,0.85)',
+        background: 'rgba(246,247,248,0.88)',
         backdropFilter: 'blur(8px)',
         padding: '4px 10px', borderRadius: 20,
         border: '1px solid var(--border)',
         animation: 'vsm-fade-in 0.3s ease',
-        pointerEvents: 'none',
-        userSelect: 'none',
+        pointerEvents: 'none', userSelect: 'none',
       }}>
         Ctrl+B or Esc to exit
       </div>
 
-      {/* ── Gradient fade — only behind bottom area ── */}
+      {/* Gradient fade — behind bottom area only */}
       <div style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0,
-        height: 220,
-        background: 'linear-gradient(to bottom, transparent 0%, rgba(246,247,248,0.92) 55%, rgba(246,247,248,0.98) 100%)',
-        zIndex: 10008,
-        pointerEvents: 'none',
+        position: 'fixed', bottom: 0, left: 0, right: 0, height: 220,
+        background: 'linear-gradient(to bottom, transparent 0%, rgba(246,247,248,0.94) 55%, rgba(246,247,248,0.99) 100%)',
+        zIndex: 10008, pointerEvents: 'none',
       }} />
 
-      {/* ── Subtitle strip ── */}
+      {/* Subtitle strip */}
       <div style={{
-        position: 'fixed', bottom: 118, left: 0, right: 0,
-        zIndex: 10009,
-        textAlign: 'center',
-        padding: '0 10vw',
-        pointerEvents: 'none',
-        minHeight: 36,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        position: 'fixed', bottom: 118, left: 0, right: 0, zIndex: 10009,
+        textAlign: 'center', padding: '0 10vw', pointerEvents: 'none',
+        minHeight: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
         <span style={{
-          fontSize: 'clamp(0.95rem, 2vw, 1.2rem)',
-          fontWeight: 500,
-          color: 'var(--text)',
-          letterSpacing: '-0.01em',
-          lineHeight: 1.5,
-          animation: displayedSubtitle ? 'vsm-fade-in 0.15s ease' : 'none',
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-word',
+          fontSize: 'clamp(0.95rem, 2vw, 1.15rem)',
+          fontWeight: 500, color: 'var(--text)',
+          letterSpacing: '-0.01em', lineHeight: 1.5,
+          whiteSpace: 'pre-wrap', wordBreak: 'break-word',
         }}>
           {displayedSubtitle}
         </span>
       </div>
 
-      {/* ── Bottom bar ── */}
+      {/* Bottom bar */}
       <div style={{
         position: 'fixed', bottom: 28, left: '50%',
         transform: 'translateX(-50%)',
@@ -577,67 +540,53 @@ export default function VoiceSpeakingMode() {
         animation: 'vsm-fade-in 0.3s ease',
       }}>
 
-        {/* Logo button with pulse ring */}
+        {/* Logo button */}
         <button
-          onClick={() => {
-            if (mode === 'listening') submitFnRef.current()
+          onClick={async () => {
+            if (mode === 'listening') await submitVoice()
             else if (mode === 'speaking') exitMode()
           }}
-          title={mode === 'listening' ? 'Tap to send' : mode === 'speaking' ? 'Stop speaking' : ''}
+          title={mode === 'listening' ? 'Tap to send' : mode === 'speaking' ? 'Stop' : ''}
           aria-label={mode === 'listening' ? 'Submit voice input' : 'Stop speaking'}
           style={{
             position: 'relative',
-            width: 52, height: 52,
-            borderRadius: '50%',
+            width: 52, height: 52, borderRadius: '50%',
             background: 'linear-gradient(135deg, #2c7873, #173f3b)',
-            border: 'none',
-            color: '#fff',
-            cursor: 'pointer',
+            border: 'none', color: '#fff', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             flexShrink: 0,
             boxShadow: '0 2px 12px rgba(44,120,115,0.35)',
           }}
         >
-          {/* Animated pulse ring */}
           <span style={{
-            position: 'absolute', inset: -6,
-            borderRadius: '50%',
+            position: 'absolute', inset: -6, borderRadius: '50%',
             border: `2px solid ${pulseColor}`,
-            animation: mode !== 'thinking'
-              ? 'vsm-pulse-ring 1.4s ease-out infinite'
-              : 'none',
+            animation: mode !== 'thinking' ? 'vsm-pulse-ring 1.4s ease-out infinite' : 'none',
             pointerEvents: 'none',
           }} />
           <SparkleIcon size={22} />
         </button>
 
-        {/* Waveform bars */}
-        <div style={{
-          display: 'flex', alignItems: 'center',
-          gap: 3, height: 36,
-        }}>
+        {/* Waveform */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 3, height: 36 }}>
           {vaBars.map((level, i) => {
             const h = Math.max(4, Math.round((level / 255) * 32))
             return (
               <div key={i} style={{
-                width: 3,
-                height: h,
-                borderRadius: 3,
+                width: 3, height: h, borderRadius: 3,
                 background: barColor,
-                opacity: 0.7 + (level / 255) * 0.3,
+                opacity: 0.65 + (level / 255) * 0.35,
                 transition: 'height 0.07s ease-out',
               }} />
             )
           })}
         </div>
 
-        {/* Status label */}
+        {/* Status */}
         <div style={{
-          fontSize: '0.8rem',
-          fontWeight: 600,
-          color: mode === 'thinking' ? 'var(--muted)' : logoColor,
-          letterSpacing: '0.03em',
-          minWidth: 72,
+          fontSize: '0.8rem', fontWeight: 600,
+          color: mode === 'thinking' ? 'var(--muted)' : '#2a7a7a',
+          letterSpacing: '0.03em', minWidth: 72,
           userSelect: 'none',
         }}>
           {statusLabel}
