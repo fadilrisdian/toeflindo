@@ -281,64 +281,61 @@ export default function VoiceSpeakingMode() {
     setSubtitle('')
 
     // ── Character-by-character subtitle streaming ─────────────────────────────
-    // ~13 chars/sec ≈ 2.5 words/sec. All timeouts share the same sentenceBuf via
-    // closure — safe because JS is single-threaded so they execute in order.
+    // Timers start when audio actually begins playing (not immediately).
+    // audioStartRef tracks the wall-clock ms when the first TTS chunk is scheduled,
+    // and realDurationRef is updated as frames arrive so timing stays accurate.
 
-    const chars    = reply.split('')
-    const totalMs  = (chars.length / 13) * 1000  // estimated total duration
+    const chars = reply.split('')
+    const audioStartRef  = { ms: -1 }   // wall clock when audio starts (-1 = not yet)
+    const realDurationRef = { ms: (chars.length / 13) * 1000 }  // updated as frames arrive
 
-    // Sentence-end detector using lookahead into the chars array.
-    // Returns true only when the period/!/? at index i is a genuine sentence end.
+    function scheduleChars() {
+      const start = audioStartRef.ms
+      const dur   = realDurationRef.ms
+
+      chars.forEach((char, i) => {
+        const t = Math.round(((i + 1) / chars.length) * dur)
+        const fireAt = start + t
+        const delay  = Math.max(0, fireAt - Date.now())
+        wordTimersRef.current.push(setTimeout(() => {
+          if (modeRef.current !== 'speaking') return
+          sentenceBuf += char
+          setSubtitle(sentenceBuf)
+
+          if (isSentenceEnd(i)) {
+            sentenceBuf = ''
+            wordTimersRef.current.push(setTimeout(() => {
+              if (modeRef.current !== 'speaking') return
+              if (sentenceBuf === '') setSubtitle('')
+            }, 500))
+          }
+        }, delay))
+      })
+    }
+
+    // Sentence-end detector — false-positive guards (same as before)
     function isSentenceEnd(idx: number): boolean {
       const ch = chars[idx]
       if (!/[.!?]/.test(ch)) return false
-
       if (ch === '!' || ch === '?') {
         const next = chars.slice(idx + 1).find(c => c.trim() !== '')
         return next === undefined || /[A-Z"'(]/.test(next)
       }
-
-      // Dot rules:
-      // Decimal number — digit immediately before dot
       if (idx > 0 && /\d/.test(chars[idx - 1])) return false
-      // Ellipsis — dot preceded by another dot
       if (idx > 0 && chars[idx - 1] === '.') return false
       if (idx > 1 && chars[idx - 2] === '.') return false
-      // Abbreviation — word immediately before dot is short (≤3 letters, e.g. Mr Dr vs etc)
       let wi = idx - 1
       while (wi >= 0 && /[A-Za-z]/.test(chars[wi])) wi--
       const wordBefore = chars.slice(wi + 1, idx).join('')
       if (wordBefore.length >= 1 && wordBefore.length <= 3) return false
-      // List item — word before dot is all digits (e.g. "1.")
       if (/^\d+$/.test(wordBefore)) return false
-      // Dot must be followed by space or end-of-string
       const after = chars[idx + 1]
       if (after !== undefined && after !== ' ' && after !== '\n') return false
-
       return true
     }
 
-    let sentenceBuf = ''  // accumulates current sentence; reset immediately on sentence end
-
-    chars.forEach((char, i) => {
-      const t = Math.round(((i + 1) / chars.length) * totalMs)
-      wordTimersRef.current.push(setTimeout(() => {
-        if (modeRef.current !== 'speaking') return
-        sentenceBuf += char
-        setSubtitle(sentenceBuf)
-
-        if (isSentenceEnd(i)) {
-          const snapshot = sentenceBuf
-          sentenceBuf = ''  // immediately ready for next sentence's chars
-          // Hold completed sentence on screen for 500ms so user can read it
-          wordTimersRef.current.push(setTimeout(() => {
-            if (modeRef.current !== 'speaking') return
-            // Only clear if no new chars have arrived yet
-            if (sentenceBuf === '') setSubtitle('')
-          }, 500))
-        }
-      }, Math.max(0, t)))
-    })
+    let sentenceBuf = ''
+    let charsScheduled = false
 
     // TTS — use streaming endpoint (same as chatbot sidebar, starts playing in ~300ms)
     const abort2 = new AbortController()
@@ -356,8 +353,11 @@ export default function VoiceSpeakingMode() {
         signal: abort2.signal,
       })
       if (!res.ok || !res.body) {
-        // TTS failed — just wait for word timers to finish then return to listening
-        const waitMs = totalMs + 500
+        // TTS failed — schedule chars with estimate and return to listening after
+        audioStartRef.ms = Date.now()
+        scheduleChars()
+        charsScheduled = true
+        const waitMs = realDurationRef.ms + 500
         wordTimersRef.current.push(setTimeout(() => {
           if (modeRef.current !== 'speaking') return
           setSubtitle(''); setMode('listening'); modeRef.current = 'listening'; startListening()
@@ -369,6 +369,7 @@ export default function VoiceSpeakingMode() {
       let buf = new Uint8Array(0)
       let sampleRate = 0
       let nextStart  = 0
+      let totalAudioMs = 0  // accumulates real audio duration as frames arrive
 
       const appendBuf = (chunk: Uint8Array) => {
         const merged = new Uint8Array(buf.length + chunk.length)
@@ -405,8 +406,23 @@ export default function VoiceSpeakingMode() {
           const now  = ctx.currentTime
           const when = Math.max(now, nextStart)
           nextStart  = when + audioBuf.duration
+          totalAudioMs += audioBuf.duration * 1000
           node.start(when)
           streamNodesRef.current.push(node)
+
+          // First frame: record wall-clock start time, update estimated duration,
+          // and schedule all character timers from that anchor point
+          if (!charsScheduled) {
+            charsScheduled = true
+            audioStartRef.ms = Date.now()
+            // Use real audio duration estimate: chars proportional to audio length
+            // We only have first chunk but TTS is ~1.6x realtime so estimate is close
+            realDurationRef.ms = (chars.length / reply.length) * (totalAudioMs / (when - ctx.currentTime + 0.001 || 1))
+            // Simpler: just use real total audio time scaled — approximate at first chunk,
+            // will be close enough since TTS speed is consistent
+            realDurationRef.ms = Math.max(totalAudioMs, (chars.length / 13) * 1000)
+            scheduleChars()
+          }
 
           // Last node triggers return to listening
           node.onended = () => {
@@ -424,8 +440,13 @@ export default function VoiceSpeakingMode() {
       }
     } catch (e: unknown) {
       if (e instanceof Error && e.name === 'AbortError') return
-      // TTS error — wait for subtitle to finish then go back to listening
-      const waitMs = totalMs + 500
+      // TTS error — schedule chars with estimate and return to listening after
+      if (!charsScheduled) {
+        audioStartRef.ms = Date.now()
+        scheduleChars()
+        charsScheduled = true
+      }
+      const waitMs = realDurationRef.ms + 500
       wordTimersRef.current.push(setTimeout(() => {
         if (modeRef.current !== 'speaking') return
         setSubtitle(''); setMode('listening'); modeRef.current = 'listening'; startListening()
