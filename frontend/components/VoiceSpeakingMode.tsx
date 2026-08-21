@@ -79,9 +79,8 @@ export default function VoiceSpeakingMode() {
   // messagesRef always holds the latest messages so async callbacks never stale-close
   const messagesRef    = useRef<Msg[]>([WELCOME_MSG])
   const modeRef        = useRef<VSMode>('idle')
-
-  // Keep refs in sync
-  modeRef.current = mode
+  // NOTE: modeRef is ONLY updated explicitly via modeRef.current = x alongside setMode()
+  // Do NOT sync it from render — re-renders from setVaBars/animations would overwrite it
 
   useEffect(() => { messagesRef.current = messages }, [messages])
 
@@ -307,7 +306,7 @@ export default function VoiceSpeakingMode() {
       const node = ctx.createBufferSource()
       node.buffer = audioBuf
       node.connect(ctx.destination)
-      node.start(0)
+      node.start(ctx.currentTime)  // use currentTime, not 0
       streamNodesRef.current = [node]
 
       // Return to listening when audio ends
@@ -372,8 +371,9 @@ export default function VoiceSpeakingMode() {
       micStreamRef.current = null
       micChunksRef.current = []
 
-      if (blob.size < 100) {
-        setMode('listening'); modeRef.current = 'listening'; startListening(); return
+      if (blob.size < 1) {
+        setSubtitle('No audio captured — try again')
+        modeRef.current = 'listening'; setMode('listening'); startListening(); return
       }
 
       // Transcribe
